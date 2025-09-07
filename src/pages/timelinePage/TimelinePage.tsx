@@ -1,10 +1,12 @@
-import { Canvas, useFrame } from "@react-three/fiber"
+import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { Environment, OrbitControls, useProgress } from "@react-three/drei"
 import { useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import { TextureLoader } from "three"
 import { eras } from "../../data/eras"
 import TimelineUI from "../../components/timeline/TimelineUI"
+import Navbar from "../../components/navbar/Navbar"
+import logo from "../../../public/images/logo3D.png"
 
 export default function MainScene() {
   // Usar siempre un id existente como inicial para evitar undefined
@@ -46,10 +48,28 @@ export default function MainScene() {
   // El componente de crossfade se encargará de cargar texturas cuando NO sean HDR.
 
   return (
-    <div className="relative w-screen h-screen">
+    <div className="relative w-screen h-screen bg-black overflow-hidden">
+      {/* Navbar consistente con WelcomePage */}
+      <div className="absolute top-0 left-0 w-full z-30 pointer-events-auto">
+        <Navbar
+          aStyles="cursor-pointer bg-gradient-to-r from-blue-800 to-purple-800 bg-clip-text text-transparent"
+          variantButton="secondary"
+          logo={logo}
+          borderColor="border-white/30"
+        />
+      </div>
+
+  {/* Gradiente superior para legibilidad */}
+  <div className="pointer-events-none absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-black/80 via-black/30 to-transparent z-20" />
+  {/* Gradiente inferior suave */}
+  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/80 via-black/30 to-transparent z-10" />
+
   <Canvas camera={{ position: [0, 0, 3], fov: 100, near: 0.1, far: 2000 }}>
         {/* Luz mínima para no oscurecer el HDRI */}
         <ambientLight intensity={0.2} />
+
+  {/* Órbita lenta automática de cámara cuando no está en vista libre */}
+  <IdleCameraOrbit active={!freeView} radius={3} period={120} />
 
         {/* Fondo dinámico (HDR/EXR) o Skydome PNG */}
         {background && (
@@ -67,7 +87,7 @@ export default function MainScene() {
       </Canvas>
 
       {/* Interfaz visible solo si NO estamos en freeView */}
-      <LoaderOverlay />
+  <LoaderOverlay />
       {!freeView && bootReady && (
         <WithProgressUI currentEra={currentEra} setCurrentEra={setCurrentEra} />
       )}
@@ -84,9 +104,9 @@ export default function MainScene() {
       {/* Botón para alternar modos */}
       <button
         onClick={() => setFreeView(!freeView)}
-        className="absolute top-5 right-5 bg-black/60 text-white px-4 py-2 rounded-lg"
+        className="absolute top-28 right-8 z-30 bg-white/10 hover:bg-white/20 border border-white/30 backdrop-blur-md text-white px-5 py-2.5 rounded-full text-xs tracking-wide uppercase transition-colors"
       >
-        {freeView ? "Salir de vista libre" : "Explorar era"}
+        {freeView ? "Close free view" : "Explore era"}
       </button>
 
     </div>
@@ -241,5 +261,20 @@ function BackgroundCrossfade({ path }: { path: string }) {
       />
     </mesh>
   )
+}
+
+// Órbita de cámara: rota 360º continuo alrededor del centro (eje Y) muy lentamente.
+function IdleCameraOrbit({ active, radius = 3, period = 120 }: { active: boolean; radius?: number; period?: number }) {
+  const { camera, clock } = useThree()
+  // Pequeña altura opcional dinámica para hacerlo menos estático
+  useFrame(() => {
+    if (!active) return
+    const t = clock.getElapsedTime()
+    const angle = (t / period) * Math.PI * 2.0 // ciclo completo cada "period" segundos
+    const y = Math.sin(t * 0.15) * 0.12 // leve vaivén vertical
+    camera.position.set(Math.cos(angle) * radius, y, Math.sin(angle) * radius)
+    camera.lookAt(0, 0, 0)
+  })
+  return null
 }
 

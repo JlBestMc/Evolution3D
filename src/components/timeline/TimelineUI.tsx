@@ -1,6 +1,7 @@
 
 import { useEffect, useMemo, useRef } from "react"
 import { eras } from "../../data/eras"
+import { Button } from "../ui/button/Button"
 
 interface TimelineUIProps {
   currentEra: string
@@ -65,48 +66,70 @@ export default function TimelineUI({ currentEra, setCurrentEra, loading = false 
   const color = era.color || '#ffffff'
 
   return (
-    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 select-none">
+    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-5 select-none z-20">
       {/* Portal principal */}
       <div
         ref={portalRef}
-        className="relative w-60 h-60 rounded-full overflow-hidden shadow-[0_0_25px_-5px_rgba(0,0,0,0.6)] border border-white/20 bg-black/40 backdrop-blur-md flex items-center justify-center"
-        style={{ boxShadow: `0 0 40px -8px ${color}AA` }}
+        className="relative w-56 h-56 rounded-3xl overflow-hidden border border-white/15 bg-white/5 backdrop-blur-md flex items-center justify-center shadow-[0_0_60px_-10px_rgba(0,0,0,0.7)]"
+        style={{ boxShadow: `0 0 50px -10px ${color}AA` }}
       >
         <img
           key={era.id}
           src={era.image}
           alt={era.name}
-          className="absolute inset-0 w-full h-full object-cover opacity-90 animate-fadeIn"
+          className="absolute inset-0 w-full h-full object-cover opacity-90 scale-105 animate-fadeIn"
           draggable={false}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-        <div className="relative text-center text-white drop-shadow">
-          <h2 className="text-xl font-semibold tracking-wide">{era.name}</h2>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+        <div className="relative text-center text-white drop-shadow flex flex-col items-center px-4">
+          <h2 className="text-2xl font-semibold tracking-wide leading-tight mb-2">{era.name}</h2>
+          {era.description && (
+            <p
+              className="text-[11px] leading-snug font-light max-w-[200px] text-white/80"
+              style={{
+                textShadow: "0 0 6px rgba(0,0,0,0.5)",
+                borderTop: `1px solid ${color}33`,
+                paddingTop: 6
+              }}
+            >
+              {era.description}
+            </p>
+          )}
         </div>
       </div>
 
       {/* Controles */}
-      <div className="flex items-center gap-6">
-  <button onClick={handlePrev} disabled={index === 0 || loading} className="px-4 py-2 text-white bg-black/50 rounded-lg disabled:opacity-30">←</button>
-        <div className="flex gap-2">
+      <div className="flex items-center gap-5">
+        <Button
+          variant="secondary"
+          onClick={handlePrev}
+          disabled={index === 0 || loading}
+          styles="!px-3 !py-2 text-xs disabled:opacity-30"
+        >Prev</Button>
+        <div className="flex gap-2 px-3 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
           {eras.map((e, i) => (
             <button
               key={e.id}
               onClick={() => !loading && setCurrentEra(e.id)}
-              className={`w-4 h-4 rounded-full border ${i === index ? 'bg-white border-white' : 'border-white/40 bg-white/10 hover:bg-white/30'} transition-colors`}
+              className={`w-3.5 h-3.5 rounded-full border transition-all ${i === index ? 'bg-white border-white scale-110 shadow' : 'border-white/40 bg-white/10 hover:bg-white/40'}`}
               aria-label={e.name}
             />
           ))}
         </div>
-        <button onClick={handleNext} disabled={index === eras.length - 1 || loading} className="px-4 py-2 text-white bg-black/50 rounded-lg disabled:opacity-30">→</button>
+        <Button
+          variant="secondary"
+          onClick={handleNext}
+          disabled={index === eras.length - 1 || loading}
+          styles="!px-3 !py-2 text-xs disabled:opacity-30"
+        >Next</Button>
       </div>
 
       {/* Miniaturas horizontales (opcional) */}
-      <div className="mt-2 flex gap-3">
+      <div className="mt-1 flex gap-3">
         {eras.map((e, i) => (
           <div
             key={e.id}
-            className={`w-16 h-12 rounded-md overflow-hidden ring-1 cursor-pointer relative ${i === index ? 'ring-white/80 ring-2 shadow-lg' : 'ring-white/20 opacity-60 hover:opacity-90'}`}
+            className={`w-16 h-12 rounded-lg overflow-hidden ring-1 cursor-pointer relative transition-all ${i === index ? 'ring-white/80 ring-2 shadow-lg scale-[1.03]' : 'ring-white/20 opacity-60 hover:opacity-90'}`}
             onClick={() => !loading && setCurrentEra(e.id)}
           >
             <img src={e.background} alt={e.name} className="w-full h-full object-cover" draggable={false} />
