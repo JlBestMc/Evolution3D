@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Button } from "../ui/button/Button";
+import Button2 from "../ui/button/Button2";
 
 
 interface NavbarProps {
@@ -8,13 +8,13 @@ interface NavbarProps {
   aStyles?: string;
   borderColor?: string;
   variantButton?: "primary" | "secondary" | "tertiary" | "quaternary";
+  variantButton2?: "primary" | "secondary" | "tertiary" | "quaternary";
 }
 export default function Navbar({
   logo,
   bgColor,
   aStyles,
   borderColor,
-  variantButton,
 }: NavbarProps)  {
   const navigate = useNavigate();
 
@@ -23,7 +23,7 @@ export default function Navbar({
       <div
         className={`flex ${bgColor} flex-col md:flex-row justify-between items-center p-4 px-16 text-black-300`}
       >
-        <div className="w-32 cursor-pointer" onClick={() => navigate("/")}>
+        <div className="w-32 cursor-pointer mr-28" onClick={() => navigate("/")}>
           <img src={logo} alt="Logo" className="w-full h-auto" />
         </div>
         <div
@@ -34,8 +34,8 @@ export default function Navbar({
           <a className={aStyles}>More</a>
         </div>  
           <div className="flex justify-between items-center space-x-3  font-semibold">
-            <Button variant={variantButton} onClick={() => navigate("/timeline")}>Login</Button>
-            <Button variant={variantButton} onClick={() => navigate("/register")}>Register</Button>
+            <Button2 onClick={() => navigate("/timeline")}>Login</Button2>
+            <Button2 onClick={() => navigate("/register")} gradientHover="from-purple-500 to-blue-500" borderColor="bg-purple-500/70">Register</Button2>
           </div>
       </div>
     </>

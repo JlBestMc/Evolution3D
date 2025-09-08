@@ -101,7 +101,7 @@ export default function TimelineUI({ currentEra, setCurrentEra, loading = false 
       {/* Controles */}
       <div className="flex items-center gap-5">
         <Button
-          variant="secondary"
+          variant="tertiary"
           onClick={handlePrev}
           disabled={index === 0 || loading}
           styles="!px-3 !py-2 text-xs disabled:opacity-30"
@@ -117,7 +117,7 @@ export default function TimelineUI({ currentEra, setCurrentEra, loading = false 
           ))}
         </div>
         <Button
-          variant="secondary"
+          variant="tertiary"
           onClick={handleNext}
           disabled={index === eras.length - 1 || loading}
           styles="!px-3 !py-2 text-xs disabled:opacity-30"

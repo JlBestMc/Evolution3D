@@ -29,10 +29,11 @@ export default function WelcomePage() {
       {/* Navbar */}
       <div className="pointer-events-auto relative z-30">
         <Navbar
-          aStyles="cursor-pointer bg-gradient-to-r from-blue-800 to-purple-800 bg-clip-text text-transparent"
-          variantButton="secondary"
+          aStyles="cursor-pointer hidden bg-gradient-to-r from-blue-400/80 to-purple-800 bg-clip-text text-transparent"
+          variantButton="primary"
+          variantButton2="secondary"
           logo={logo}
-          borderColor="border-white/30"
+          borderColor="border-white/30 hidden"
         />
       </div>
 

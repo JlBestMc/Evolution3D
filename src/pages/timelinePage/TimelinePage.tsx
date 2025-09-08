@@ -52,10 +52,10 @@ export default function MainScene() {
       {/* Navbar consistente con WelcomePage */}
       <div className="absolute top-0 left-0 w-full z-30 pointer-events-auto">
         <Navbar
-          aStyles="cursor-pointer bg-gradient-to-r from-blue-800 to-purple-800 bg-clip-text text-transparent"
-          variantButton="secondary"
+          aStyles="cursor-pointer text-white bg-clip-text text-transparent"
+          variantButton="tertiary"
           logo={logo}
-          borderColor="border-white/30"
+          borderColor="border-white/50"
         />
       </div>
 
@@ -104,7 +104,7 @@ export default function MainScene() {
       {/* Botón para alternar modos */}
       <button
         onClick={() => setFreeView(!freeView)}
-        className="absolute top-28 right-8 z-30 bg-white/10 hover:bg-white/20 border border-white/30 backdrop-blur-md text-white px-5 py-2.5 rounded-full text-xs tracking-wide uppercase transition-colors"
+        className="absolute bottom-8 right-8 z-30 bg-white/10 hover:bg-white/20 border border-white/25 shadow-[0_0_0_1px_rgba(255,255,255,0.05)] backdrop-blur-md text-white/90 hover:text-white px-5 py-2.5 rounded-full text-[11px] tracking-wide uppercase transition-colors select-none"
       >
         {freeView ? "Close free view" : "Explore era"}
       </button>
