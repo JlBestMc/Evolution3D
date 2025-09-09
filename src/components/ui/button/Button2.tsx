@@ -17,7 +17,7 @@ function Button2({
   children,
   gradientHover = "from-teal-400 via-blue-500 to-purple-500",
   bgColor = "bg-gray-950",
-  borderColor= "bg-gray-800",
+  borderColor = "bg-gray-800",
 }: Button2Props) {
   return (
     <div className="relative inline-block group">
@@ -36,7 +36,7 @@ function Button2({
           aria-hidden="true"
           className={`absolute inset-0 rounded-xl bg-gradient-to-r ${gradientHover} p-[2px] opacity-0 transition-opacity duration-500 group-hover:opacity-100`}
         />
-        <span className={`relative z-10 block px-6 py-3 rounded-xl ${bgColor}`}>
+        <span className={`relative z-10 block px-3 py-3 rounded-xl ${bgColor}`}>
           <span className="relative z-10 flex items-center space-x-2">
             <span className="transition-transform duration-500 group-hover:translate-x-1">
               {children}
