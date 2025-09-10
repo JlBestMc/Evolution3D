@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 
 const WelcomePage = lazy(() => import("../pages/welcomePage/WelcomePage"));
 const TimelinePage = lazy(() => import("../pages/timelinePage/TimelinePage"));
+const EraPage = lazy(() => import("../pages/eraPage/EraPage"));
 const AuthPage = lazy(() => import("../auth/auth"));
 const LoginPage = lazy(() => import("../pages/loginPage/loginPage"));
 const RegisterPage = lazy(() => import("../pages/registerPage/registerPage"));
@@ -10,6 +11,7 @@ const RegisterPage = lazy(() => import("../pages/registerPage/registerPage"));
 export const PATHS = {
   root: "/",
   timeline: "/timeline",
+  era: "/era",
   auth: "/auth",
   login: "/login",
   register: "/register",
@@ -51,6 +53,7 @@ export default function AppRoutes() {
             //</ProtectedRoute>
           }
         />
+  <Route path={PATHS.era} element={<EraPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

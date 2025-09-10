@@ -38,7 +38,7 @@ export default function Navbar({
           <a className={aStyles}>More</a>
         </div>
         <div className="flex justify-between items-center space-x-3  font-semibold">
-          <Button2 onClick={() => navigate("/timeline")}>Login</Button2>
+          <Button2 onClick={() => navigate("/era")}>Login</Button2>
           <Button2
             onClick={() => navigate("/register")}
             gradientHover="from-purple-500 to-blue-500"

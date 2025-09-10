@@ -1,6 +1,6 @@
 import Spline from "@splinetool/react-spline";
 import Navbar from "../../components/navbar/Navbar";
-import logo from "/public/images/logo3D.png";
+import logo from "/images/logo3D.png";
 import { useRef, useState, useEffect } from "react";
 
 export default function WelcomePage() {

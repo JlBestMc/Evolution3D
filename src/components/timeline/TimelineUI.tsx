@@ -82,7 +82,10 @@ export default function TimelineUI({ currentEra, setCurrentEra, loading = false 
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
         <div className="relative text-center text-white drop-shadow flex flex-col items-center px-4">
-          <h2 className="text-2xl font-semibold tracking-wide leading-tight mb-2">{era.name}</h2>
+          <h2 className="text-2xl font-semibold tracking-wide leading-tight mb-1">{era.name}</h2>
+          {era.period && (
+            <p className="text-xs font-medium tracking-wide text-white/80 mb-1">{era.period}</p>
+          )}
           {era.description && (
             <p
               className="text-[11px] leading-snug font-light max-w-[200px] text-white/80"
@@ -124,18 +127,47 @@ export default function TimelineUI({ currentEra, setCurrentEra, loading = false 
         >Next</Button>
       </div>
 
-      {/* Miniaturas horizontales (opcional) */}
-      <div className="mt-1 flex gap-3">
-        {eras.map((e, i) => (
-          <div
-            key={e.id}
-            className={`w-16 h-12 rounded-lg overflow-hidden ring-1 cursor-pointer relative transition-all ${i === index ? 'ring-white/80 ring-2 shadow-lg scale-[1.03]' : 'ring-white/20 opacity-60 hover:opacity-90'}`}
-            onClick={() => !loading && setCurrentEra(e.id)}
-          >
-            <img src={e.background} alt={e.name} className="w-full h-full object-cover" draggable={false} />
-            {i === index && <div className="absolute inset-0 bg-black/20" />}
-          </div>
-        ))}
+  {/* Miniaturas horizontales removidas para usar solo las del rail */}
+
+      {/* Timeline rail inferior */}
+      <div className="mt-6 w-[88vw] max-w-[1200px] h-24 relative">
+        {/* Línea principal */}
+        <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-[2px] bg-white/30" />
+        {/* Punteado fino */}
+        <div className="absolute left-0 right-0 top-[calc(50%+6px)] flex justify-between px-4">
+          {Array.from({ length: 40 }).map((_, i) => (
+            <span key={i} className="w-[2px] h-[2px] bg-white/50 rounded-full opacity-50" />
+          ))}
+        </div>
+        {/* Nodos de eras + miniaturas arriba y periodo abajo */}
+        <div className="absolute inset-0 flex items-center justify-between px-6">
+          {eras.map((e, i) => (
+            <div key={e.id} className="relative w-0 h-0">
+              {/* Miniatura arriba */}
+              <button
+                onClick={() => !loading && setCurrentEra(e.id)}
+                className={`absolute -top-16 left-1/2 -translate-x-1/2 w-14 h-10 rounded-md overflow-hidden ring-1 transition-all ${i === index ? 'ring-white/80 shadow-md scale-105' : 'ring-white/20 opacity-70 hover:opacity-100'}`}
+                aria-label={`${e.name} thumbnail`}
+              >
+                <img src={e.image} alt={e.name} className="w-full h-full object-cover" draggable={false} />
+              </button>
+
+              {/* Nodo en la línea */}
+              <button
+                aria-label={e.name}
+                onClick={() => !loading && setCurrentEra(e.id)}
+                className={`relative w-4 h-4 rounded-full border transition-all ml-[-8px] ${i === index ? 'bg-white border-white shadow-[0_0_12px_rgba(255,255,255,0.8)] scale-110' : 'bg-white/20 border-white/60 hover:bg-white/50'}`}
+              />
+
+              {/* Periodo debajo */}
+              {e.period && (
+                <span className="absolute top-6 left-1/2 -translate-x-1/2 text-[10px] font-medium tracking-wide text-white/80 whitespace-nowrap">
+                  {e.period}
+                </span>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )

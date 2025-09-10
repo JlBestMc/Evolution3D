@@ -5,6 +5,7 @@ export const eras = [
     image: "/images/precambrian.png",
     background: "/skydome/precambrianEra.png",
     color: "#2b6cb0",
+  period: "4.6 Ga – 541 Ma",
     description: "Formation of Earth, early atmosphere, first simple life (bacteria, algae)."
   },
   {
@@ -13,6 +14,7 @@ export const eras = [
     image: "/images/paleozoic.png",
     background: "/skydome/paleozoicEra.png",
     color: "#d4b24a",
+  period: "541 – 252 Ma",
     description: "Explosion of marine life, first land plants, insects, amphibians and reptiles."
   },
   {
@@ -21,6 +23,7 @@ export const eras = [
     image: "/images/mesozoic.png",
     background: "/skydome/mesozoicEra.png",
     color: "#6b4f2a",
+  period: "252 – 66 Ma",
     description: "Age of dinosaurs, early mammals and birds, breakup of Pangaea."
   },
   {
@@ -29,6 +32,7 @@ export const eras = [
     image: "/images/cenozoic.png",
     background: "/skydome/cenozoicEra.png",
     color: "#6b4f2a",
+  period: "66 Ma – present",
     description: "Rise of mammals, modern climates, evolution of humans."
   },
 ]

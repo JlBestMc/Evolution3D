@@ -6,7 +6,7 @@ import { TextureLoader } from "three";
 import { eras } from "../../data/eras";
 import TimelineUI from "../../components/timeline/TimelineUI";
 import Navbar from "../../components/navbar/Navbar";
-import logo from "../../../public/images/logo3D.png";
+import logo from "/images/logo3D.png";
 
 export default function MainScene() {
   // Usar siempre un id existente como inicial para evitar undefined
@@ -237,8 +237,8 @@ function BackgroundCrossfade({ path }: { path: string }) {
       uniform float uBlur; 
 
       // Ajusta estos dos valores para experimentar:
-      const float uExposure = 2.2; // >1 más brillante, <1 más oscuro
-      const float uGamma = 1.2;     // 2.2 estándar; bajar = look más "plano"
+      const float uExposure = 1.9; // >1 más brillante, <1 más oscuro
+      const float uGamma = 1.3;     // 2.2 estándar; bajar = look más "plano"
 
       vec4 sampleBlur(sampler2D tx, vec2 uv, float b){
         if(b<=0.0001) return texture2D(tx,uv);
