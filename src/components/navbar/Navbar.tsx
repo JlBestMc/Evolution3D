@@ -35,7 +35,7 @@ export default function Navbar({
           <a onClick={() => navigate("/timeline")} className={aStyles}>
             Timeline
           </a>
-          <a className={aStyles}>More</a>
+          <a onClick={() => navigate("/era")} className={aStyles}>More</a>
         </div>
         <div className="flex justify-between items-center space-x-3  font-semibold">
           <Button2 onClick={() => navigate("/timeline")}>Login</Button2>

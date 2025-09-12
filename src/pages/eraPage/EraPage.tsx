@@ -153,7 +153,7 @@ export default function EraPage() {
   );
 }
 
-useGLTF.preload("/models/chicken/Archaeopteryx3D.glb");
-useGLTF.preload("/models/whale/Whale3D.glb");
-useGLTF.preload("/models/whale/Pakicetus3D.glb");
+useGLTF.preload("/models/Archaeopteryx3D.glb");
+useGLTF.preload("/models/Whale3D.glb");
+useGLTF.preload("/models/Pakicetus3D.glb");
 
