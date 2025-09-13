@@ -1,7 +1,10 @@
-import TimelinePage from "./pages/timelinePage/TimelinePage"
+
+import AppRoutes from './routes/routes'
 function App() {
   return (
-    <TimelinePage />
+    <>
+  <AppRoutes />
+    </>
   )
 }
 export default App
