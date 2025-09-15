@@ -7,6 +7,7 @@ import { eras } from "../../data/eras";
 import TimelineUI from "../../components/timeline/TimelineUI";
 import Navbar from "../../components/navbar/Navbar";
 import logo from "/images/logo3D.png";
+import { Button } from "../../components/ui/button/Button";
 
 export default function MainScene() {
   // Usar siempre un id existente como inicial para evitar undefined
@@ -109,12 +110,13 @@ export default function MainScene() {
         </div>
       )}
 
-      <button
+      <Button
         onClick={() => setFreeView(!freeView)}
-        className="absolute bottom-8 right-8 z-30 bg-white/10 hover:bg-white/20 border border-white/25 shadow-[0_0_0_1px_rgba(255,255,255,0.05)] backdrop-blur-md text-white/90 hover:text-white px-5 py-2.5 rounded-full text-[11px] tracking-wide uppercase transition-colors select-none"
+        variant="secondary"
+        styles="absolute bottom-8 left-8 z-30 bg-white/10 hover:bg-white/20 border border-white/25 shadow-[0_0_0_1px_rgba(255,255,255,0.05)] backdrop-blur-md text-white/90 hover:text-white px-5 py-2.5 rounded-full text-[11px] tracking-wide uppercase transition-colors select-none"
       >
-        {freeView ? "Close free view" : "Explore era"}
-      </button>
+        {freeView ? "Close free view" : "Free view"}
+      </Button>
     </div>
   );
 }
@@ -236,9 +238,8 @@ function BackgroundCrossfade({ path }: { path: string }) {
       uniform float uHasPrev; 
       uniform float uBlur; 
 
-      // Ajusta estos dos valores para experimentar:
-      const float uExposure = 1.9; // >1 más brillante, <1 más oscuro
-      const float uGamma = 1.3;     // 2.2 estándar; bajar = look más "plano"
+      const float uExposure = 1.9;
+      const float uGamma = 1.3; 
 
       vec4 sampleBlur(sampler2D tx, vec2 uv, float b){
         if(b<=0.0001) return texture2D(tx,uv);

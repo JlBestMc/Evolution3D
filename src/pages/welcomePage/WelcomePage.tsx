@@ -27,11 +27,11 @@ export default function WelcomePage() {
     <main className="w-full h-screen overflow-hidden relative bg-black">
       <div className="pointer-events-auto relative z-30">
         <Navbar
-          aStyles="cursor-pointer bg-gradient-to-r from-blue-400/80 to-purple-800 bg-clip-text text-transparent"
+          aStyles="cursor-pointer hidden bg-gradient-to-r from-blue-400/80 to-purple-800 bg-clip-text text-transparent"
           variantButton="primary"
           variantButton2="secondary"
           logo={logo}
-          borderColor="border-white/30"
+          borderColor="border-white/30 hidden"
         />
       </div>
 

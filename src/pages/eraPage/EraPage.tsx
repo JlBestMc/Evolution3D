@@ -1,133 +1,59 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, useGLTF, Center, AdaptiveDpr } from "@react-three/drei";
-import animalsData, { type Animal } from "../../data/animals";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useGLTF } from "@react-three/drei";
+import animalsData from "../../data/animals";
+import { eras } from "../../data/eras";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/navbar/Navbar";
+import Background from "../../components/ui/backgrounds/Background";
 import logo from "/images/logo3D.png";
-import { Group, ReinhardToneMapping, SRGBColorSpace } from "three";
+import { Card3D } from "../../components/ui/card/Card3D";
 
-function SpinningModel({ url, paused, scale = 1 }: { url: string; paused?: boolean; scale?: number }) {
-  const { scene } = useGLTF(url);
-  const ref = useRef<Group>(null);
-  useFrame((_, delta) => {
-  if (!paused && ref.current) ref.current.rotation.y += delta * 0.3; // giro leve
-  });
-  return (
-    <Center>
-  <primitive ref={ref} object={scene} scale={[scale, scale, scale]} />
-    </Center>
-  );
-}
-
-function Card3D({ animal }: { animal: Animal }) {
-  const [lost, setLost] = useState(false);
-  const [interacting, setInteracting] = useState(false);
-  return (
-    <div className="relative w-72 h-96 rounded-2xl overflow-hidden bg-white/5 border border-white/10 backdrop-blur-md shadow-xl">
-      <div className="absolute inset-0">
-        <Canvas
-          camera={{ position: [0, 0.5, 3], fov: 50 }}
-          gl={{ alpha: true, antialias: true }}
-          dpr={[1, 1.5]}
-          style={{ background: "transparent", cursor: interacting ? "grabbing" : "grab" }}
-          onCreated={({ gl }) => {
-            // Reducir saturación percibida: tone mapping + exposición
-            gl.toneMapping = ReinhardToneMapping;
-            gl.toneMappingExposure = 0.9;
-            gl.outputColorSpace = SRGBColorSpace;
-
-            const el = gl.domElement;
-            const onLost = (e: Event) => {
-              e.preventDefault();
-              setLost(true);
-            };
-            const onRestore = () => setLost(false);
-            el.addEventListener("webglcontextlost", onLost as EventListener, { passive: false } as AddEventListenerOptions);
-            el.addEventListener("webglcontextrestored", onRestore as EventListener);
-          }}
-        >
-          <AdaptiveDpr pixelated />
-          <ambientLight intensity={0.7} />
-          <directionalLight position={[3, 4, 5]} intensity={2.2} />
-          <hemisphereLight intensity={0.35} />
-          <Suspense fallback={null}>
-            <SpinningModel url={animal.model} paused={interacting} scale={1.5} />
-          </Suspense>
-          <OrbitControls
-            enablePan={false}
-            enableZoom={false}
-            enableRotate
-            enableDamping
-            dampingFactor={0.08}
-            rotateSpeed={0.7}
-            minPolarAngle={Math.PI / 2 - 0.6}
-            maxPolarAngle={Math.PI / 2 + 0.6}
-            onStart={() => setInteracting(true)}
-            onEnd={() => setInteracting(false)}
-          />
-        </Canvas>
-        {lost && (
-          <div className="absolute inset-0 flex items-center justify-center text-white/70 text-xs bg-black/20">
-            WebGL context lost — try reducing open tabs or GPU load
-          </div>
-        )}
-      </div>
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent text-white">
-        <h3 className="text-lg font-semibold">{animal.name}</h3>
-        <p className="text-xs opacity-80">{animal.description}</p>
-      </div>
-    </div>
-  );
-}
+const DRACO_CDN = "https://www.gstatic.com/draco/v1/decoders/";
+useGLTF.setDecoderPath(DRACO_CDN);
+// Optional: preload all declared models once
+animalsData.forEach((a) => {
+  if (a.model) useGLTF.preload(a.model, true);
+});
 
 export default function EraPage() {
-  // Mostrar todos por defecto; si el usuario selecciona una era, se filtra
-  const [eraId] = useState<string>("");
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    let raf = 0;
-    const onScroll = () => {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        setScrollY(window.scrollY || window.pageYOffset || 0);
-        raf = 0;
-      });
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
+  // Leer eraId desde la URL: /era/:eraId
+  const params = useParams<{ eraId?: string }>();
+  const [eraId] = useState<string>(params.eraId ?? "");
+  const eraObj = useMemo(() => eras.find((e) => e.id === eraId), [eraId]);
+  const eraColor = eraObj?.color ?? "#6b8cff";
 
   const animals = useMemo(() => {
-    return animalsData
-      .filter(a => !eraId || a.eraId === eraId)
-      .sort((a, b) => (a.startMa ?? 0) - (b.startMa ?? 0)); // del más antiguo al más reciente
+    const filtered = animalsData.filter((a) => !eraId || a.eraId === eraId);
+    // Preload solo de la era activa (y con Draco)
+    filtered.forEach((a) => a.model && useGLTF.preload(a.model, true));
+    // Ordenar de más antiguo (mayor startMa) a más reciente (menor startMa)
+    return filtered.sort((a, b) => (b.startMa ?? 0) - (a.startMa ?? 0));
   }, [eraId]);
+  const navigate = useNavigate();
+
+  // Mejor UX: convertir rueda vertical a scroll horizontal en el carrusel
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (e.ctrlKey || e.shiftKey) return;
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        el.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel as EventListener);
+  }, []);
 
   return (
-    <main className="relative min-h-screen w-full overflow-hidden bg-black text-white">
-      {/* Parallax background */}
-      <div className="pointer-events-none absolute inset-0 z-0">
-        <div
-          className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(255,255,255,0.22),transparent_60%)] will-change-transform"
-          style={{ transform: `translateY(${scrollY * 0.05}px) scale(1.03)` }}
-        />
-        <div
-          className="absolute inset-0 bg-[radial-gradient(circle_at_80%_120%,rgba(0,150,255,0.12),transparent_60%)] will-change-transform"
-          style={{ transform: `translateY(${scrollY * 0.1}px)` }}
-        />
-        <div
-          className="absolute inset-0 bg-[radial-gradient(circle_at_10%_120%,rgba(180,100,255,0.1),transparent_60%)] will-change-transform"
-          style={{ transform: `translateY(${scrollY * 0.16}px)` }}
-        />
-      </div>
+    <main className="relative min-h-screen w-full overflow-hidden bg-[#06080F] text-white">
+      <Background accentColor={eraColor} />
 
       <div className="relative z-20">
         <Navbar
-          aStyles="cursor-pointer bg-gradient-to-r from-blue-800 to-purple-800 bg-clip-text text-transparent"
+          aStyles="cursor-pointer"
           variantButton="secondary"
           logo={logo}
           borderColor="border-white/30"
@@ -136,14 +62,55 @@ export default function EraPage() {
 
       <section className="relative z-10 container mx-auto px-6 py-10">
         <header className="mb-6">
-          <h1 className="text-2xl font-semibold">Era</h1>
-          <p className="text-white/70 text-sm">3D animals — ordered by time</p>
+          <div className="flex items-end justify-between gap-4 flex-wrap">
+            <div>
+              <h1
+                className="text-3xl md:text-4xl font-semibold tracking-tight"
+                style={{
+                  background: `linear-gradient(90deg, ${eraColor}, #ffffff)`,
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  color: "transparent",
+                }}
+              >
+                {eraObj?.name ?? "All Eras"}
+              </h1>
+              {eraObj?.period && (
+                <p className="mt-1 text-white/70 text-sm">{eraObj.period}</p>
+              )}
+            </div>
+          </div>
+          <div
+            className="mt-3 h-[3px] w-24 rounded-full"
+            style={{
+              background: `linear-gradient(90deg, ${eraColor}, transparent)`,
+            }}
+          />
+          <p className="mt-3 text-white/70 text-sm">
+            3D animals — ordered by time
+          </p>
         </header>
 
         {/* Carousel */}
-        <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory">
+        <div
+          ref={scrollRef}
+          className="carousel-scroll flex gap-6 overflow-x-auto pb-6 select-none scroll-smooth"
+          aria-label="3D animals carousel"
+        >
           {animals.map((a) => (
-            <div key={a.name} className="snap-center shrink-0">
+            <div
+              key={a.name}
+              className="snap-center px-4 pt-5 md:snap-start shrink-0 snap-stop cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/30 rounded-lg"
+              onClick={() => navigate(`/animal/${encodeURIComponent(a.name)}`)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  navigate(`/animal/${encodeURIComponent(a.name)}`);
+                }
+              }}
+            >
               <Card3D animal={a} />
             </div>
           ))}
@@ -153,7 +120,7 @@ export default function EraPage() {
   );
 }
 
-useGLTF.preload("/models/Archaeopteryx3D.glb");
-useGLTF.preload("/models/Whale3D.glb");
-useGLTF.preload("/models/Pakicetus3D.glb");
-
+useGLTF.preload("/models/Archaeopteryx3D_draco.glb", true);
+useGLTF.preload("/models/Whale3D.glb", true);
+useGLTF.preload("/models/Pakicetus3D.glb", true);
+useGLTF.preload("/models/trex.glb", true);

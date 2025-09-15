@@ -22,7 +22,7 @@ export const eras = [
     name: "Mesozoic Era",
     image: "/images/mesozoic.png",
     background: "/skydome/mesozoicEra.png",
-    color: "#6b4f2a",
+    color: "#287c1b",
   period: "252 – 66 Ma",
     description: "Age of dinosaurs, early mammals and birds, breakup of Pangaea."
   },
@@ -31,7 +31,7 @@ export const eras = [
     name: "Cenozoic Era",
     image: "/images/cenozoic.png",
     background: "/skydome/cenozoicEra.png",
-    color: "#6b4f2a",
+    color: "#6b4f6a",
   period: "66 Ma – present",
     description: "Rise of mammals, modern climates, evolution of humans."
   },
