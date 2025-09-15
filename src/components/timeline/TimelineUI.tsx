@@ -1,5 +1,7 @@
 
 import { useEffect, useMemo, useRef } from "react"
+import { useNavigate } from "react-router-dom"
+import { PATHS } from "../../routes/routes"
 import { eras } from "../../data/eras"
 import { Button } from "../ui/button/Button"
 
@@ -10,6 +12,7 @@ interface TimelineUIProps {
 }
 
 export default function TimelineUI({ currentEra, setCurrentEra, loading = false }: TimelineUIProps) {
+  const navigate = useNavigate()
   // Indice seguro (si no se encuentra el id, forzamos 0)
   const index = useMemo(() => {
     const i = eras.findIndex(e => e.id === currentEra)
@@ -41,6 +44,11 @@ export default function TimelineUI({ currentEra, setCurrentEra, loading = false 
       setCurrentEra(target)
     }
   }
+  const handleExplore = () => {
+    if (loading) return
+    const era = eras[index]
+    navigate(PATHS.eraId(era.id))
+  }
 
   // Teclado ← →
   useEffect(() => {
@@ -66,11 +74,13 @@ export default function TimelineUI({ currentEra, setCurrentEra, loading = false 
   const color = era.color || '#ffffff'
 
   return (
+    <>
     <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-5 select-none z-20">
       {/* Portal principal */}
       <div
+        onClick={handleExplore}
         ref={portalRef}
-        className="relative w-56 h-56 rounded-3xl overflow-hidden border border-white/15 bg-white/5 backdrop-blur-md flex items-center justify-center shadow-[0_0_60px_-10px_rgba(0,0,0,0.7)]"
+        className="relative cursor-pointer w-56 h-56 rounded-3xl overflow-hidden border border-white/15 bg-white/5 backdrop-blur-md flex items-center justify-center shadow-[0_0_60px_-10px_rgba(0,0,0,0.7)]"
         style={{ boxShadow: `0 0 50px -10px ${color}AA` }}
       >
         <img
@@ -126,6 +136,7 @@ export default function TimelineUI({ currentEra, setCurrentEra, loading = false 
           styles="!px-3 !py-2 text-xs disabled:opacity-30"
         >Next</Button>
       </div>
+          
 
   {/* Miniaturas horizontales removidas para usar solo las del rail */}
 
@@ -149,7 +160,7 @@ export default function TimelineUI({ currentEra, setCurrentEra, loading = false 
                 className={`absolute -top-16 left-1/2 -translate-x-1/2 w-14 h-10 rounded-md overflow-hidden ring-1 transition-all ${i === index ? 'ring-white/80 shadow-md scale-105' : 'ring-white/20 opacity-70 hover:opacity-100'}`}
                 aria-label={`${e.name} thumbnail`}
               >
-                <img src={e.image} alt={e.name} className="w-full h-full object-cover" draggable={false} />
+                <img src={e.background} alt={e.name} className="w-full h-full object-cover" draggable={false} />
               </button>
 
               {/* Nodo en la línea */}
@@ -166,12 +177,21 @@ export default function TimelineUI({ currentEra, setCurrentEra, loading = false 
                 </span>
               )}
             </div>
+            
           ))}
+          
         </div>
+        
       </div>
+      
     </div>
+    <Button
+          variant="secondary"
+          onClick={handleExplore}
+          disabled={loading}
+          styles="absolute bottom-8 right-8 z-30 bg-white/10 hover:bg-white/20 border border-white/25 shadow-[0_0_0_1px_rgba(255,255,255,0.05)] backdrop-blur-md text-white/90 hover:text-white px-5 py-2.5 rounded-full text-[11px] tracking-wide uppercase transition-colors select-none"
+        >Explore era</Button>
+    </>
+    
   )
 }
-
-// Animación simple CSS (se puede mover a un CSS global si prefieres)
-// .animate-fadeIn { animation: fadeIn 0.6s ease both }

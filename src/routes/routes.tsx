@@ -4,6 +4,8 @@ import { Routes, Route } from "react-router-dom";
 const WelcomePage = lazy(() => import("../pages/welcomePage/WelcomePage"));
 const TimelinePage = lazy(() => import("../pages/timelinePage/TimelinePage"));
 const EraPage = lazy(() => import("../pages/eraPage/EraPage"));
+const AnimalPage = lazy(() => import("../pages/animalPage/AnimalPage"));
+const MuseumPage = lazy(() => import("../pages/museumPage/MuseumPage"));
 const AuthPage = lazy(() => import("../auth/auth"));
 const LoginPage = lazy(() => import("../pages/loginPage/loginPage"));
 const RegisterPage = lazy(() => import("../pages/registerPage/registerPage"));
@@ -12,6 +14,9 @@ export const PATHS = {
   root: "/",
   timeline: "/timeline",
   era: "/era",
+  eraId: (eraId: string) => `/era/${eraId}`,
+  animal: (name: string) => `/animal/${encodeURIComponent(name)}`,
+  museum: "/museum",
   auth: "/auth",
   login: "/login",
   register: "/register",
@@ -54,6 +59,9 @@ export default function AppRoutes() {
           }
         />
   <Route path={PATHS.era} element={<EraPage />} />
+    <Route path={`${PATHS.era}/:eraId`} element={<EraPage />} />
+  <Route path="/animal/:name" element={<AnimalPage />} />
+        <Route path={PATHS.museum} element={<MuseumPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

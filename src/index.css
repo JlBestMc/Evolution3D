@@ -1,1 +1,23 @@
 @import "tailwindcss";
+
+/* Carousel scroll UX enhancements */
+.carousel-scroll {
+	mask-image: linear-gradient( to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100% );
+	-webkit-mask-image: linear-gradient( to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100% );
+	overscroll-behavior-x: contain;
+	-webkit-overflow-scrolling: touch; /* iOS momentum */
+}
+
+/* Firefox */
+.carousel-scroll { scrollbar-color: rgba(255,255,255,0.25) transparent; scrollbar-width: thin; }
+
+/* WebKit */
+.carousel-scroll::-webkit-scrollbar { height: 10px; }
+.carousel-scroll::-webkit-scrollbar-track { background: transparent; }
+.carousel-scroll::-webkit-scrollbar-thumb {
+	background: linear-gradient(90deg, rgba(255,255,255,0.22), rgba(255,255,255,0.14));
+	border-radius: 999px;
+}
+.carousel-scroll::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(90deg, rgba(255,255,255,0.32), rgba(255,255,255,0.22));
+}
