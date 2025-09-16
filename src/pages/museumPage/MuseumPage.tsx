@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/navbar/Navbar";
-import Background from "../../components/ui/backgrounds/Background";
+import Background from "../../components/ui/background/Background";
 import logo from "/images/logo3D.png";
 import { eras } from "../../data/eras";
 const MODEL_UID = "27eed96c03ad480bb29331ee1b955d15"; // Gunma Museum of Natural History
@@ -12,7 +12,7 @@ export default function MuseumPage() {
 
   return (
     <main className="relative min-h-screen w-full overflow-hidden bg-[#06080F] text-white">
-  <Background accentColor={accent} />
+      <Background accentColor={accent} />
 
       <div className="relative z-20">
         <Navbar
@@ -38,10 +38,13 @@ export default function MuseumPage() {
           </h1>
           <div
             className="mt-3 h-[3px] w-24 rounded-full"
-            style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }}
+            style={{
+              background: `linear-gradient(90deg, ${accent}, transparent)`,
+            }}
           />
           <p className="mt-3 text-white/70 text-sm">
-            Explora el museo 3D embebido. Las anotaciones están visibles dentro del visor.
+            Explore the 3D Gunma Museum of Natural History. The annotations
+            allow you to interact with the exhibits.
           </p>
         </header>
 
@@ -51,15 +54,22 @@ export default function MuseumPage() {
             frameBorder="0"
             allow="autoplay; fullscreen; xr-spatial-tracking"
             allowFullScreen
+            loading="lazy"
             src={`https://sketchfab.com/models/${MODEL_UID}/embed?autostart=1&annotations_visible=1&dnt=1`}
             className="w-full h-full"
           />
         </div>
         <div className="mt-4 text-sm text-white/60">
           <p className="mt-2">
-            Volver a <Link className="text-blue-400 hover:underline" to="/">inicio</Link> o a
-            {" "}
-            <Link className="text-blue-400 hover:underline" to="/era">eras</Link>.
+            Volver a{" "}
+            <Link className="text-blue-400 hover:underline" to="/">
+              inicio
+            </Link>{" "}
+            o a{" "}
+            <Link className="text-blue-400 hover:underline" to="/era">
+              eras
+            </Link>
+            .
           </p>
         </div>
       </section>

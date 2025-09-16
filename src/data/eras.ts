@@ -5,7 +5,7 @@ export const eras = [
     image: "/images/precambrian.png",
     background: "/skydome/precambrianEra.png",
     color: "#2b6cb0",
-  period: "4.6 Ga – 541 Ma",
+  period: "4600 Ma – 541 Ma",
     description: "Formation of Earth, early atmosphere, first simple life (bacteria, algae)."
   },
   {

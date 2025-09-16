@@ -5,7 +5,7 @@ const WelcomePage = lazy(() => import("../pages/welcomePage/WelcomePage"));
 const TimelinePage = lazy(() => import("../pages/timelinePage/TimelinePage"));
 const EraPage = lazy(() => import("../pages/eraPage/EraPage"));
 const AnimalPage = lazy(() => import("../pages/animalPage/AnimalPage"));
-const MuseumPage = lazy(() => import("../pages/museumPage/MuseumPage"));
+const MuseumPage = lazy(() => import("../pages/museumPage/MuseumPage2"));
 const AuthPage = lazy(() => import("../auth/auth"));
 const LoginPage = lazy(() => import("../pages/loginPage/loginPage"));
 const RegisterPage = lazy(() => import("../pages/registerPage/registerPage"));
@@ -58,9 +58,9 @@ export default function AppRoutes() {
             //</ProtectedRoute>
           }
         />
-  <Route path={PATHS.era} element={<EraPage />} />
-    <Route path={`${PATHS.era}/:eraId`} element={<EraPage />} />
-  <Route path="/animal/:name" element={<AnimalPage />} />
+        <Route path={PATHS.era} element={<EraPage />} />
+        <Route path={`${PATHS.era}/:eraId`} element={<EraPage />} />
+        <Route path="/animal/:name" element={<AnimalPage />} />
         <Route path={PATHS.museum} element={<MuseumPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
