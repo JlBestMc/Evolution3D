@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/navbar/Navbar";
-import Background from "../../components/ui/backgrounds/Background";
+import Background from "../../components/ui/background/Background";
 import logo from "/images/logo3D.png";
 import { eras } from "../../data/eras";
 const MODEL_UID = "27eed96c03ad480bb29331ee1b955d15"; // Gunma Museum of Natural History
@@ -51,6 +51,7 @@ export default function MuseumPage() {
             frameBorder="0"
             allow="autoplay; fullscreen; xr-spatial-tracking"
             allowFullScreen
+            loading="lazy"
             src={`https://sketchfab.com/models/${MODEL_UID}/embed?autostart=1&annotations_visible=1&dnt=1`}
             className="w-full h-full"
           />

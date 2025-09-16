@@ -4,16 +4,13 @@ import animalsData from "../../data/animals";
 import { eras } from "../../data/eras";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../components/navbar/Navbar";
-import Background from "../../components/ui/backgrounds/Background";
+import Background from "../../components/ui/background/Background";
 import logo from "/images/logo3D.png";
 import { Card3D } from "../../components/ui/card/Card3D";
+import { DragSafeCard } from "../../components/ui/card/DragSafeCard";
 
 const DRACO_CDN = "https://www.gstatic.com/draco/v1/decoders/";
 useGLTF.setDecoderPath(DRACO_CDN);
-// Optional: preload all declared models once
-animalsData.forEach((a) => {
-  if (a.model) useGLTF.preload(a.model, true);
-});
 
 export default function EraPage() {
   // Leer eraId desde la URL: /era/:eraId
@@ -24,11 +21,38 @@ export default function EraPage() {
 
   const animals = useMemo(() => {
     const filtered = animalsData.filter((a) => !eraId || a.eraId === eraId);
-    // Preload solo de la era activa (y con Draco)
-    filtered.forEach((a) => a.model && useGLTF.preload(a.model, true));
     // Ordenar de más antiguo (mayor startMa) a más reciente (menor startMa)
     return filtered.sort((a, b) => (b.startMa ?? 0) - (a.startMa ?? 0));
   }, [eraId]);
+
+  // Preload solo algunos modelos visibles (primeros 6) y limpiar cache al cambiar de era
+  useEffect(() => {
+    const toPreload = animals.map((a) => a.model).filter(Boolean).slice(0, 8);
+    toPreload.forEach((m) => useGLTF.preload(m, true));
+    return () => {
+      toPreload.forEach((m) => {
+        try {
+          useGLTF.clear(m);
+        } catch {
+          // ignore clear errors
+        }
+      });
+    };
+  }, [animals]);
+
+  // Al salir de EraPage, limpia la caché de TODOS los modelos conocidos para liberar memoria
+  useEffect(() => {
+    return () => {
+      const allModels = Array.from(new Set(animalsData.map((a) => a.model).filter(Boolean)));
+      allModels.forEach((m) => {
+        try {
+          useGLTF.clear(m);
+        } catch {
+          // ignore
+        }
+      });
+    };
+  }, []);
   const navigate = useNavigate();
 
   // Mejor UX: convertir rueda vertical a scroll horizontal en el carrusel
@@ -98,21 +122,12 @@ export default function EraPage() {
           aria-label="3D animals carousel"
         >
           {animals.map((a) => (
-            <div
+            <DragSafeCard
               key={a.name}
-              className="snap-center px-4 pt-5 md:snap-start shrink-0 snap-stop cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/30 rounded-lg"
-              onClick={() => navigate(`/animal/${encodeURIComponent(a.name)}`)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  navigate(`/animal/${encodeURIComponent(a.name)}`);
-                }
-              }}
+              onActivate={() => navigate(`/animal/${encodeURIComponent(a.name)}`)}
             >
               <Card3D animal={a} />
-            </div>
+            </DragSafeCard>
           ))}
         </div>
       </section>
@@ -120,7 +135,6 @@ export default function EraPage() {
   );
 }
 
-useGLTF.preload("/models/Archaeopteryx3D_draco.glb", true);
-useGLTF.preload("/models/Whale3D.glb", true);
-useGLTF.preload("/models/Pakicetus3D.glb", true);
-useGLTF.preload("/models/trex.glb", true);
+// Nota: evitamos preloads globales para no incrementar memoria innecesariamente.
+
+

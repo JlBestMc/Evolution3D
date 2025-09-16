@@ -64,7 +64,7 @@ const animals: Animal[] = [
     subtitle: "Legendary apex predator of the Cretaceous.",
     description:
       "Tyrannosaurus rex was a colossal theropod dinosaur with powerful jaws and bone-crushing teeth. Living at the end of the Cretaceous, it dominated terrestrial ecosystems. Fossil evidence suggests keen senses and complex behavior, making it an enduring icon of prehistoric life.",
-    model: "/models/T-rex_draco.glb",
+    model: "/models/T-rex3D_draco.glb",
     startMa: 68,
     eraId: "mesozoic",
     thumb: "/images/mesozoic.png",

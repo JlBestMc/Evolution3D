@@ -1,4 +1,4 @@
-import { Suspense, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Center, AdaptiveDpr } from "@react-three/drei";
 import { Group, ReinhardToneMapping, SRGBColorSpace } from "three";
@@ -35,9 +35,13 @@ export function Card3D({
   heightClass = "h-140",
   className = "",
   modelScale = 1.8,
+  lazyMount3D = true,
+  rootMargin = "300px",
+  clearOnUnmount = true,
 }: Card3DProps) {
-  const [lost, setLost] = useState(false);
   const [interacting, setInteracting] = useState(false);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [isVisible, setIsVisible] = useState<boolean>(!lazyMount3D);
   const eraColor = useMemo(
     () => eras.find((e) => e.id === animal.eraId)?.color ?? "#8ab4ff",
     [animal.eraId]
@@ -46,11 +50,6 @@ export function Card3D({
   const ageLabel = useMemo(() => {
     const ma = animal.startMa;
     if (ma == null) return null;
-    if (ma >= 1000) {
-      const ga = ma / 1000;
-      const formatted = Number.isInteger(ga) ? ga.toFixed(0) : ga.toFixed(1);
-      return `${formatted} Ga`;
-    }
     const formatted =
       ma < 1
         ? ma.toFixed(2)
@@ -60,8 +59,38 @@ export function Card3D({
     return `${formatted} Ma`;
   }, [animal.startMa]);
 
+  // Lazy mount Canvas when in viewport
+  useEffect(() => {
+    if (!lazyMount3D) return;
+    const el = containerRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        const e = entries[0];
+        setIsVisible(e.isIntersecting || e.intersectionRatio > 0);
+      },
+      { root: null, rootMargin, threshold: 0.01 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [lazyMount3D, rootMargin]);
+
+  // Clear GLTF cache on unmount if desired
+  useEffect(() => {
+    return () => {
+      if (clearOnUnmount && animal.model) {
+        try {
+          useGLTF.clear(animal.model);
+        } catch {
+          // ignore cache clear failures
+        }
+      }
+    };
+  }, [animal.model, clearOnUnmount]);
+
   return (
     <div
+      ref={containerRef}
       className={`group relative ${widthClass} ${heightClass} rounded-2xl overflow-hidden bg-white/5 border border-white/10 backdrop-blur-md shadow-xl transition-all duration-300 hover:-translate-y-1 hover:scale-105 md:duration-500 ${className}`}
       style={{ boxShadow: `0 0 40px -12px ${eraColor}55` }}
     >
@@ -97,10 +126,11 @@ export function Card3D({
       </div>
 
       <div className="absolute inset-0">
+        {(isVisible || interacting) ? (
         <Canvas
           camera={{ position: [0, 0.5, 3], fov: 60 }}
           gl={{ alpha: true, antialias: true }}
-          dpr={[1, 1.5]}
+          dpr={[1, 1.25]}
           style={{
             background: "transparent",
             cursor: interacting ? "grabbing" : "grab",
@@ -109,21 +139,6 @@ export function Card3D({
             gl.toneMapping = ReinhardToneMapping;
             gl.toneMappingExposure = 0.9;
             gl.outputColorSpace = SRGBColorSpace;
-            const el = gl.domElement;
-            const onLost = (e: Event) => {
-              e.preventDefault();
-              setLost(true);
-            };
-            const onRestore = () => setLost(false);
-            el.addEventListener(
-              "webglcontextlost",
-              onLost as EventListener,
-              { passive: false } as AddEventListenerOptions
-            );
-            el.addEventListener(
-              "webglcontextrestored",
-              onRestore as EventListener
-            );
           }}
         >
           <AdaptiveDpr pixelated />
@@ -148,10 +163,8 @@ export function Card3D({
             onEnd={() => setInteracting(false)}
           />
         </Canvas>
-        {lost && (
-          <div className="absolute inset-0 flex items-center justify-center text-white/70 text-xs bg-black/20">
-            WebGL context lost — try reducing open tabs or GPU load
-          </div>
+        ) : (
+          <div className="h-full w-full bg-gradient-to-b from-white/5 to-black/20" />
         )}
       </div>
 
@@ -161,7 +174,7 @@ export function Card3D({
           {ageLabel && (
             <span
               className="inline-flex items-center rounded-md border border-white/10 bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-white/80"
-              title="Age (millions/billions of years ago)"
+              title="Age (millions of years ago)"
             >
               ≈ {ageLabel}
             </span>

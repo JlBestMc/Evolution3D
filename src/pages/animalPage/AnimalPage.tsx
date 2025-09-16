@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import animals from "../../data/animals";
 import { eras } from "../../data/eras";
 import Navbar from "../../components/navbar/Navbar";
-import PremiumBackground from "../../components/ui/backgrounds/Background";
+import PremiumBackground from "../../components/ui/background/Background";
 import logo from "/images/logo3D.png";
 import { Card3D } from "../../components/ui/card/Card3D";
 
@@ -55,48 +55,52 @@ export default function AnimalPage() {
         />
       </div>
 
-      <section className="relative z-10 container mx-auto px-6 py-10">
-        <header className="mb-8">
+      <section className="relative z-10 container mx-auto px-6 py-5 pt-15">
+        {/* Moved Back link above the grid */}
+        <div className="mb-4">
           <Link
             to={animal.eraId ? `/era/${animal.eraId}` : "/era"}
             className="text-sm text-white/70 hover:text-white/90"
           >
             ← Back to {era?.name ?? "Eras"}
           </Link>
-          <h1
-            className="mt-2 text-3xl md:text-4xl font-semibold tracking-tight"
-            style={{
-              background: `linear-gradient(90deg, ${eraColor}, #ffffff)`,
-              WebkitBackgroundClip: "text",
-              backgroundClip: "text",
-              color: "transparent",
-            }}
-          >
-            {animal.name}
-          </h1>
-          <div
-            className="mt-3 h-[3px] w-24 rounded-full"
-            style={{
-              background: `linear-gradient(90deg, ${eraColor}, transparent)`,
-            }}
-          />
-          {animal.startMa != null && (
-            <p className="mt-1 text-white/70 text-sm">
-              ≈ {animal.startMa >= 1000
-                ? `${(animal.startMa / 1000).toFixed(animal.startMa % 1000 ? 1 : 0)} Ga`
-                : `${animal.startMa < 1
-                    ? animal.startMa.toFixed(2)
-                    : Number.isInteger(animal.startMa)
-                    ? animal.startMa.toFixed(0)
-                    : animal.startMa.toFixed(1)
-                  } Ma`}
-            </p>
-          )}
-        </header>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-          {/* Left: info */}
+        </div>
+        <div className="min-h-[75vh] flex items-start">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start w-full">
+          {/* Left: header + info */}
           <div>
+            <header className="mb-4">
+              <h1
+                className=" text-3xl md:text-4xl font-semibold tracking-tight"
+                style={{
+                  background: `linear-gradient(90deg, ${eraColor}, #ffffff, #ffffff, #ffffff, #ffffff, #ffffff)`,
+                  WebkitBackgroundClip: "text",
+                  backgroundClip: "text",
+                  color: "transparent",
+                }}
+              >
+                {animal.name}
+              </h1>
+              <div
+                className="mt-3 h-[3px] w-24 rounded-full"
+                style={{
+                  background: `linear-gradient(90deg, ${eraColor}, transparent)`,
+                }}
+              />
+              {animal.startMa != null && (
+                <p className="mt-1 text-white/70 text-sm">
+                  ≈ {animal.startMa >= 1000
+                    ? `${(animal.startMa / 1000).toFixed(animal.startMa % 1000 ? 1 : 0)} Ga`
+                    : `${animal.startMa < 1
+                        ? animal.startMa.toFixed(2)
+                        : Number.isInteger(animal.startMa)
+                        ? animal.startMa.toFixed(0)
+                        : animal.startMa.toFixed(1)
+                      } Ma`}
+                </p>
+              )}
+            </header>
+
             <p className="text-white/80 leading-relaxed">{animal.description}</p>
             {era?.description && (
               <p className="mt-4 text-white/60 text-sm max-w-prose">{era.description}</p>
@@ -109,11 +113,12 @@ export default function AnimalPage() {
               animal={animal}
               enableZoom
               minDistance={1.5}
-              maxDistance={6}
+              maxDistance={7}
               widthClass="w-full"
               heightClass="h-[520px] md:h-[620px]"
-              modelScale={3.0}
+              modelScale={2.3}
             />
+          </div>
           </div>
         </div>
       </section>
