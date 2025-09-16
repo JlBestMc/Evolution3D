@@ -27,7 +27,10 @@ export default function EraPage() {
 
   // Preload solo algunos modelos visibles (primeros 6) y limpiar cache al cambiar de era
   useEffect(() => {
-    const toPreload = animals.map((a) => a.model).filter(Boolean).slice(0, 8);
+    const toPreload = animals
+      .map((a) => a.model)
+      .filter(Boolean)
+      .slice(0, 8);
     toPreload.forEach((m) => useGLTF.preload(m, true));
     return () => {
       toPreload.forEach((m) => {
@@ -43,7 +46,9 @@ export default function EraPage() {
   // Al salir de EraPage, limpia la caché de TODOS los modelos conocidos para liberar memoria
   useEffect(() => {
     return () => {
-      const allModels = Array.from(new Set(animalsData.map((a) => a.model).filter(Boolean)));
+      const allModels = Array.from(
+        new Set(animalsData.map((a) => a.model).filter(Boolean))
+      );
       allModels.forEach((m) => {
         try {
           useGLTF.clear(m);
@@ -124,7 +129,9 @@ export default function EraPage() {
           {animals.map((a) => (
             <DragSafeCard
               key={a.name}
-              onActivate={() => navigate(`/animal/${encodeURIComponent(a.name)}`)}
+              onActivate={() =>
+                navigate(`/animal/${encodeURIComponent(a.name)}`)
+              }
             >
               <Card3D animal={a} />
             </DragSafeCard>
@@ -136,5 +143,3 @@ export default function EraPage() {
 }
 
 // Nota: evitamos preloads globales para no incrementar memoria innecesariamente.
-
-

@@ -6,7 +6,7 @@ import { TextureLoader } from "three";
 import { eras } from "../../data/eras";
 import TimelineUI from "../../components/timeline/TimelineUI";
 import Navbar from "../../components/navbar/Navbar";
-import logo from "/images/logo3D.png";
+import logo from "/images/logoblack.png";
 import { Button } from "../../components/ui/button/Button";
 
 export default function MainScene() {

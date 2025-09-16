@@ -126,43 +126,47 @@ export function Card3D({
       </div>
 
       <div className="absolute inset-0">
-        {(isVisible || interacting) ? (
-        <Canvas
-          camera={{ position: [0, 0.5, 3], fov: 60 }}
-          gl={{ alpha: true, antialias: true }}
-          dpr={[1, 1.25]}
-          style={{
-            background: "transparent",
-            cursor: interacting ? "grabbing" : "grab",
-          }}
-          onCreated={({ gl }) => {
-            gl.toneMapping = ReinhardToneMapping;
-            gl.toneMappingExposure = 0.9;
-            gl.outputColorSpace = SRGBColorSpace;
-          }}
-        >
-          <AdaptiveDpr pixelated />
-          <ambientLight intensity={0.7} />
-          <directionalLight position={[3, 4, 5]} intensity={2.2} />
-          <hemisphereLight intensity={0.35} />
-          <Suspense fallback={null}>
-            <SpinningModel url={animal.model} paused={interacting} scale={modelScale} />
-          </Suspense>
-          <OrbitControls
-            enablePan={false}
-            enableZoom={enableZoom}
-            minDistance={minDistance}
-            maxDistance={maxDistance}
-            enableRotate
-            enableDamping
-            dampingFactor={0.08}
-            rotateSpeed={0.7}
-            minPolarAngle={Math.PI / 2 - 0.6}
-            maxPolarAngle={Math.PI / 2 + 0.6}
-            onStart={() => setInteracting(true)}
-            onEnd={() => setInteracting(false)}
-          />
-        </Canvas>
+        {isVisible || interacting ? (
+          <Canvas
+            camera={{ position: [0, 0.5, 3], fov: 60 }}
+            gl={{ alpha: true, antialias: true }}
+            dpr={[1, 1.25]}
+            style={{
+              background: "transparent",
+              cursor: interacting ? "grabbing" : "grab",
+            }}
+            onCreated={({ gl }) => {
+              gl.toneMapping = ReinhardToneMapping;
+              gl.toneMappingExposure = 0.9;
+              gl.outputColorSpace = SRGBColorSpace;
+            }}
+          >
+            <AdaptiveDpr pixelated />
+            <ambientLight intensity={0.7} />
+            <directionalLight position={[3, 4, 5]} intensity={2.2} />
+            <hemisphereLight intensity={0.35} />
+            <Suspense fallback={null}>
+              <SpinningModel
+                url={animal.model}
+                paused={interacting}
+                scale={modelScale}
+              />
+            </Suspense>
+            <OrbitControls
+              enablePan={false}
+              enableZoom={enableZoom}
+              minDistance={minDistance}
+              maxDistance={maxDistance}
+              enableRotate
+              enableDamping
+              dampingFactor={0.08}
+              rotateSpeed={0.7}
+              minPolarAngle={Math.PI / 2 - 0.6}
+              maxPolarAngle={Math.PI / 2 + 0.6}
+              onStart={() => setInteracting(true)}
+              onEnd={() => setInteracting(false)}
+            />
+          </Canvas>
         ) : (
           <div className="h-full w-full bg-gradient-to-b from-white/5 to-black/20" />
         )}

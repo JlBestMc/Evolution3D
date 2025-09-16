@@ -5,12 +5,11 @@ export interface Card3DProps {
   enableZoom?: boolean;
   minDistance?: number;
   maxDistance?: number;
-  widthClass?: string; 
-  heightClass?: string; 
+  widthClass?: string;
+  heightClass?: string;
   className?: string;
-  modelScale?: number; 
-  // Memory/perf controls
+  modelScale?: number;
   lazyMount3D?: boolean; // mount Canvas only when in viewport (default true)
-  rootMargin?: string;   // IntersectionObserver margin (default "300px")
+  rootMargin?: string; // IntersectionObserver margin (default "300px")
   clearOnUnmount?: boolean; // clear useGLTF cache on unmount (default true)
 }
