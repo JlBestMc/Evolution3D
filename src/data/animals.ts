@@ -60,7 +60,7 @@ const animals: Animal[] = [
     thumb: "/images/cenozoic.png",
   },
   {
-    name: "Tyrannosaurus Rex",
+    name: "Tyrannosaurus rex",
     subtitle: "Legendary apex predator of the Cretaceous.",
     description:
       "Tyrannosaurus rex was a colossal theropod dinosaur with powerful jaws and bone-crushing teeth. Living at the end of the Cretaceous, it dominated terrestrial ecosystems. Fossil evidence suggests keen senses and complex behavior, making it an enduring icon of prehistoric life.",
@@ -80,10 +80,10 @@ const animals: Animal[] = [
     thumb: "/images/cenozoic.png",
   },
   {
-    name: "Brachiosaurus",
+    name: "Brachiosaurus brancai",
     subtitle: "High-browsing Late Jurassic sauropod.",
     description:
-      "Brachiosaurus was a towering sauropod with long forelimbs and an elevated neck, adapted to browsing treetops. Its unique body plan distinguished it from other sauropods and shaped Late Jurassic ecosystems.",
+      "Brachiosaurus brancai was a towering sauropod with long forelimbs and an elevated neck, adapted to browsing treetops. Its unique body plan distinguished it from other sauropods and shaped Late Jurassic ecosystems.",
     model: "/models/Brachiosaurus3D_draco.glb",
     startMa: 154,
     eraId: "mesozoic",
@@ -100,7 +100,7 @@ const animals: Animal[] = [
     thumb: "/images/cenozoic.png",
   },
   {
-    name: "Mamenchisaurus",
+    name: "Mamenchisaurus hochuanensis",
     subtitle: "Dinosaur famed for extremely long neck.",
     description:
       "Mamenchisaurus is renowned for its extraordinarily long neck, comprising over half its body length. This adaptation likely allowed efficient feeding across wide areas without moving the heavy body.",
@@ -140,7 +140,7 @@ const animals: Animal[] = [
     thumb: "/images/precambrian.png",
   },
   {
-    name: "Gallimimus",
+    name: "Gallimimus ballatus",
     subtitle: "Fast, ostrich-like ornithomimosaur.",
     description:
       "Gallimimus was a swift, lightly built dinosaur resembling modern ostriches. It likely fed opportunistically, using speed to avoid predators and cover large territories.",
