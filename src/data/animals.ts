@@ -6,48 +6,92 @@ export interface Animal {
   startMa?: number; // millones de años atrás (para orden cronológico)
   eraId?: string; // opcional: vincular a una era
   thumb?: string; // miniatura opcional
+  isIconic?: boolean; // animales icónicos que dieron lugar a clados enteros
+  // Taxonomía básica (opcional)
+  className?: string; // p.ej. Mammalia, Trilobita, Aves (Avialae)
+  order?: string; // p.ej. Cetartiodactyla, Theropoda
+  family?: string; // p.ej. Pakicetidae, Tyrannosauridae
+  diet?: string; // p.ej. herbivore, carnivore, omnivore, detritivore
+  // Métricas (opcional, unidades SI)
+  lengthM?: number; // longitud total (m)
+  heightM?: number; // altura en estación/altura máxima (m)
+  widthM?: number; // anchura máxima (m)
+  wingspanM?: number; // en aves/reptiles voladores (m)
+  weightKg?: number; // masa (kg)
+  // Descubrimiento
+  discoveryLocation?: string; // lugar de hallazgo o localidad tipo
 }
 
 const animals: Animal[] = [
   {
     name: "Pakicetus",
+    isIconic: true,
     subtitle: "Early whale ancestor from the Eocene.",
     description:
-      "Pakicetus is one of the earliest known whales, living during the early Eocene about 50 million years ago. Unlike modern whales, it spent much of its time on land and likely hunted in shallow waters. Fossils show features that link it to hoofed mammals, highlighting the dramatic transition from land to sea in whale evolution.",
+      "Pakicetus is one of the earliest known whales, living during the early Eocene about 50 million years ago. Unlike modern whales, it spent much of its time on land and likely hunted in shallow waters. Fossils show features that link it to hoofed mammals, highlighting the dramatic transition from land to sea in whale evolution. Approx. size: length ~1.5 m, height ~0.6 m, ~45 kg. Class: Mammalia.",
     model: "/models/Pakicetus3D_draco.glb",
     startMa: 53.8,
     eraId: "cenozoic",
     thumb: "/images/cenozoic.png",
+    className: "Mammalia",
+    order: "Cetartiodactyla",
+    family: "Pakicetidae",
+    diet: "carnivore",
+    lengthM: 1.5,
+    heightM: 0.6,
+    weightKg: 45,
+    discoveryLocation: "Pakistan (Kuldana Formation)",
   },
   {
     name: "Trilobite",
+    isIconic: true,
     subtitle: "Iconic Paleozoic marine arthropod.",
     description:
-      "Trilobites were diverse, hard-shelled arthropods that thrived in ancient oceans for more than 270 million years. Their segmented bodies and compound eyes made them remarkably successful. They are among the most recognizable fossils, helping scientists date rock layers and understand early marine ecosystems.",
+      "Trilobites were diverse, hard-shelled arthropods that thrived in ancient oceans for more than 270 million years. Their segmented bodies and compound eyes made them remarkably successful. They are among the most recognizable fossils, helping scientists date rock layers and understand early marine ecosystems. Typical size: ~7 cm long, ~3 cm wide. Class: Trilobita.",
     model: "/models/Trilobite3D_draco.glb",
     startMa: 540,
     eraId: "paleozoic",
     thumb: "/images/paleozoic.png",
+    className: "Trilobita",
+    diet: "detritivore",
+    lengthM: 0.07,
+    widthM: 0.03,
+    discoveryLocation: "Global (widespread Paleozoic deposits)",
   },
   {
     name: "Cameroceras",
     subtitle: "Giant straight-shelled cephalopod.",
     description:
-      "Cameroceras was a massive orthoconic (straight-shelled) cephalopod that prowled Ordovician seas. As an active predator, it likely used jet propulsion to ambush prey. Its impressive size and long shell made it one of the top predators of its time.",
+      "Cameroceras was a massive orthoconic (straight-shelled) cephalopod that prowled Ordovician seas. As an active predator, it likely used jet propulsion to ambush prey. Its impressive size and long shell made it one of the top predators of its time. Estimates suggest lengths up to ~6–10 m.",
     model: "/models/Cameroceras3D_draco.glb",
     startMa: 487,
     eraId: "paleozoic",
     thumb: "/images/paleozoic.png",
+    className: "Cephalopoda",
+    order: "Endocerida",
+    family: "Cameroceratidae",
+    diet: "carnivore",
+    lengthM: 6,
+    widthM: 0.5,
+    discoveryLocation: "North America (Ordovician deposits)",
   },
   {
     name: "Archaeopteryx",
+    isIconic: true,
     subtitle: "Transitional form between dinos and birds.",
     description:
-      "Archaeopteryx is often cited as the first bird, bridging dinosaurs and modern avians. It had feathers and wings but also teeth and a long bony tail. Its fossils provide crucial evidence for the evolution of flight and the dinosaur-bird connection.",
+      "Archaeopteryx is often cited as the first bird, bridging dinosaurs and modern avians. It had feathers and wings but also teeth and a long bony tail. Its fossils provide crucial evidence for the evolution of flight and the dinosaur-bird connection. Approx. size: length ~0.5 m, wingspan ~0.5 m, ~0.8 kg. Class: Aves (Avialae).",
     model: "/models/Archaeopteryx3D_draco.glb",
     startMa: 150,
     eraId: "mesozoic",
     thumb: "/images/mesozoic.png",
+    className: "Aves (Avialae)",
+    diet: "carnivore",
+    lengthM: 0.5,
+    heightM: 0.2,
+    wingspanM: 0.5,
+    weightKg: 0.8,
+    discoveryLocation: "Solnhofen, Bavaria, Germany",
   },
   {
     name: "Whale",
@@ -58,6 +102,12 @@ const animals: Animal[] = [
     startMa: 23,
     eraId: "cenozoic",
     thumb: "/images/cenozoic.png",
+    className: "Mammalia",
+    order: "Cetartiodactyla",
+    family: "Balaenopteridae",
+    diet: "carnivore",
+    lengthM: 15,
+    weightKg: 30000,
   },
   {
     name: "Tyrannosaurus rex",
@@ -68,6 +118,14 @@ const animals: Animal[] = [
     startMa: 68,
     eraId: "mesozoic",
     thumb: "/images/mesozoic.png",
+    className: "Reptilia",
+    order: "Theropoda",
+    family: "Tyrannosauridae",
+    diet: "carnivore",
+    lengthM: 12.3,
+    heightM: 4,
+    weightKg: 8000,
+    discoveryLocation: "Montana, USA",
   },
   {
     name: "Chicken",
@@ -78,6 +136,13 @@ const animals: Animal[] = [
     startMa: 0.005,
     eraId: "cenozoic",
     thumb: "/images/cenozoic.png",
+    className: "Aves",
+    order: "Galliformes",
+    family: "Phasianidae",
+    diet: "omnivore",
+    lengthM: 0.45,
+    heightM: 0.4,
+    weightKg: 2,
   },
   {
     name: "Brachiosaurus brancai",
@@ -88,6 +153,14 @@ const animals: Animal[] = [
     startMa: 154,
     eraId: "mesozoic",
     thumb: "/images/mesozoic.png",
+    className: "Reptilia",
+    order: "Sauropoda",
+    family: "Brachiosauridae",
+    diet: "herbivore",
+    lengthM: 23,
+    heightM: 12,
+    weightKg: 40000,
+    discoveryLocation: "Tendaguru Formation, Tanzania",
   },
   {
     name: "Elephant",
@@ -98,6 +171,13 @@ const animals: Animal[] = [
     startMa: 11.62,
     eraId: "cenozoic",
     thumb: "/images/cenozoic.png",
+    className: "Mammalia",
+    order: "Proboscidea",
+    family: "Elephantidae",
+    diet: "herbivore",
+    lengthM: 6.5,
+    heightM: 3.3,
+    weightKg: 6000,
   },
   {
     name: "Mamenchisaurus hochuanensis",
@@ -108,6 +188,14 @@ const animals: Animal[] = [
     startMa: 163,
     eraId: "mesozoic",
     thumb: "/images/mesozoic.png",
+    className: "Reptilia",
+    order: "Sauropoda",
+    family: "Mamenchisauridae",
+    diet: "herbivore",
+    lengthM: 22,
+    heightM: 7,
+    weightKg: 18000,
+    discoveryLocation: "Sichuan, China",
   },
   {
     name: "Mammoth",
@@ -118,6 +206,14 @@ const animals: Animal[] = [
     startMa: 4.8,
     eraId: "cenozoic",
     thumb: "/images/cenozoic.png",
+    className: "Mammalia",
+    order: "Proboscidea",
+    family: "Elephantidae",
+    diet: "herbivore",
+    lengthM: 6,
+    heightM: 3.2,
+    weightKg: 6000,
+    discoveryLocation: "Siberia and North America",
   },
   {
     name: "Megalodon",
@@ -128,6 +224,13 @@ const animals: Animal[] = [
     startMa: 19.8,
     eraId: "cenozoic",
     thumb: "/images/cenozoic.png",
+    className: "Chondrichthyes",
+    order: "Lamniformes",
+    family: "Otodontidae",
+    diet: "carnivore",
+    lengthM: 15,
+    weightKg: 50000,
+    discoveryLocation: "Worldwide fossil record",
   },
   {
     name: "Charniodiscus",
@@ -138,9 +241,14 @@ const animals: Animal[] = [
     startMa: 565,
     eraId: "precambrian",
     thumb: "/images/precambrian.png",
+    className: "Ediacaran biota",
+    diet: "suspension feeder",
+    lengthM: 1,
+    heightM: 0.2,
+    discoveryLocation: "Charnwood Forest, England",
   },
   {
-    name: "Gallimimus ballatus",
+    name: "Gallimimus bullatus",
     subtitle: "Fast, ostrich-like ornithomimosaur.",
     description:
       "Gallimimus was a swift, lightly built dinosaur resembling modern ostriches. It likely fed opportunistically, using speed to avoid predators and cover large territories.",
@@ -148,6 +256,14 @@ const animals: Animal[] = [
     startMa: 70,
     eraId: "mesozoic",
     thumb: "/images/mesozoic.png",
+    className: "Reptilia",
+    order: "Theropoda",
+    family: "Ornithomimidae",
+    diet: "omnivore",
+    lengthM: 6,
+    heightM: 2,
+    weightKg: 200,
+    discoveryLocation: "Gobi Desert, Mongolia",
   },
   {
     name: "Jellyfish (aurelia aurita)",
@@ -158,6 +274,12 @@ const animals: Animal[] = [
     startMa: 700,
     eraId: "precambrian",
     thumb: "/images/cenozoic.png",
+    className: "Scyphozoa",
+    order: "Semaeostomeae",
+    family: "Ulmaridae",
+    diet: "carnivore",
+    widthM: 0.25,
+    heightM: 0.05,
   },
   {
     name: "Moose",
@@ -168,6 +290,13 @@ const animals: Animal[] = [
     startMa: 2.6,
     eraId: "cenozoic",
     thumb: "/images/cenozoic.png",
+    className: "Mammalia",
+    order: "Cetartiodactyla",
+    family: "Cervidae",
+    diet: "herbivore",
+    lengthM: 2.8,
+    heightM: 1.9,
+    weightKg: 500,
   },
   {
     name: "Sperm Whale",
@@ -178,6 +307,12 @@ const animals: Animal[] = [
     startMa: 10,
     eraId: "cenozoic",
     thumb: "/images/cenozoic.png",
+    className: "Mammalia",
+    order: "Cetartiodactyla",
+    family: "Physeteridae",
+    diet: "carnivore",
+    lengthM: 16,
+    weightKg: 45000,
   },
   {
     name: "Triceratops",
@@ -188,6 +323,14 @@ const animals: Animal[] = [
     startMa: 68,
     eraId: "mesozoic",
     thumb: "/images/mesozoic.png",
+    className: "Reptilia",
+    order: "Ornithischia",
+    family: "Ceratopsidae",
+    diet: "herbivore",
+    lengthM: 9,
+    heightM: 3,
+    weightKg: 6000,
+    discoveryLocation: "Montana and Wyoming, USA",
   },
   {
     name: "Cyanobacteria",
@@ -198,6 +341,9 @@ const animals: Animal[] = [
     startMa: 2500,
     eraId: "precambrian",
     thumb: "/images/precambrian.png",
+    className: "Bacteria",
+    diet: "autotroph",
+    discoveryLocation: "Global stromatolite formations",
   },
 ];
 
