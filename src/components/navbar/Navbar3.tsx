@@ -2,12 +2,12 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { PATHS } from "../../routes/routes";
 
-interface NavbarProps {
+interface NavbarProps3 {
   logo: string;
 }
 export default function Navbar3({
   logo,
-}: NavbarProps) {
+}: NavbarProps3) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
@@ -25,13 +25,19 @@ export default function Navbar3({
   };
 
   return (
-    <nav className="my-5 top-4 z-50 w-full px-4">
+    <nav className="mt-6 top-4 z-50 w-full px-4">
       <div className="mx-auto flex justify-center">
         {/* Glass pill container */}
         <div
           className={[
-            "relative grid grid-cols-[auto_1fr_auto] items-center gap-2 md:gap-4 w-full max-w-9/12",
-            "rounded-full px-2 md:px-4 py-2",
+            // layout: 3 columns -> logo | center (links) | right (cta/hamburger)
+            "relative grid grid-cols-[auto_1fr_auto] items-center",
+            // responsive gaps to keep logo and hamburger clearly separated on mobile
+            "gap-2 sm:gap-3 md:gap-4 w-full",
+            // responsive max-widths for better tablet/laptop scaling
+            "max-w-full sm:max-w-2xl md:max-w-1xl lg:max-w-1xl",
+            // padding scales with viewport
+            "rounded-full px-2 sm:px-3 md:px-4 py-2",
             // glassmorphism
             "backdrop-blur-xl bg-white/10 border border-white/15",
             "shadow-[0_8px_30px_rgba(0,0,0,0.25)]",
@@ -44,19 +50,19 @@ export default function Navbar3({
             onClick={() => handleNavigate(PATHS.root)}
             className="shrink-0 pointer-events-auto"
           >
-            <div className="h-9 w-9 md:h-10 md:w-10 rounded-full border border-white/20 bg-white/5 grid place-items-center overflow-hidden">
-              <img src={logo} alt="Logo" className="h-6 w-6 object-contain" />
+            <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full border border-white/20 bg-white/5 grid place-items-center overflow-hidden">
+              <img src={logo} alt="Logo" className="h-9 w-9 sm:h-10 sm:w-10 object-contain" />
             </div>
           </button>
 
           {/* Center links - desktop */}
-          <div className="hidden md:flex items-center justify-center gap-2">
+          <div className="hidden md:flex items-center justify-center gap-2 md:gap-3">
             {navItems.map((item) => (
               <button
                 key={item.label}
                 onClick={() => handleNavigate(item.to)}
                 className={[
-                  "px-4 py-2 rounded-full text-sm font-medium",
+                  "px-3 md:px-4 py-2 rounded-full text-sm md:text-base font-medium",
                   "text-white/85 hover:text-white",
                   "hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30",
                 ].join(" ")}
@@ -73,7 +79,7 @@ export default function Navbar3({
                 onClick={() => handleNavigate(PATHS.register)}
                 className={[
                   "relative inline-flex items-center justify-center",
-                  "px-4 py-2 rounded-full text-sm font-semibold",
+                  "px-4 py-2 rounded-full text-sm md:text-base font-semibold",
                   "bg-neutral-900 text-white border border-white/10",
                   "hover:bg-neutral-800 transition-colors",
                   "shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]",
@@ -85,8 +91,9 @@ export default function Navbar3({
             <div className="md:hidden flex items-center">
               <button
                 aria-label="Toggle menu"
+                aria-expanded={open}
                 onClick={() => setOpen((v) => !v)}
-                className="p-2 rounded-full text-white/90 hover:bg-white/10"
+                className="p-2 rounded-full text-white/90 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
               >
                 {open ? (
                   <svg

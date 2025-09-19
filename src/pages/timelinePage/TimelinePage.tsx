@@ -2,14 +2,14 @@ import { Canvas } from "@react-three/fiber";
 import { Environment, OrbitControls } from "@react-three/drei";
 import { useEffect, useMemo, useState } from "react";
 import { eras } from "../../data/eras";
-import Navbar from "../../components/navbar/Navbar";
-import logo from "/images/logoblack.png";
+import logo from "/images/favicon.ico";
 import { Button } from "../../components/ui/button/Button";
 import IdleCameraOrbit from "../../components/timeline/IdleCameraOrbit";
 import BackgroundCrossfade from "../../components/timeline/BackgroundCrossfade";
 import LoaderOverlay from "../../components/timeline/LoaderOverlay";
 import WithProgressUI from "../../components/timeline/WithProgressUI";
 import { TextureLoader } from "three";
+import Navbar3 from "../../components/navbar/Navbar3";
 
 export default function MainScene() {
   // Usar siempre un id existente como inicial para evitar undefined
@@ -65,11 +65,8 @@ export default function MainScene() {
   return (
     <div className="relative w-screen h-screen bg-black overflow-hidden">
       <div className="absolute top-0 left-0 w-full z-30 pointer-events-auto">
-        <Navbar
-          aStyles="cursor-pointer text-white bg-clip-text text-transparent"
-          variantButton="tertiary"
+        <Navbar3
           logo={logo}
-          borderColor="border-white/50"
         />
       </div>
 

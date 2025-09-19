@@ -3,11 +3,11 @@ import { useGLTF } from "@react-three/drei";
 import animalsData from "../../data/animals";
 import { eras } from "../../data/eras";
 import { useNavigate, useParams } from "react-router-dom";
-import Navbar from "../../components/navbar/Navbar";
 import Background from "../../components/ui/background/Background";
-import logo from "/images/logo3D.png";
+import logo from "/images/favicon.ico";
 import { Card3D } from "../../components/ui/card/Card3D";
 import { DragSafeCard } from "../../components/ui/card/DragSafeCard";
+import Navbar3 from "../../components/navbar/Navbar3";
 
 const DRACO_CDN = "https://www.gstatic.com/draco/v1/decoders/";
 useGLTF.setDecoderPath(DRACO_CDN);
@@ -81,11 +81,8 @@ export default function EraPage() {
       <Background accentColor={eraColor} />
 
       <div className="relative z-20">
-        <Navbar
-          aStyles="cursor-pointer"
-          variantButton="secondary"
+        <Navbar3
           logo={logo}
-          borderColor="border-white/30"
         />
       </div>
 

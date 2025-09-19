@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../../components/navbar/Navbar";
 import Background from "../../components/ui/background/Background";
 import logo from "/images/logo3D.png";
 import { eras } from "../../data/eras";
+import Navbar3 from "../../components/navbar/Navbar3";
 const MODEL_UID = "27eed96c03ad480bb29331ee1b955d15"; // Gunma Museum of Natural History
 
 export default function MuseumPage() {
@@ -15,11 +15,8 @@ export default function MuseumPage() {
       <Background accentColor={accent} />
 
       <div className="relative z-20">
-        <Navbar
-          aStyles="cursor-pointer"
-          variantButton="secondary"
-          logo={logo}
-          borderColor="border-white/30"
+        <Navbar3
+        logo={logo}
         />
       </div>
 

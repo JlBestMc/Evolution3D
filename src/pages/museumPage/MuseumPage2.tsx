@@ -1,9 +1,9 @@
 import { useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../../components/navbar/Navbar";
 import Background from "../../components/ui/background/Background";
-import logo from "/images/logo3D.png";
+import logo from "/images/favicon.ico";
 import { eras } from "../../data/eras";
+import Navbar3 from "../../components/navbar/Navbar3";
 
 // Minimal types for Sketchfab Viewer API to keep TS happy without adding global d.ts
 type SketchfabApiCamera = {
@@ -314,11 +314,8 @@ const SketchfabViewer = () => {
       <Background accentColor={accent} />
 
       <div className="relative z-20">
-        <Navbar
-          aStyles="cursor-pointer"
-          variantButton="secondary"
-          logo={logo}
-          borderColor="border-white/30"
+        <Navbar3
+        logo={logo}
         />
       </div>
 
