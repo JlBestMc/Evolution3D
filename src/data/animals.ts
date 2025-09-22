@@ -106,7 +106,7 @@ const animals: Animal[] = [
     order: "Cetartiodactyla",
     family: "Balaenopteridae",
     diet: "carnivore",
-    lengthM: 15,
+    lengthM: 23,
     weightKg: 30000,
   },
   {

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { PATHS } from "../../routes/routes";
+import Button2 from "../ui/button/Button2";
 
 interface NavbarProps3 {
   logo: string;
@@ -13,8 +14,8 @@ export default function Navbar3({
 
   // Basic nav items; tweak labels/routes as needed
   const navItems: Array<{ label: string; to: string; onClick?: () => void }>= [
+    { label: "Info", to: PATHS.timeline },
     { label: "Timeline", to: PATHS.timeline },
-    { label: "Eras", to: PATHS.era },
     { label: "Museum", to: PATHS.museum },
     { label: "About", to: PATHS.root },
   ];
@@ -50,8 +51,8 @@ export default function Navbar3({
             onClick={() => handleNavigate(PATHS.root)}
             className="shrink-0 pointer-events-auto"
           >
-            <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full border border-white/20 bg-white/5 grid place-items-center overflow-hidden">
-              <img src={logo} alt="Logo" className="h-9 w-9 sm:h-10 sm:w-10 object-contain" />
+            <div className="h-9 w-9 sm:h-12 sm:w-12 rounded-full border border-white/20 bg-white/5 grid place-items-center overflow-hidden">
+              <img src={logo} alt="Logo" className="h-9 w-9 sm:h-12 sm:w-12 object-contain" />
             </div>
           </button>
 
@@ -75,18 +76,11 @@ export default function Navbar3({
           {/* Right side: CTA (desktop) + Hamburger (mobile) */}
           <div className="flex items-center justify-end gap-1">
             <div className="hidden md:flex items-center pl-1">
-              <button
+              <Button2
                 onClick={() => handleNavigate(PATHS.register)}
-                className={[
-                  "relative inline-flex items-center justify-center",
-                  "px-4 py-2 rounded-full text-sm md:text-base font-semibold",
-                  "bg-neutral-900 text-white border border-white/10",
-                  "hover:bg-neutral-800 transition-colors",
-                  "shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]",
-                ].join(" ")}
               >
-                Join Today
-              </button>
+                Logout
+              </Button2>
             </div>
             <div className="md:hidden flex items-center">
               <button
@@ -128,7 +122,7 @@ export default function Navbar3({
               className={[
                 "absolute left-0 right-0 top-full mt-2",
                 "rounded-2xl p-2",
-                "backdrop-blur-xl bg-white/10 border border-white/15",
+                "backdrop-blur-xl bg-gray-800 border border-white/15",
                 "shadow-[0_8px_30px_rgba(0,0,0,0.25)]",
               ].join(" ")}
             >
@@ -143,12 +137,12 @@ export default function Navbar3({
                   </button>
                 ))}
                 <div className="px-2 pt-1">
-                  <button
+                  <Button2
                     onClick={() => handleNavigate(PATHS.register)}
-                    className="w-full px-4 py-2 rounded-xl text-sm font-semibold bg-neutral-900 text-white border border-white/10 hover:bg-neutral-800"
+                    rounded="rounded-full"
                   >
                     Join Today
-                  </button>
+                  </Button2>
                 </div>
               </div>
             </div>

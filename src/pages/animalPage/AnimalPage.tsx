@@ -2,9 +2,9 @@ import { useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import animals from "../../data/animals";
 import { eras } from "../../data/eras";
-import Navbar3 from "../../components/navbar/Navbar3";
+import Navbar from "../../components/navbar/Navbar";
 import Background from "../../components/ui/background/Background";
-import logo from "/images/favicon.ico";
+import logo from "/images/logo3D.png";
 import { Card3D } from "../../components/ui/card/Card3D";
 
 export default function AnimalPage() {
@@ -23,8 +23,11 @@ export default function AnimalPage() {
       <main className="relative min-h-screen w-full overflow-hidden bg-[#06080F] text-white">
         <Background accentColor={eraColor} />
         <div className="relative z-20">
-          <Navbar3
+          <Navbar
+            aStyles="cursor-pointer"
+            variantButton="secondary"
             logo={logo}
+            borderColor="border-white/30"
           />
         </div>
         <section className="relative z-10 container mx-auto px-6 py-10">
@@ -44,9 +47,11 @@ export default function AnimalPage() {
     <main className="relative min-h-screen w-full overflow-hidden bg-[#06080F] text-white">
       <Background accentColor={eraColor} />
       <div className="relative z-20">
-        <Navbar3
- 
+        <Navbar
+          aStyles="cursor-pointer"
+          variantButton="secondary"
           logo={logo}
+          borderColor="border-white/30"
         />
       </div>
 
