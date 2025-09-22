@@ -6,14 +6,12 @@ import Button2 from "../ui/button/Button2";
 interface NavbarProps3 {
   logo: string;
 }
-export default function Navbar3({
-  logo,
-}: NavbarProps3) {
+export default function Navbar3({ logo }: NavbarProps3) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
   // Basic nav items; tweak labels/routes as needed
-  const navItems: Array<{ label: string; to: string; onClick?: () => void }>= [
+  const navItems: Array<{ label: string; to: string; onClick?: () => void }> = [
     { label: "Info", to: PATHS.timeline },
     { label: "Timeline", to: PATHS.timeline },
     { label: "Museum", to: PATHS.museum },
@@ -36,7 +34,7 @@ export default function Navbar3({
             // responsive gaps to keep logo and hamburger clearly separated on mobile
             "gap-2 sm:gap-3 md:gap-4 w-full",
             // responsive max-widths for better tablet/laptop scaling
-            "max-w-full sm:max-w-2xl md:max-w-1xl lg:max-w-1xl",
+            "max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-2xl",
             // padding scales with viewport
             "rounded-full px-2 sm:px-3 md:px-4 py-2",
             // glassmorphism
@@ -51,8 +49,12 @@ export default function Navbar3({
             onClick={() => handleNavigate(PATHS.root)}
             className="shrink-0 pointer-events-auto"
           >
-            <div className="h-9 w-9 sm:h-12 sm:w-12 rounded-full border border-white/20 bg-white/5 grid place-items-center overflow-hidden">
-              <img src={logo} alt="Logo" className="h-9 w-9 sm:h-12 sm:w-12 object-contain" />
+            <div className="h-9 w-9 sm:h-12 sm:w-12 rounded-full border cursor-pointer border-white/20 bg-white/5 grid place-items-center overflow-hidden">
+              <img
+                src={logo}
+                alt="Logo"
+                className="h-9 w-9 sm:h-12 sm:w-12 object-contain"
+              />
             </div>
           </button>
 
@@ -63,7 +65,7 @@ export default function Navbar3({
                 key={item.label}
                 onClick={() => handleNavigate(item.to)}
                 className={[
-                  "px-3 md:px-4 py-2 rounded-full text-sm md:text-base font-medium",
+                  "px-3 md:px-4 py-2 rounded-full text-sm md:text-base font-medium cursor-pointer",
                   "text-white/85 hover:text-white",
                   "hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30",
                 ].join(" ")}
@@ -76,9 +78,7 @@ export default function Navbar3({
           {/* Right side: CTA (desktop) + Hamburger (mobile) */}
           <div className="flex items-center justify-end gap-1">
             <div className="hidden md:flex items-center pl-1">
-              <Button2
-                onClick={() => handleNavigate(PATHS.register)}
-              >
+              <Button2 onClick={() => handleNavigate(PATHS.register)}>
                 Logout
               </Button2>
             </div>
@@ -141,7 +141,7 @@ export default function Navbar3({
                     onClick={() => handleNavigate(PATHS.register)}
                     rounded="rounded-full"
                   >
-                    Join Today
+                    Logout
                   </Button2>
                 </div>
               </div>

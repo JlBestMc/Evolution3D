@@ -1,25 +1,22 @@
 export interface Animal {
   name: string;
   description: string;
-  subtitle?: string; // breve texto para usar en EraPage/Card overlays
+  subtitle?: string;
   model: string;
-  startMa?: number; // millones de años atrás (para orden cronológico)
-  eraId?: string; // opcional: vincular a una era
-  thumb?: string; // miniatura opcional
-  isIconic?: boolean; // animales icónicos que dieron lugar a clados enteros
-  // Taxonomía básica (opcional)
-  className?: string; // p.ej. Mammalia, Trilobita, Aves (Avialae)
-  order?: string; // p.ej. Cetartiodactyla, Theropoda
-  family?: string; // p.ej. Pakicetidae, Tyrannosauridae
-  diet?: string; // p.ej. herbivore, carnivore, omnivore, detritivore
-  // Métricas (opcional, unidades SI)
-  lengthM?: number; // longitud total (m)
-  heightM?: number; // altura en estación/altura máxima (m)
-  widthM?: number; // anchura máxima (m)
-  wingspanM?: number; // en aves/reptiles voladores (m)
-  weightKg?: number; // masa (kg)
-  // Descubrimiento
-  discoveryLocation?: string; // lugar de hallazgo o localidad tipo
+  startMa?: number;
+  eraId?: string;
+  thumb?: string;
+  isIconic?: boolean;
+  className?: string;
+  order?: string;
+  family?: string;
+  diet?: string;
+  lengthM?: number;
+  heightM?: number;
+  widthM?: number;
+  wingspanM?: number;
+  weightKg?: number;
+  discoveryLocation?: string;
 }
 
 const animals: Animal[] = [

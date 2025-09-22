@@ -34,7 +34,6 @@ function Button2({
           "transition-transform duration-300 ease-in-out",
           "hover:scale-105 active:scale-95",
           "focus-visible:outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black",
-          
         ].join(" ")}
       >
         <span

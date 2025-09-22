@@ -81,9 +81,7 @@ export default function EraPage() {
       <Background accentColor={eraColor} />
 
       <div className="relative z-20">
-        <Navbar3
-          logo={logo}
-        />
+        <Navbar3 logo={logo} />
       </div>
 
       <section className="relative z-10 container mx-auto px-6 py-10">
@@ -130,7 +128,11 @@ export default function EraPage() {
                 navigate(`/animal/${encodeURIComponent(a.name)}`)
               }
             >
-              <Card3D animal={a} />
+              <Card3D
+                animal={a}
+                heightClass="h-[440px] md:h-[460px] lg:h-[460px] xl:h-[500px]"
+                widthClass="w-72 md:w-72 lg:w-100 xl:w-100"
+              />
             </DragSafeCard>
           ))}
         </div>
@@ -138,5 +140,3 @@ export default function EraPage() {
     </main>
   );
 }
-
-// Nota: evitamos preloads globales para no incrementar memoria innecesariamente.
