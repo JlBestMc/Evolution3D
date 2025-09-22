@@ -9,6 +9,7 @@ const MuseumPage = lazy(() => import("../pages/museumPage/MuseumPage2"));
 const AuthPage = lazy(() => import("../auth/auth"));
 const LoginPage = lazy(() => import("../pages/loginPage/loginPage"));
 const RegisterPage = lazy(() => import("../pages/registerPage/registerPage"));
+const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard"));
 
 export const PATHS = {
   root: "/",
@@ -20,6 +21,7 @@ export const PATHS = {
   auth: "/auth",
   login: "/login",
   register: "/register",
+  admin: "/admin",
 } as const;
 
 // Auth guard placeholder removed; wire your auth context here when ready.
@@ -62,6 +64,7 @@ export default function AppRoutes() {
         <Route path={`${PATHS.era}/:eraId`} element={<EraPage />} />
         <Route path="/animal/:name" element={<AnimalPage />} />
         <Route path={PATHS.museum} element={<MuseumPage />} />
+  <Route path={PATHS.admin} element={<AdminDashboard />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

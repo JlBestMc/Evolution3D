@@ -199,6 +199,24 @@ export function Card3D({
       >
         3D
       </div>
+      {animal.isIconic && (
+        <div
+          className="absolute top-4 left-4 z-10 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold text-amber-100"
+          style={{
+            background: `linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(245, 158, 11, 0.15))`,
+            border: `1px solid rgba(245, 158, 11, 0.35)`,
+            backdropFilter: "blur(4px)",
+          }}
+          title="Animal icónico — origen de grandes linajes"
+        >
+          <span
+            aria-hidden
+            className="inline-block h-2 w-2 rounded-full"
+            style={{ background: `rgba(245, 158, 11, 0.9)` }}
+          />
+          Legendary
+        </div>
+      )}
       <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/10" />
     </div>
   );
