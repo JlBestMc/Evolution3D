@@ -1,14 +1,15 @@
 import { useState } from "react";
 import AnimalsAdmin from "./AnimalsAdmin.tsx";
 import ErasAdmin from "./ErasAdmin.tsx";
+import AdminHeader from "@/components/admin/AdminHeader";
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState<"animals" | "eras">("animals");
   return (
-    <div className="min-h-screen bg-black text-white p-6">
-      <div className="mx-auto max-w-7xl">
-        <h1 className="text-2xl font-semibold">Admin Dashboard</h1>
-        <div className="mt-4 inline-flex rounded-full border border-white/15 bg-white/5 p-1">
+    <main className="relative min-h-screen w-full overflow-hidden bg-[#06080F] text-white">
+      <section className="relative z-10 container mx-auto px-6 py-8">
+        <AdminHeader title="Admin Dashboard" subtitle="Manage animals, eras and models" />
+        <div className="mb-6 inline-flex rounded-full border border-white/15 bg-white/5 p-1">
           <button
             className={`px-4 py-2 rounded-full text-sm ${tab === "animals" ? "bg-white/10" : "hover:bg-white/5"}`}
             onClick={() => setTab("animals")}
@@ -22,10 +23,10 @@ export default function AdminDashboard() {
             Eras
           </button>
         </div>
-        <div className="mt-6">
+        <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] shadow-xl p-4 md:p-6">
           {tab === "animals" ? <AnimalsAdmin /> : <ErasAdmin />}
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 }
