@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Navbar from "../../components/navbar/Navbar";
-import logo from "/images/logo3D.png";
+import logo from "/images/favicon.ico";
+import Navbar3 from "@/components/navbar/Navbar3";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -8,12 +8,7 @@ const LoginPage = () => {
   const [error, setError] = useState<string | null>(null);
   return (
     <>
-      <Navbar
-        aStyles="cursor-pointer hover:bg-gradient-to-r hover:from-[#90cea1] hover:to-[#01b4e4] hover:bg-clip-text hover:text-transparent text-white"
-        logo={logo}
-        borderColor="border-white"
-        variantButton="quaternary"
-      />
+      <Navbar3 logo={logo} />
       <div className="bg-[url('@/assets/Rectangle.jpg')] bg-cover bg-center items-center justify-center min-h-screen flex h-full bg-fixed bg-no-repeat">
         <form>
           <div className="relative py-3 sm:max-w-xl sm:mx-auto">

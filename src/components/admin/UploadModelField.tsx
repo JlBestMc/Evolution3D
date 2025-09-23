@@ -12,7 +12,7 @@ type Props = {
 export default function UploadModelField({
   value,
   onUploaded,
-  bucket = import.meta.env.VITE_SUPABASE_MODELS_BUCKET || "models",
+  bucket = "models",
   accept = ".glb,.gltf,.zip,.usdz,.obj",
   disabled,
 }: Props) {
@@ -27,7 +27,10 @@ export default function UploadModelField({
       setProgress(0);
 
       const path = `${Date.now()}_${file.name}`;
-      const tick = setInterval(() => setProgress((p) => Math.min(95, p + 5)), 120);
+      const tick = setInterval(
+        () => setProgress((p) => Math.min(95, p + 5)),
+        120
+      );
 
       const { data, error } = await supabase.storage
         .from(bucket)
@@ -42,7 +45,9 @@ export default function UploadModelField({
         return;
       }
 
-      const { data: pub } = supabase.storage.from(bucket).getPublicUrl(data.path);
+      const { data: pub } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(data.path);
       setProgress(100);
       setUploading(false);
       if (pub?.publicUrl) onUploaded(pub.publicUrl);
@@ -71,16 +76,23 @@ export default function UploadModelField({
         onClick={() => inputRef.current?.click()}
       >
         <p className="text-sm text-white/90 font-medium">Upload 3D model</p>
-        <p className="text-xs text-white/60">Accepted: {accept} — Bucket: {bucket}</p>
+        <p className="text-xs text-white/60">
+          Accepted: {accept} — Bucket: {bucket}
+        </p>
 
         {uploading && (
           <div className="mt-3 h-2 w-full bg-white/[0.06] rounded-full overflow-hidden">
-            <div className="h-full bg-emerald-400" style={{ width: `${progress}%` }} />
+            <div
+              className="h-full bg-emerald-400"
+              style={{ width: `${progress}%` }}
+            />
           </div>
         )}
 
         {!uploading && value && (
-          <div className="mt-3 text-xs text-emerald-300 break-all">Uploaded URL: {value}</div>
+          <div className="mt-3 text-xs text-emerald-300 break-all">
+            Uploaded URL: {value}
+          </div>
         )}
       </div>
 
