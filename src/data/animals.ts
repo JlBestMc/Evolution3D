@@ -322,6 +322,24 @@ const animals: Animal[] = [
     diet: "autotroph",
     discoveryLocation: "Global stromatolite formations",
   },
+  {
+    name: "Tiktaalik",
+    isIconic: true,
+    subtitle: "Transitional fishapod between fish and early tetrapods.",
+    description:
+      "Tiktaalik is a Late Devonian elpistostegalian fish that bridges the gap between finned fishes and the first four-limbed vertebrates. It had a mobile neck, robust ribcage, and fin bones analogous to a shoulder, elbow, and wrist—adaptations for shallow-water support and propulsion. Its mix of gills and lungs highlights the water-to-land transition.",
+    model: "/models/Tiktaalik3D_draco.glb",
+    startMa: 375,
+    eraId: "paleozoic",
+    className: "Sarcopterygii",
+    order: "Tetrapodomorpha",
+    family: "Elpistostegidae",
+    diet: "carnivore",
+    lengthM: 2.7,
+    heightM: 0.35,
+    weightKg: 100,
+    discoveryLocation: "Ellesmere Island, Nunavut, Canada",
+  },
 ];
 
 export default animals;
