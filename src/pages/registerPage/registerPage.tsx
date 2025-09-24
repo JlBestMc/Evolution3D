@@ -1,7 +1,8 @@
 import { useState } from "react";
-import Navbar from "../../components/navbar/Navbar";
-import logo from "/images/logo3D.png";
+import logo from "/images/favicon.ico";
+import logo2 from "/images/logo2.png";
 import { useNavigate } from "react-router-dom";
+import Navbar3 from "@/components/navbar/Navbar3";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
@@ -9,20 +10,15 @@ const RegisterPage = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   return (
-    <>
-      <Navbar
-        aStyles="cursor-pointer hover:bg-gradient-to-r hover:from-[#90cea1] hover:to-[#01b4e4] hover:bg-clip-text hover:text-transparent text-white"
-        logo={logo}
-        borderColor="border-white"
-        variantButton="quaternary"
-      />
-      <div className="bg-[url('@/assets/Rectangle.jpg')] bg-cover bg-center items-center justify-center min-h-screen flex h-full bg-fixed bg-no-repeat">
+    <div className="bg-[url('/images/30.png')] bg-cover bg-center min-h-screen bg-fixed bg-no-repeat flex flex-col">
+      <Navbar3 logo={logo} />
+      <div className="flex-1 flex items-center justify-center">
         <form>
           <div className="relative py-3 sm:max-w-xl sm:mx-auto">
             <div className="relative px-4 py-10 bg-white mx-8 md:mx-0 shadow rounded-3xl sm:p-10">
               <div className="max-w-md mx-auto">
                 <div className="flex items-center space-x-5 justify-center">
-                  <img src={logo} alt="Logo" className="h-20" />
+                  <img src={logo2} alt="Logo" className="h-20" />
                 </div>
                 <div className="mt-5">
                   <label
@@ -92,7 +88,7 @@ const RegisterPage = () => {
           </div>
         </form>
       </div>
-    </>
+    </div>
   );
 };
 
