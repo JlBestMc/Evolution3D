@@ -33,7 +33,12 @@ const LoginPage = () => {
               <div className="relative px-4 py-10 bg-white mx-8 md:mx-0 shadow rounded-3xl sm:p-10">
                 <div className="max-w-md mx-auto">
                   <div className="flex items-center space-x-5 justify-center">
-                    <img src={logo2} alt="Logo" className="h-20" />
+                    <img
+                      src={logo2}
+                      alt="Logo"
+                      className="h-20 cursor-pointer"
+                      onClick={() => navigate("/")}
+                    />
                   </div>
                   {error && (
                     <p className="text-red-500 mb-4 text-center text-sm">

@@ -5,8 +5,8 @@ import { eras } from "../../data/eras";
 import { useNavigate, useParams } from "react-router-dom";
 import Background from "../../components/ui/background/Background";
 import logo from "/images/favicon.ico";
-import { Card3D } from "../../components/ui/card/Card3D";
-import { DragSafeCard } from "../../components/ui/card/DragSafeCard";
+import { Card3D } from "../../components/card/Card3D";
+import { DragSafeCard } from "../../components/card/DragSafeCard";
 import Navbar3 from "../../components/navbar/Navbar3";
 
 const DRACO_CDN = "https://www.gstatic.com/draco/v1/decoders/";

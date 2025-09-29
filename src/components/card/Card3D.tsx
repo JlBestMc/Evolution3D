@@ -2,7 +2,7 @@ import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Center, AdaptiveDpr } from "@react-three/drei";
 import { Group, ReinhardToneMapping, SRGBColorSpace } from "three";
-import { eras } from "../../../data/eras";
+import { eras } from "../../data/eras";
 import type { Card3DProps } from "./Card3D.types";
 
 function SpinningModel({

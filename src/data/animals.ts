@@ -77,7 +77,7 @@ const animals: Animal[] = [
     model: "/models/Archaeopteryx3D_draco.glb",
     startMa: 150,
     eraId: "mesozoic",
-    className: "Aves (Avialae)",
+    className: "Aves",
     diet: "carnivore",
     lengthM: 0.5,
     heightM: 0.2,

@@ -1,14 +1,24 @@
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../lib/supabaseClient";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../../components/ui/shadcn/table";
 import { eras as erasStatic } from "../../data/eras";
 
-type Era = typeof erasStatic[number];
+type Era = (typeof erasStatic)[number];
 type DbEra = Era & { id: string; period?: string };
 
 async function fetchEras(): Promise<DbEra[]> {
-  const { data, error } = await supabase.from("eras").select("*").order("name", { ascending: true });
+  const { data, error } = await supabase
+    .from("eras")
+    .select("*")
+    .order("name", { ascending: true });
   if (error) throw error;
   return data as DbEra[];
 }
@@ -20,7 +30,10 @@ async function insertEra(payload: Partial<DbEra>) {
 
 export default function ErasAdmin() {
   const qc = useQueryClient();
-  const { data, isLoading, error } = useQuery({ queryKey: ["eras"], queryFn: fetchEras });
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["eras"],
+    queryFn: fetchEras,
+  });
   const [form, setForm] = useState<Partial<DbEra>>({ id: "", name: "" });
   const createMutation = useMutation({
     mutationFn: insertEra,
@@ -85,7 +98,9 @@ export default function ErasAdmin() {
           <TableHeader>
             <TableRow>
               {columns.map((c) => (
-                <TableHead key={c.key} className="text-left">{c.label}</TableHead>
+                <TableHead key={c.key} className="text-left">
+                  {c.label}
+                </TableHead>
               ))}
             </TableRow>
           </TableHeader>
@@ -97,14 +112,18 @@ export default function ErasAdmin() {
             )}
             {error && (
               <TableRow>
-                <TableCell colSpan={columns.length} className="text-red-400">{String(error)}</TableCell>
+                <TableCell colSpan={columns.length} className="text-red-400">
+                  {String(error)}
+                </TableCell>
               </TableRow>
             )}
             {data?.map((row) => (
               <TableRow key={row.id}>
                 {columns.map((c) => {
                   const value = (row as DbEra)[c.key as keyof DbEra] as unknown;
-                  return <TableCell key={c.key}>{String(value ?? "")}</TableCell>;
+                  return (
+                    <TableCell key={c.key}>{String(value ?? "")}</TableCell>
+                  );
                 })}
               </TableRow>
             ))}
