@@ -1,18 +1,34 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import logo from "/images/favicon.ico";
 import logo2 from "/images/logo2.png";
 import Navbar3 from "@/components/navbar/Navbar3";
+import { useAuth } from "@/auth/useAuth";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { signInWithGoogle, signInWithPassword } = useAuth();
+  const from = "/"; // Always send to Welcome after login
   return (
     <>
       <div className="bg-[url('/images/30.png')] bg-cover bg-center min-h-screen bg-fixed bg-no-repeat flex flex-col">
         <Navbar3 logo={logo} />
         <div className="flex-1 flex items-center justify-center">
-          <form>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setError(null);
+              const { error } = await signInWithPassword(email, password);
+              if (error) {
+                setError(error);
+              } else {
+                navigate(from, { replace: true });
+              }
+            }}
+          >
             <div className="relative py-3 sm:max-w-xl sm:mx-auto">
               <div className="relative px-4 py-10 bg-white mx-8 md:mx-0 shadow rounded-3xl sm:p-10">
                 <div className="max-w-md mx-auto">
@@ -56,7 +72,11 @@ const LoginPage = () => {
                   </div>
                   <div className="flex justify-center w-full items-center">
                     <div>
-                      <button className="flex items-center justify-center cursor-pointer py-2 px-20 bg-white hover:bg-gray-200 focus:ring-blue-500 focus:ring-offset-blue-200 text-gray-700 w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg">
+                      <button
+                        type="button"
+                        onClick={() => signInWithGoogle(from)}
+                        className="flex items-center justify-center cursor-pointer py-2 px-20 bg-white hover:bg-gray-200 focus:ring-blue-500 focus:ring-offset-blue-200 text-gray-700 w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
+                      >
                         <svg
                           viewBox="0 0 24 24"
                           height="25"

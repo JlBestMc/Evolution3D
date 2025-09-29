@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { PATHS } from "../../routes/routes";
 import Button2 from "../ui/button/Button2";
+import { useAuth } from "@/auth/useAuth";
 
 interface NavbarProps3 {
   logo: string;
@@ -9,6 +10,7 @@ interface NavbarProps3 {
 export default function Navbar3({ logo }: NavbarProps3) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const { signOut, user } = useAuth();
 
   // Basic nav items; tweak labels/routes as needed
   const navItems: Array<{ label: string; to: string; onClick?: () => void }> = [
@@ -21,6 +23,15 @@ export default function Navbar3({ logo }: NavbarProps3) {
   const handleNavigate = (to: string) => {
     setOpen(false);
     navigate(to);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+    } finally {
+      setOpen(false);
+      navigate(PATHS.root);
+    }
   };
 
   return (
@@ -47,7 +58,7 @@ export default function Navbar3({ logo }: NavbarProps3) {
           <button
             aria-label="Home"
             onClick={() => handleNavigate(PATHS.root)}
-            className="shrink-0 pointer-events-auto"
+            className="shrink-0 pointer-events-auto transition-transform duration-200 ease-out hover:scale-105 active:scale-95"
           >
             <div className="h-9 w-9 sm:h-12 sm:w-12 rounded-full border cursor-pointer border-white/20 bg-white/5 grid place-items-center overflow-hidden">
               <img
@@ -68,6 +79,7 @@ export default function Navbar3({ logo }: NavbarProps3) {
                   "px-3 md:px-4 py-2 rounded-full text-sm md:text-base font-medium cursor-pointer",
                   "text-white/85 hover:text-white",
                   "hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30",
+                  "transition-all duration-200 ease-out hover:-translate-y-0.5 active:scale-95",
                 ].join(" ")}
               >
                 {item.label}
@@ -78,23 +90,29 @@ export default function Navbar3({ logo }: NavbarProps3) {
           {/* Right side: CTA (desktop) + Hamburger (mobile) */}
           <div className="flex items-center justify-end gap-1">
             <div className="hidden md:flex items-center pl-1">
-              <Button2 onClick={() => handleNavigate(PATHS.register)}>
-                Logout
-              </Button2>
+              {user ? (
+                <Button2 onClick={handleLogout}>Logout</Button2>
+              ) : (
+                <Button2 onClick={() => handleNavigate(PATHS.register)}>Register</Button2>
+              )}
             </div>
             <div className="md:hidden flex items-center">
               <button
                 aria-label="Toggle menu"
                 aria-expanded={open}
                 onClick={() => setOpen((v) => !v)}
-                className="p-2 rounded-full text-white/90 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+                className={[
+                  "p-2 rounded-full text-white/90 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30",
+                  "transition-transform duration-200 ease-out active:scale-95",
+                  open ? "rotate-90" : "",
+                ].join(" ")}
               >
                 {open ? (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="currentColor"
-                    className="h-6 w-6"
+                    className="h-6 w-6 transition-transform duration-200 ease-out"
                   >
                     <path
                       fillRule="evenodd"
@@ -107,7 +125,7 @@ export default function Navbar3({ logo }: NavbarProps3) {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="currentColor"
-                    className="h-6 w-6"
+                    className="h-6 w-6 transition-transform duration-200 ease-out"
                   >
                     <path d="M3.75 6.75A.75.75 0 0 1 4.5 6h15a.75.75 0 0 1 0 1.5h-15a.75.75 0 0 1-.75-.75ZM3.75 12a.75.75 0 0 1 .75-.75h15a.75.75 0 0 1 0 1.5h-15A.75.75 0 0 1 3.75 12Zm0 5.25a.75.75 0 0 1 .75-.75h15a.75.75 0 0 1 0 1.5h-15a.75.75 0 0 1-.75-.75Z" />
                   </svg>
@@ -124,25 +142,27 @@ export default function Navbar3({ logo }: NavbarProps3) {
                 "rounded-2xl p-2",
                 "backdrop-blur-xl bg-gray-800 border border-white/15",
                 "shadow-[0_8px_30px_rgba(0,0,0,0.25)]",
+                "transform origin-top transition-all duration-200 ease-out",
+                "opacity-100 translate-y-0",
               ].join(" ")}
             >
               <div className="flex flex-col">
-                {navItems.map((item) => (
+                {navItems.map((item, idx) => (
                   <button
                     key={item.label}
                     onClick={() => handleNavigate(item.to)}
-                    className="text-left px-3 py-2 rounded-xl text-sm font-medium text-white/85 hover:text-white hover:bg-white/10"
+                    className="text-left px-3 py-2 rounded-xl text-sm font-medium text-white/85 hover:text-white hover:bg-white/10 transition-all duration-200 ease-out hover:translate-x-0.5 active:scale-95"
+                    style={{ transitionDelay: `${idx * 25}ms` }}
                   >
                     {item.label}
                   </button>
                 ))}
                 <div className="px-2 pt-1">
-                  <Button2
-                    onClick={() => handleNavigate(PATHS.register)}
-                    rounded="rounded-full"
-                  >
-                    Logout
-                  </Button2>
+                  {user ? (
+                    <Button2 onClick={handleLogout} rounded="rounded-full" size="sm">Logout</Button2>
+                  ) : (
+                    <Button2 onClick={() => handleNavigate(PATHS.register)} rounded="rounded-full" size="sm">Register</Button2>
+                  )}
                 </div>
               </div>
             </div>

@@ -12,6 +12,7 @@ export default function AnimalsEditModal({
   saving,
   onClose,
   onSave,
+  mode = "edit",
 }: {
   open: boolean;
   originalId?: string | null;
@@ -21,6 +22,7 @@ export default function AnimalsEditModal({
   saving: boolean;
   onClose: () => void;
   onSave: () => void;
+  mode?: "create" | "edit";
 }) {
   if (!open) return null;
 
@@ -30,7 +32,7 @@ export default function AnimalsEditModal({
       <div className="relative w-full max-w-4xl rounded-2xl border border-white/10 bg-[#0B0F17] p-0 shadow-2xl overflow-hidden">
         <div className="flex items-center justify-between px-5 py-3 border-b border-white/10">
           <div className="flex items-center gap-3">
-            <h3 className="text-lg font-semibold">Editar animal</h3>
+            <h3 className="text-lg font-semibold">{mode === "create" ? "Crear animal" : "Editar animal"}</h3>
             {originalId && (
               <span className="text-[11px] rounded-md bg-white/[0.06] border border-white/10 px-2 py-0.5 text-white/70 font-mono">
                 id: {originalId}
@@ -170,7 +172,7 @@ export default function AnimalsEditModal({
             onClick={onSave}
             className="rounded-lg bg-emerald-500 hover:bg-emerald-400 disabled:opacity-60 disabled:hover:bg-emerald-500 text-black font-medium px-4 py-2 text-sm"
           >
-            {saving ? "Guardando…" : "Guardar"}
+            {saving ? (mode === "create" ? "Creando…" : "Guardando…") : mode === "create" ? "Crear" : "Guardar"}
           </button>
         </div>
       </div>

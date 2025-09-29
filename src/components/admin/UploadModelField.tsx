@@ -18,6 +18,7 @@ export default function UploadModelField({
 }: Props) {
   const [progress, setProgress] = useState<number>(0);
   const [uploading, setUploading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const onSelect = useCallback(
@@ -25,6 +26,7 @@ export default function UploadModelField({
       if (!file) return;
       setUploading(true);
       setProgress(0);
+  setErrorMsg(null);
 
       const path = `${Date.now()}_${file.name}`;
       const tick = setInterval(
@@ -41,7 +43,7 @@ export default function UploadModelField({
         setUploading(false);
         setProgress(0);
         console.error(error);
-        alert("Upload failed");
+        setErrorMsg(error.message || "Upload failed");
         return;
       }
 
@@ -87,6 +89,10 @@ export default function UploadModelField({
               style={{ width: `${progress}%` }}
             />
           </div>
+        )}
+
+        {errorMsg && !uploading && (
+          <p className="mt-2 text-xs text-red-400">{errorMsg}</p>
         )}
 
         {!uploading && value && (
