@@ -1,135 +1,146 @@
-import { useMemo, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "../../lib/supabaseClient";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../components/ui/shadcn/table";
-import { eras as erasStatic } from "../../data/eras";
+import { ErasToolbar, ErasList, ErasEditModal } from "./eras";
 
-type Era = (typeof erasStatic)[number];
-type DbEra = Era & { id: string; period?: string };
+type EraRow = { id: string; name: string; period?: string | null };
 
-async function fetchEras(): Promise<DbEra[]> {
-  const { data, error } = await supabase
+async function fetchEras(page: number, pageSize: number, search: string): Promise<{ rows: EraRow[]; count: number }>{
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  let query = supabase
     .from("eras")
-    .select("*")
-    .order("name", { ascending: true });
+    .select("*", { count: "exact" })
+    .order("name", { ascending: true })
+    .range(from, to);
+  const s = search.trim();
+  if (s) query = query.or(`name.ilike.%${s}%,period.ilike.%${s}%,id.ilike.%${s}%`);
+  const { data, error, count } = await query;
   if (error) throw error;
-  return data as DbEra[];
-}
-
-async function insertEra(payload: Partial<DbEra>) {
-  const { error } = await supabase.from("eras").insert(payload);
-  if (error) throw error;
+  return { rows: (data ?? []) as EraRow[], count: count ?? 0 };
 }
 
 export default function ErasAdmin() {
-  const qc = useQueryClient();
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["eras"],
-    queryFn: fetchEras,
-  });
-  const [form, setForm] = useState<Partial<DbEra>>({ id: "", name: "" });
-  const createMutation = useMutation({
-    mutationFn: insertEra,
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["eras"] });
-      setForm({ id: "", name: "" });
-    },
-  });
+  const [items, setItems] = useState<EraRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [total, setTotal] = useState(0);
 
-  const columns = useMemo(
-    () => [
-      { key: "id", label: "ID" },
-      { key: "name", label: "Name" },
-      { key: "period", label: "Period" },
-    ],
-    []
-  );
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createForm, setCreateForm] = useState<Partial<EraRow>>({});
+  const [createErrors, setCreateErrors] = useState<{ id?: string; name?: string } | null>(null);
+  const [createSaving, setCreateSaving] = useState(false);
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [editForm, setEditForm] = useState<Partial<EraRow>>({});
+  const [editOriginal, setEditOriginal] = useState<{ id: string } | null>(null);
+  const [editErrors, setEditErrors] = useState<{ id?: string; name?: string } | null>(null);
+  const [editSaving, setEditSaving] = useState(false);
+
+  const loadPage = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { rows, count } = await fetchEras(page, pageSize, search);
+      setItems(rows);
+      setTotal(count);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, pageSize, search]);
+
+  useEffect(() => { loadPage(); }, [loadPage]);
+  useEffect(() => { setPage(1); }, [search]);
+
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const rangeStart = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const rangeEnd = Math.min(total, page * pageSize);
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold">Eras</h2>
-      </div>
-      <div className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4">
-        <h3 className="font-medium mb-3">Create new era</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <input
-            className="px-3 py-2 rounded-md bg-black/40 border border-white/10"
-            placeholder="ID (e.g., mesozoic)"
-            value={form.id || ""}
-            onChange={(e) => setForm((f) => ({ ...f, id: e.target.value }))}
-          />
-          <input
-            className="px-3 py-2 rounded-md bg-black/40 border border-white/10"
-            placeholder="Name"
-            value={form.name || ""}
-            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-          />
-          <input
-            className="px-3 py-2 rounded-md bg-black/40 border border-white/10"
-            placeholder="Period (e.g., 252 – 66 Ma)"
-            value={form.period || ""}
-            onChange={(e) => setForm((f) => ({ ...f, period: e.target.value }))}
-          />
-        </div>
-        <div className="mt-3">
-          <button
-            className="px-4 py-2 rounded-md bg-white/10 border border-white/20 hover:bg:white/20"
-            disabled={createMutation.isPending || !form.id || !form.name}
-            onClick={() => createMutation.mutate(form)}
-          >
-            {createMutation.isPending ? "Creating…" : "Create"}
-          </button>
-          {createMutation.isError && (
-            <span className="text-red-400 ml-3">Error creating era</span>
-          )}
+      <ErasToolbar search={search} setSearch={setSearch} onNew={() => { setCreateForm({}); setCreateErrors(null); setCreateOpen(true); }} />
+      <ErasList
+        items={items}
+        loading={loading}
+        error={error}
+        onEdit={(row) => { setEditForm({ ...row }); setEditOriginal({ id: row.id }); setEditErrors(null); setEditOpen(true); }}
+      />
+
+      <div className="mt-3 flex items-center justify-between text-sm text-white/70">
+        <div>Showing {rangeStart}-{rangeEnd} of {total}</div>
+        <div className="flex items-center gap-2">
+          <button className="px-3 py-1 rounded-md bg-white/10 border border-white/15 disabled:opacity-40" disabled={page <= 1 || loading} onClick={() => setPage((p) => Math.max(1, p - 1))}>Prev</button>
+          <span>Page {page} / {totalPages}</span>
+          <button className="px-3 py-1 rounded-md bg-white/10 border border-white/15 disabled:opacity-40" disabled={page >= totalPages || loading} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>Next</button>
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/10 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {columns.map((c) => (
-                <TableHead key={c.key} className="text-left">
-                  {c.label}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading && (
-              <TableRow>
-                <TableCell colSpan={columns.length}>Loading…</TableCell>
-              </TableRow>
-            )}
-            {error && (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="text-red-400">
-                  {String(error)}
-                </TableCell>
-              </TableRow>
-            )}
-            {data?.map((row) => (
-              <TableRow key={row.id}>
-                {columns.map((c) => {
-                  const value = (row as DbEra)[c.key as keyof DbEra] as unknown;
-                  return (
-                    <TableCell key={c.key}>{String(value ?? "")}</TableCell>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <ErasEditModal
+        open={createOpen}
+        form={createForm}
+        setForm={(u) => setCreateForm((prev) => u(prev))}
+        errors={createErrors}
+        saving={createSaving}
+        mode="create"
+        onClose={() => setCreateOpen(false)}
+        onSave={async () => {
+          const errs: { id?: string; name?: string } = {};
+          if (!createForm.id) errs.id = "ID is required";
+          if (!createForm.name) errs.name = "Name is required";
+          setCreateErrors(Object.keys(errs).length ? errs : null);
+          if (Object.keys(errs).length) return;
+          try {
+            setCreateSaving(true);
+            const { error } = await supabase.from("eras").insert(createForm);
+            if (error) throw error;
+            await loadPage();
+            setCreateOpen(false);
+            setCreateForm({});
+          } catch (e) {
+            console.error(e);
+            alert("Could not create era");
+          } finally {
+            setCreateSaving(false);
+          }
+        }}
+      />
+
+      <ErasEditModal
+        open={editOpen}
+        form={editForm}
+        setForm={(u) => setEditForm((prev) => u(prev))}
+        errors={editErrors}
+        saving={editSaving}
+        onClose={() => setEditOpen(false)}
+        onSave={async () => {
+          const errs: { id?: string; name?: string } = {};
+          if (!editForm.id) errs.id = "ID is required";
+          if (!editForm.name) errs.name = "Name is required";
+          setEditErrors(Object.keys(errs).length ? errs : null);
+          if (Object.keys(errs).length) return;
+          if (!editOriginal?.id) { alert("Missing era id to update"); return; }
+          try {
+            setEditSaving(true);
+            const { error } = await supabase
+              .from("eras")
+              .update({ name: editForm.name, period: editForm.period })
+              .eq("id", editOriginal.id);
+            if (error) throw error;
+            await loadPage();
+            setEditOpen(false);
+            setEditOriginal(null);
+            setEditForm({});
+          } catch (e) {
+            console.error(e);
+            alert("Could not save era");
+          } finally {
+            setEditSaving(false);
+          }
+        }}
+      />
     </div>
   );
 }

@@ -16,8 +16,8 @@ export default function Navbar3({ logo }: NavbarProps3) {
   const navItems: Array<{ label: string; to: string; onClick?: () => void }> = [
     { label: "Info", to: PATHS.timeline },
     { label: "Timeline", to: PATHS.timeline },
+    { label: "Map", to: PATHS.map },
     { label: "Museum", to: PATHS.museum },
-    { label: "About", to: PATHS.root },
   ];
 
   const handleNavigate = (to: string) => {

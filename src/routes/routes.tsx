@@ -7,6 +7,7 @@ const TimelinePage = lazy(() => import("../pages/timelinePage/TimelinePage"));
 const EraPage = lazy(() => import("../pages/eraPage/EraPage"));
 const AnimalPage = lazy(() => import("../pages/animalPage/AnimalPage"));
 const MuseumPage = lazy(() => import("../pages/museumPage/MuseumPage2"));
+const MapPage = lazy(() => import("../pages/mapPage/MapPage"));
 const LoginPage = lazy(() => import("../pages/loginPage/loginPage"));
 const RegisterPage = lazy(() => import("../pages/registerPage/registerPage"));
 const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard"));
@@ -18,6 +19,7 @@ export const PATHS = {
   eraId: (eraId: string) => `/era/${eraId}`,
   animal: (name: string) => `/animal/${encodeURIComponent(name)}`,
   museum: "/museum",
+  map: "/map",
   auth: "/auth",
   login: "/login",
   register: "/register",
@@ -54,6 +56,7 @@ export default function AppRoutes() {
         <Route path={`${PATHS.era}/:eraId`} element={<EraPage />} />
         <Route path="/animal/:name" element={<AnimalPage />} />
         <Route path={PATHS.museum} element={<MuseumPage />} />
+  <Route path={PATHS.map} element={<MapPage />} />
   <Route
     path={PATHS.admin}
     element={

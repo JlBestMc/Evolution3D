@@ -1,17 +1,69 @@
-import { useMemo, useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import type { Animal } from "@/data/animals";
 import { AnimalsToolbar, AnimalsList, AnimalsEditModal } from "./animals";
 
 type DbAnimal = Animal & { id?: string };
+type DbAnimalRow = {
+  id?: string;
+  name: string;
+  description: string;
+  model: string;
+  subtitle?: string;
+  start_ma?: number;
+  era_id?: string | null;
+  isIconic?: boolean;
+  country?: string;
+  className?: string;
+  order?: string;
+  family?: string;
+  diet?: string;
+  lengthM?: number;
+  heightM?: number;
+  widthM?: number;
+  wingspanM?: number;
+  weightKg?: number;
+  discoveryLocation?: string;
+};
 
-async function fetchAnimals(): Promise<DbAnimal[]> {
-  const { data, error } = await supabase
+function fromRow(row: DbAnimalRow): DbAnimal {
+  const { era_id, start_ma, ...rest } = row;
+  const base: Animal = { ...(rest as unknown as Animal), startMa: start_ma };
+  return { ...base, id: row.id, eraId: era_id ?? undefined };
+}
+
+function toInsertPayload(form: Partial<DbAnimal>): Partial<DbAnimalRow> {
+  const { eraId, startMa, ...rest } = form;
+  const payload: Partial<DbAnimalRow> = { ...(rest as Partial<DbAnimalRow>) };
+  if (eraId !== undefined) payload.era_id = eraId;
+  if (startMa !== undefined) payload.start_ma = startMa;
+  return payload;
+}
+
+function toUpdatePayload(form: Partial<DbAnimal>): Partial<DbAnimalRow> {
+  const { eraId, startMa, ...rest } = form;
+  const payload: Partial<DbAnimalRow> = { ...(rest as Partial<DbAnimalRow>) };
+  if (eraId !== undefined) payload.era_id = eraId;
+  if (startMa !== undefined) payload.start_ma = startMa;
+  return payload;
+}
+
+async function fetchAnimals(page: number, pageSize: number, search: string): Promise<{ rows: DbAnimal[]; count: number }>{
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+  let query = supabase
     .from("animals")
-    .select("*")
-    .order("name", { ascending: true });
+    .select("*", { count: "exact" })
+    .order("name", { ascending: true })
+    .range(from, to);
+  const s = search.trim();
+  if (s) {
+    query = query.or(`name.ilike.%${s}%,era_id.ilike.%${s}%`);
+  }
+  const { data, error, count } = await query;
   if (error) throw error;
-  return data as DbAnimal[];
+  const rows = (data ?? []) as DbAnimalRow[];
+  return { rows: rows.map(fromRow), count: count ?? 0 };
 }
 
 export default function AnimalsAdmin() {
@@ -19,6 +71,9 @@ export default function AnimalsAdmin() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [total, setTotal] = useState(0);
   // Create modal state
   const [createOpen, setCreateOpen] = useState(false);
   const [createForm, setCreateForm] = useState<Partial<DbAnimal>>({});
@@ -36,32 +91,31 @@ export default function AnimalsAdmin() {
     eraId?: string;
   } | null>(null);
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        setLoading(true);
-        const data = await fetchAnimals();
-        if (mounted) setItems(data);
-      } catch (e) {
-        setError((e as Error).message);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const loadPage = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { rows, count } = await fetchAnimals(page, pageSize, search);
+      setItems(rows);
+      setTotal(count);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, pageSize, search]);
 
-  const filtered = useMemo(() => {
-    if (!search) return items;
-    const s = search.toLowerCase();
-    return items.filter(
-      (a) =>
-        a.name.toLowerCase().includes(s) || a.eraId?.toLowerCase().includes(s)
-    );
-  }, [items, search]);
+  useEffect(() => {
+    loadPage();
+  }, [loadPage]);
+
+  // Reset to first page when search changes
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const rangeStart = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const rangeEnd = Math.min(total, page * pageSize);
 
   return (
     <div>
@@ -75,14 +129,12 @@ export default function AnimalsAdmin() {
         }}
       />
       <AnimalsList
-        items={filtered}
+        items={items}
         loading={loading}
         error={error}
         onEdit={(a) => {
           if (!a.id) {
-            alert(
-              "Esta fila no tiene id disponible. Refresca los datos e inténtalo de nuevo."
-            );
+            alert("This row has no available id. Refresh data and try again.");
             return;
           }
           setEditForm({ ...a });
@@ -91,6 +143,32 @@ export default function AnimalsAdmin() {
           setEditOpen(true);
         }}
       />
+
+      {/* Pagination */}
+      <div className="mt-3 flex items-center justify-between text-sm text-white/70">
+        <div>
+          Showing {rangeStart}-{rangeEnd} of {total}
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            className="px-3 py-1 rounded-md bg-white/10 border border-white/15 disabled:opacity-40"
+            disabled={page <= 1 || loading}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+          >
+            Prev
+          </button>
+          <span>
+            Page {page} / {totalPages}
+          </span>
+          <button
+            className="px-3 py-1 rounded-md bg-white/10 border border-white/15 disabled:opacity-40"
+            disabled={page >= totalPages || loading}
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+          >
+            Next
+          </button>
+        </div>
+      </div>
 
       <AnimalsEditModal
         open={createOpen}
@@ -103,28 +181,26 @@ export default function AnimalsAdmin() {
         onClose={() => setCreateOpen(false)}
         onSave={async () => {
           const errs: { name?: string; eraId?: string } = {};
-          if (!createForm.name) errs.name = "El nombre es obligatorio";
-          if (!createForm.eraId) errs.eraId = "El eraId es obligatorio";
+          if (!createForm.name) errs.name = "Name is required";
+          if (!createForm.eraId) errs.eraId = "Era is required";
           setCreateErrors(Object.keys(errs).length ? errs : null);
           if (Object.keys(errs).length) return;
           try {
             setCreateSaving(true);
-            const { data, error } = await supabase
+            // Map UI form to DB payload: eraId -> era_id (omit id)
+            const insertPayload = toInsertPayload(createForm);
+            const { error } = await supabase
               .from("animals")
-              .insert(createForm)
+              .insert(insertPayload)
               .select()
               .single();
             if (error) throw error;
-            setItems((prev) =>
-              [...prev, data as DbAnimal].sort((a, b) =>
-                a.name.localeCompare(b.name)
-              )
-            );
+            await loadPage();
             setCreateOpen(false);
             setCreateForm({});
           } catch (e) {
             console.error(e);
-            alert("No se pudo crear el animal");
+            alert("Could not create the animal");
           } finally {
             setCreateSaving(false);
           }
@@ -141,14 +217,12 @@ export default function AnimalsAdmin() {
         onClose={() => setEditOpen(false)}
         onSave={async () => {
           const errs: { name?: string; eraId?: string } = {};
-          if (!editForm.name) errs.name = "El nombre es obligatorio";
-          if (!editForm.eraId) errs.eraId = "El eraId es obligatorio";
+          if (!editForm.name) errs.name = "Name is required";
+          if (!editForm.eraId) errs.eraId = "Era is required";
           setEditErrors(Object.keys(errs).length ? errs : null);
           if (Object.keys(errs).length) return;
           if (!editOriginal?.id) {
-            alert(
-              "No se pudo determinar el registro a actualizar (id ausente)"
-            );
+            alert("Could not determine record to update (missing id)");
             return;
           }
           try {
@@ -156,27 +230,23 @@ export default function AnimalsAdmin() {
             const entries = Object.entries(editForm).filter(
               ([k, v]) => k !== "id" && v !== undefined
             );
-            const payload = Object.fromEntries(entries);
+            const withoutId = Object.fromEntries(entries) as Partial<DbAnimal>;
+            const payload = toUpdatePayload(withoutId);
 
-            const { data, error } = await supabase
+            const { error } = await supabase
               .from("animals")
               .update(payload)
               .eq("id", editOriginal.id)
               .select()
               .single();
             if (error) throw error;
-            const updated = data as DbAnimal;
-            setItems((prev) =>
-              prev
-                .map((it) => (it.id === editOriginal.id ? updated : it))
-                .sort((a, b) => a.name.localeCompare(b.name))
-            );
+            await loadPage();
             setEditOpen(false);
             setEditOriginal(null);
             setEditForm({});
           } catch (e) {
             console.error(e);
-            alert("No se pudo guardar los cambios");
+            alert("Could not save changes");
           } finally {
             setEditSaving(false);
           }

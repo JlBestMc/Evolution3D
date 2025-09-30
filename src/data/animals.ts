@@ -6,6 +6,7 @@ export interface Animal {
   startMa?: number;
   eraId?: string;
   isIconic?: boolean;
+  country?: string;
   className?: string;
   order?: string;
   family?: string;
@@ -77,7 +78,7 @@ const animals: Animal[] = [
     model: "/models/Archaeopteryx3D_draco.glb",
     startMa: 150,
     eraId: "mesozoic",
-    className: "Aves",
+    className: "Birds",
     diet: "carnivore",
     lengthM: 0.5,
     heightM: 0.2,

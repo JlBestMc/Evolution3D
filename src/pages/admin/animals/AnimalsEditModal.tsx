@@ -26,6 +26,13 @@ export default function AnimalsEditModal({
 }) {
   if (!open) return null;
 
+  const eraOptions: Array<{ label: string; value: string }> = [
+    { label: "Precambrian", value: "fa623e10-ea07-4ad0-a4da-6b469ea2016b" },
+    { label: "Paleozoic", value: "1a148d60-41df-4477-aa02-1d5d36ddc5a5" },
+    { label: "Mesozoic", value: "7809661c-0b73-48f6-9c52-7e05b2e80cba" },
+    { label: "Cenozoic", value: "854cf820-50b8-4a21-a87d-1f6a7738f5c0" },
+  ];
+
   return (
     <div className="fixed inset-0 z-50 grid place-items-center p-4">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
@@ -33,7 +40,7 @@ export default function AnimalsEditModal({
         <div className="flex items-center justify-between px-5 py-3 border-b border-white/10">
           <div className="flex items-center gap-3">
             <h3 className="text-lg font-semibold">
-              {mode === "create" ? "Crear animal" : "Editar animal"}
+              {mode === "create" ? "Create Animal" : "Edit Animal"}
             </h3>
             {originalId && (
               <span className="text-[11px] rounded-md bg-white/[0.06] border border-white/10 px-2 py-0.5 text-white/70 font-mono">
@@ -51,11 +58,11 @@ export default function AnimalsEditModal({
         </div>
 
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {/* Básico */}
+          {/* Basics */}
           <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-white/80">Básico</h4>
+            <h4 className="text-sm font-semibold text-white/80">Basics</h4>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Nombre</label>
+              <label className="text-sm font-medium">Name</label>
               <input
                 className="rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
                 value={form.name ?? ""}
@@ -68,21 +75,27 @@ export default function AnimalsEditModal({
               )}
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Era ID</label>
-              <input
-                className="rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
-                placeholder="e.g. mesozoic"
+              <label className="text-sm font-medium">Era</label>
+              <select
+                className="w-full rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
                 value={form.eraId ?? ""}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, eraId: e.target.value }))
-                }
-              />
+                onChange={(e) => setForm((f) => ({ ...f, eraId: e.target.value }))}
+              >
+                <option className=" bg-black/10" value="" disabled>
+                  Select an era…
+                </option>
+                {eraOptions.map((opt) => (
+                  <option className="text-black bg-black/10" key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
               {errors?.eraId && (
                 <p className="text-xs text-red-400">{errors.eraId}</p>
               )}
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Subtítulo</label>
+              <label className="text-sm font-medium">Subtitle</label>
               <input
                 className="rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
                 value={form.subtitle ?? ""}
@@ -91,11 +104,45 @@ export default function AnimalsEditModal({
                 }
               />
             </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Start (Ma)</label>
+              <input
+                type="number"
+                step={0.01}
+                className="rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
+                value={form.startMa ?? ""}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    startMa: e.target.value === "" ? undefined : Number.parseFloat(e.target.value),
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Country</label>
+              <input
+                className="rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
+                placeholder="e.g. Germany"
+                value={form.country ?? ""}
+                onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
+              />
+            </div>
+            <div className="flex items-center gap-2 pt-1">
+              <input
+                id="isIconic"
+                type="checkbox"
+                className="h-4 w-4 rounded border-white/20 bg-white/10"
+                checked={!!form.isIconic}
+                onChange={(e) => setForm((f) => ({ ...f, isIconic: e.target.checked }))}
+              />
+              <label htmlFor="isIconic" className="text-sm font-medium select-none">Is iconic</label>
+            </div>
           </div>
 
-          {/* Modelo 3D */}
+          {/* 3D Model */}
           <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-white/80">Modelo 3D</h4>
+            <h4 className="text-sm font-semibold text-white/80">3D Model</h4>
             <div className="space-y-2">
               <label className="text-sm font-medium">Model URL</label>
               <input
@@ -107,8 +154,7 @@ export default function AnimalsEditModal({
                 }
               />
               <p className="text-xs text-white/50">
-                Sube un modelo 3D o pega un enlace público. Al subir, este campo
-                se autocompleta.
+                Upload a 3D model or paste a public URL. When uploading, this field is auto-filled.
               </p>
             </div>
             <UploadModelField
@@ -117,12 +163,12 @@ export default function AnimalsEditModal({
             />
           </div>
 
-          {/* Taxonomía */}
+          {/* Taxonomy */}
           <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-white/80">Taxonomía</h4>
+            <h4 className="text-sm font-semibold text-white/80">Taxonomy</h4>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Clase</label>
+                <label className="text-sm font-medium">Class</label>
                 <input
                   className="w-full rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
                   value={form.className ?? ""}
@@ -132,7 +178,7 @@ export default function AnimalsEditModal({
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Orden</label>
+                <label className="text-sm font-medium">Order</label>
                 <input
                   className="w-full rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
                   value={form.order ?? ""}
@@ -142,7 +188,7 @@ export default function AnimalsEditModal({
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Familia</label>
+                <label className="text-sm font-medium">Family</label>
                 <input
                   className="w-full rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
                   value={form.family ?? ""}
@@ -152,7 +198,7 @@ export default function AnimalsEditModal({
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium">Dieta</label>
+                <label className="text-sm font-medium">Diet</label>
                 <input
                   className="w-full rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
                   value={form.diet ?? ""}
@@ -164,33 +210,33 @@ export default function AnimalsEditModal({
             </div>
           </div>
 
-          {/* Métricas */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-white/80">Métricas</h4>
-            <div className="grid grid-cols-2 gap-3">
+          {/* Metrics */}
+          <div className="space-y-3 md:col-span-2 xl:col-span-3">
+            <h4 className="text-sm font-semibold text-white/80">Metrics</h4>
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
               <NumberField
-                label="Longitud (m)"
+                label="Length (m)"
                 value={form.lengthM}
                 onChange={(v) => setForm((f) => ({ ...f, lengthM: v }))}
               />
               <NumberField
-                label="Altura (m)"
+                label="Height (m)"
                 value={form.heightM}
                 onChange={(v) => setForm((f) => ({ ...f, heightM: v }))}
               />
               <NumberField
-                label="Ancho (m)"
+                label="Width (m)"
                 value={form.widthM}
                 onChange={(v) => setForm((f) => ({ ...f, widthM: v }))}
               />
               <NumberField
-                label="Envergadura (m)"
+                label="Wingspan (m)"
                 value={form.wingspanM}
                 onChange={(v) => setForm((f) => ({ ...f, wingspanM: v }))}
               />
               <NumberField
                 className="xl:col-span-2"
-                label="Peso (kg)"
+                label="Weight (kg)"
                 step={0.1}
                 value={form.weightKg}
                 onChange={(v) => setForm((f) => ({ ...f, weightKg: v }))}
@@ -198,15 +244,11 @@ export default function AnimalsEditModal({
             </div>
           </div>
 
-          {/* Descubrimiento y Descripción (full width) */}
+          {/* Discovery and Description (full width) */}
           <div className="space-y-3 md:col-span-2 xl:col-span-3">
-            <h4 className="text-sm font-semibold text-white/80">
-              Historia y observaciones
-            </h4>
+            <h4 className="text-sm font-semibold text-white/80">History and notes</h4>
             <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Lugar de descubrimiento
-              </label>
+              <label className="text-sm font-medium">Discovery location</label>
               <input
                 className="w-full rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
                 value={form.discoveryLocation ?? ""}
@@ -216,7 +258,7 @@ export default function AnimalsEditModal({
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Descripción</label>
+              <label className="text-sm font-medium">Description</label>
               <textarea
                 rows={5}
                 className="w-full rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
@@ -234,7 +276,7 @@ export default function AnimalsEditModal({
             onClick={onClose}
             className="rounded-lg border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] px-4 py-2 text-sm"
           >
-            Cancelar
+            Cancel
           </button>
           <button
             disabled={saving}
@@ -243,11 +285,11 @@ export default function AnimalsEditModal({
           >
             {saving
               ? mode === "create"
-                ? "Creando…"
-                : "Guardando…"
+                ? "Creating…"
+                : "Saving…"
               : mode === "create"
-              ? "Crear"
-              : "Guardar"}
+              ? "Create"
+              : "Save"}
           </button>
         </div>
       </div>
