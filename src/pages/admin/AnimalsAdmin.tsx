@@ -22,13 +22,19 @@ export default function AnimalsAdmin() {
   // Create modal state
   const [createOpen, setCreateOpen] = useState(false);
   const [createForm, setCreateForm] = useState<Partial<DbAnimal>>({});
-  const [createErrors, setCreateErrors] = useState<{ name?: string; eraId?: string } | null>(null);
+  const [createErrors, setCreateErrors] = useState<{
+    name?: string;
+    eraId?: string;
+  } | null>(null);
   const [createSaving, setCreateSaving] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [editForm, setEditForm] = useState<Partial<DbAnimal>>({});
   const [editOriginal, setEditOriginal] = useState<{ id: string } | null>(null);
   const [editSaving, setEditSaving] = useState(false);
-  const [editErrors, setEditErrors] = useState<{ name?: string; eraId?: string } | null>(null);
+  const [editErrors, setEditErrors] = useState<{
+    name?: string;
+    eraId?: string;
+  } | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -51,23 +57,32 @@ export default function AnimalsAdmin() {
   const filtered = useMemo(() => {
     if (!search) return items;
     const s = search.toLowerCase();
-    return items.filter((a) => a.name.toLowerCase().includes(s) || a.eraId?.toLowerCase().includes(s));
+    return items.filter(
+      (a) =>
+        a.name.toLowerCase().includes(s) || a.eraId?.toLowerCase().includes(s)
+    );
   }, [items, search]);
 
   return (
     <div>
-      <AnimalsToolbar search={search} setSearch={setSearch} onNew={() => {
-        setCreateForm({});
-        setCreateErrors(null);
-        setCreateOpen(true);
-      }} />
+      <AnimalsToolbar
+        search={search}
+        setSearch={setSearch}
+        onNew={() => {
+          setCreateForm({});
+          setCreateErrors(null);
+          setCreateOpen(true);
+        }}
+      />
       <AnimalsList
         items={filtered}
         loading={loading}
         error={error}
         onEdit={(a) => {
           if (!a.id) {
-            alert("Esta fila no tiene id disponible. Refresca los datos e inténtalo de nuevo.");
+            alert(
+              "Esta fila no tiene id disponible. Refresca los datos e inténtalo de nuevo."
+            );
             return;
           }
           setEditForm({ ...a });
@@ -88,27 +103,31 @@ export default function AnimalsAdmin() {
         onClose={() => setCreateOpen(false)}
         onSave={async () => {
           const errs: { name?: string; eraId?: string } = {};
-            if (!createForm.name) errs.name = "El nombre es obligatorio";
-            if (!createForm.eraId) errs.eraId = "El eraId es obligatorio";
-            setCreateErrors(Object.keys(errs).length ? errs : null);
-            if (Object.keys(errs).length) return;
-            try {
-              setCreateSaving(true);
-              const { data, error } = await supabase
-                .from("animals")
-                .insert(createForm)
-                .select()
-                .single();
-              if (error) throw error;
-              setItems((prev) => [...prev, data as DbAnimal].sort((a, b) => a.name.localeCompare(b.name)));
-              setCreateOpen(false);
-              setCreateForm({});
-            } catch (e) {
-              console.error(e);
-              alert("No se pudo crear el animal");
-            } finally {
-              setCreateSaving(false);
-            }
+          if (!createForm.name) errs.name = "El nombre es obligatorio";
+          if (!createForm.eraId) errs.eraId = "El eraId es obligatorio";
+          setCreateErrors(Object.keys(errs).length ? errs : null);
+          if (Object.keys(errs).length) return;
+          try {
+            setCreateSaving(true);
+            const { data, error } = await supabase
+              .from("animals")
+              .insert(createForm)
+              .select()
+              .single();
+            if (error) throw error;
+            setItems((prev) =>
+              [...prev, data as DbAnimal].sort((a, b) =>
+                a.name.localeCompare(b.name)
+              )
+            );
+            setCreateOpen(false);
+            setCreateForm({});
+          } catch (e) {
+            console.error(e);
+            alert("No se pudo crear el animal");
+          } finally {
+            setCreateSaving(false);
+          }
         }}
       />
 
@@ -127,12 +146,16 @@ export default function AnimalsAdmin() {
           setEditErrors(Object.keys(errs).length ? errs : null);
           if (Object.keys(errs).length) return;
           if (!editOriginal?.id) {
-            alert("No se pudo determinar el registro a actualizar (id ausente)");
+            alert(
+              "No se pudo determinar el registro a actualizar (id ausente)"
+            );
             return;
           }
           try {
             setEditSaving(true);
-            const entries = Object.entries(editForm).filter(([k, v]) => k !== "id" && v !== undefined);
+            const entries = Object.entries(editForm).filter(
+              ([k, v]) => k !== "id" && v !== undefined
+            );
             const payload = Object.fromEntries(entries);
 
             const { data, error } = await supabase

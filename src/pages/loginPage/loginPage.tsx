@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from "/images/favicon.ico";
 import logo2 from "/images/logo2.png";
-import Navbar3 from "@/components/navbar/Navbar3";
 import { useAuth } from "@/auth/useAuth";
 
 const LoginPage = () => {
@@ -15,7 +13,6 @@ const LoginPage = () => {
   return (
     <>
       <div className="bg-[url('/images/30.png')] bg-cover bg-center min-h-screen bg-fixed bg-no-repeat flex flex-col">
-        <Navbar3 logo={logo} />
         <div className="flex-1 flex items-center justify-center">
           <form
             onSubmit={async (e) => {
