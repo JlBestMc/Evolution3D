@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useGLTF } from "@react-three/drei";
-import animalsData from "../../data/animals";
 import { eras } from "../../data/eras";
 import { useNavigate, useParams } from "react-router-dom";
 import Background from "../../components/ui/background/Background";
@@ -8,24 +8,37 @@ import logo from "/images/favicon.ico";
 import { Card3D } from "../../components/card/Card3D";
 import { DragSafeCard } from "../../components/card/DragSafeCard";
 import Navbar3 from "../../components/navbar/Navbar3";
+import { getAnimals, getAnimalsByEra } from "@/services/animals";
+import { getEraColor } from "@/services/eras";
 
 const DRACO_CDN = "https://www.gstatic.com/draco/v1/decoders/";
 useGLTF.setDecoderPath(DRACO_CDN);
 
 export default function EraPage() {
-  // Leer eraId desde la URL: /era/:eraId
   const params = useParams<{ eraId?: string }>();
   const [eraId] = useState<string>(params.eraId ?? "");
   const eraObj = useMemo(() => eras.find((e) => e.id === eraId), [eraId]);
-  const eraColor = eraObj?.color ?? "#6b8cff";
+  const { data: eraColorFromDb } = useQuery({
+    queryKey: ["era-color", eraId],
+    enabled: !!eraId,
+    queryFn: () => getEraColor(eraId),
+  });
+  const eraColor = eraColorFromDb ?? eraObj?.color ?? "#6b8cff";
+
+  const {
+    data: fetchedAnimals,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["animals", eraId || "all"],
+    queryFn: () => (eraId ? getAnimalsByEra(eraId) : getAnimals()),
+  });
 
   const animals = useMemo(() => {
-    const filtered = animalsData.filter((a) => !eraId || a.eraId === eraId);
-    // Ordenar de más antiguo (mayor startMa) a más reciente (menor startMa)
-    return filtered.sort((a, b) => (b.startMa ?? 0) - (a.startMa ?? 0));
-  }, [eraId]);
+    const arr = fetchedAnimals ?? [];
+    return arr.slice().sort((a, b) => (b.startMa ?? 0) - (a.startMa ?? 0));
+  }, [fetchedAnimals]);
 
-  // Preload solo algunos modelos visibles (primeros 6) y limpiar cache al cambiar de era
   useEffect(() => {
     const toPreload = animals
       .map((a) => a.model)
@@ -43,13 +56,12 @@ export default function EraPage() {
     };
   }, [animals]);
 
-  // Al salir de EraPage, limpia la caché de TODOS los modelos conocidos para liberar memoria
   useEffect(() => {
     return () => {
-      const allModels = Array.from(
-        new Set(animalsData.map((a) => a.model).filter(Boolean))
+      const currentModels = Array.from(
+        new Set((fetchedAnimals ?? []).map((a) => a.model).filter(Boolean))
       );
-      allModels.forEach((m) => {
+      currentModels.forEach((m) => {
         try {
           useGLTF.clear(m);
         } catch {
@@ -57,10 +69,9 @@ export default function EraPage() {
         }
       });
     };
-  }, []);
+  }, [fetchedAnimals]);
   const navigate = useNavigate();
 
-  // Mejor UX: convertir rueda vertical a scroll horizontal en el carrusel
   const scrollRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const el = scrollRef.current;
@@ -84,14 +95,14 @@ export default function EraPage() {
         <Navbar3 logo={logo} />
       </div>
 
-      <section className="relative z-10 container mx-auto px-6 py-10">
+      <section className="relative z-10 container mx-auto px-6 py-7">
         <header className="mb-6">
           <div className="flex items-end justify-between gap-4 flex-wrap">
             <div>
               <h1
                 className="text-3xl md:text-4xl font-semibold tracking-tight"
                 style={{
-                  background: `linear-gradient(90deg, ${eraColor}, #ffffff)`,
+                  backgroundImage: `linear-gradient(90deg, ${eraColor}, #ffffff)`,
                   WebkitBackgroundClip: "text",
                   backgroundClip: "text",
                   color: "transparent",
@@ -100,7 +111,7 @@ export default function EraPage() {
                 {eraObj?.name ?? "All Eras"}
               </h1>
               {eraObj?.period && (
-                <p className="mt-1 text-white/70 text-sm">{eraObj.period}</p>
+                <p className="mt-1 text-white text-sm">{eraObj.period}</p>
               )}
             </div>
           </div>
@@ -110,12 +121,13 @@ export default function EraPage() {
               background: `linear-gradient(90deg, ${eraColor}, transparent)`,
             }}
           />
-          <p className="mt-3 text-white/70 text-sm">
-            3D animals — ordered by time
-          </p>
         </header>
-
-        {/* Carousel */}
+        {isLoading && <div className="text-white/70">Loading animals…</div>}
+        {error && (
+          <div className="text-red-400 text-sm">
+            {String((error as Error)?.message || error)}
+          </div>
+        )}
         <div
           ref={scrollRef}
           className="carousel-scroll flex gap-6 overflow-x-auto pb-6 select-none scroll-smooth"

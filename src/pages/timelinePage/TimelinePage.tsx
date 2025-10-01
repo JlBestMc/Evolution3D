@@ -12,18 +12,15 @@ import { TextureLoader } from "three";
 import Navbar3 from "../../components/navbar/Navbar3";
 
 export default function MainScene() {
-  // Usar siempre un id existente como inicial para evitar undefined
   const [currentEra, setCurrentEra] = useState<string>(eras[0]?.id || "");
   const [freeView, setFreeView] = useState(false);
   const [bootReady, setBootReady] = useState(false);
 
-  // Fallback seguro: si no encuentra coincidencia retorna la primera era
   const eraData = useMemo(() => {
     return eras.find((e) => e.id === currentEra) || eras[0];
   }, [currentEra]);
 
   const background = eraData?.background;
-  // Pre-cargar todos los fondos PNG/JPG al inicio para que el primer cambio no tenga salto.
   useEffect(() => {
     let mounted = true;
     const loader = new TextureLoader();
@@ -59,15 +56,14 @@ export default function MainScene() {
     };
   }, []);
 
-  const isHDR = !!background && (background.endsWith(".hdr") || background.endsWith(".exr"));
-  // El componente de crossfade se encargará de cargar texturas cuando NO sean HDR.
+  const isHDR =
+    !!background &&
+    (background.endsWith(".hdr") || background.endsWith(".exr"));
 
   return (
     <div className="relative w-screen h-screen bg-black overflow-hidden">
       <div className="absolute top-0 left-0 w-full z-30 pointer-events-auto">
-        <Navbar3
-          logo={logo}
-        />
+        <Navbar3 logo={logo} />
       </div>
 
       <Canvas camera={{ position: [0, 0, 3], fov: 90, near: 0.1, far: 2000 }}>

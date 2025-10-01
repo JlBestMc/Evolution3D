@@ -3,8 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { PATHS } from "../../routes/routes";
 
 interface NavbarProps {
-  logo: string; // image path
-  // Back-compat props (ignored but kept to avoid breaking imports)
+  logo: string;
   bgColor?: string;
   aStyles?: string;
   borderColor?: string;
@@ -17,12 +16,10 @@ export default function Navbar2({ logo }: NavbarProps) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Close mobile menu on route change
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
 
-  // Escape to close
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") setOpen(false);
@@ -42,19 +39,14 @@ export default function Navbar2({ logo }: NavbarProps) {
   );
 
   const isActive = (to: string) => {
-    // simple startsWith to catch nested routes
     return location.pathname === to || location.pathname.startsWith(`${to}/`);
   };
 
   return (
     <>
-      {/* Centered, floating pill navbar */}
       <div className="mt-5 mb-5 z-50 w-full px-3 sm:px-4">
-        <div
-          className="mx-auto max-w-5xl rounded-full border border-white/10 bg-black/40 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
-        >
+        <div className="mx-auto max-w-5xl rounded-full border border-white/10 bg-black/40 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
           <div className="flex items-center justify-between px-2 sm:px-3">
-            {/* Left: Logo */}
             <button
               aria-label="Home"
               onClick={() => navigate(PATHS.root)}
@@ -71,7 +63,6 @@ export default function Navbar2({ logo }: NavbarProps) {
               )}
             </button>
 
-            {/* Center: Links (desktop) */}
             <nav className="hidden md:flex items-center gap-1">
               {links.map((l) => (
                 <Link
@@ -89,7 +80,6 @@ export default function Navbar2({ logo }: NavbarProps) {
               ))}
             </nav>
 
-            {/* Right: Login + Hamburger */}
             <div className="flex items-center gap-1 sm:gap-2">
               <button
                 onClick={() => navigate(PATHS.login)}
@@ -98,7 +88,6 @@ export default function Navbar2({ logo }: NavbarProps) {
                 Log In
               </button>
 
-              {/* Mobile menu button */}
               <button
                 aria-label="Toggle Menu"
                 aria-expanded={open}
@@ -132,12 +121,13 @@ export default function Navbar2({ logo }: NavbarProps) {
         </div>
       </div>
 
-      {/* Mobile flyout */}
       <div
         id="mobile-menu"
         className={[
           "md:hidden fixed inset-x-0 top-0 z-40 px-3 pt-20 pb-6 transition-opacity",
-          open ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0",
+          open
+            ? "pointer-events-auto opacity-100"
+            : "pointer-events-none opacity-0",
         ].join(" ")}
         onClick={() => setOpen(false)}
       >
@@ -159,7 +149,12 @@ export default function Navbar2({ logo }: NavbarProps) {
               className="inline-flex items-center justify-center size-9 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-white/90 transition"
               aria-label="Close menu"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="size-6"
+              >
                 <path
                   fillRule="evenodd"
                   d="M6.225 4.811a1 1 0 0 1 1.414 0L12 9.172l4.361-4.361a1 1 0 1 1 1.414 1.414L13.414 10.586l4.361 4.361a1 1 0 0 1-1.414 1.414L12 12l-4.361 4.361a1 1 0 0 1-1.414-1.414l4.361-4.361-4.361-4.361a1 1 0 0 1 0-1.414Z"

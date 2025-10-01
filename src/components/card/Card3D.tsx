@@ -1,8 +1,15 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, useGLTF, Center, AdaptiveDpr } from "@react-three/drei";
+import {
+  OrbitControls,
+  useGLTF,
+  Center,
+  AdaptiveDpr,
+  Clone,
+} from "@react-three/drei";
 import { Group, ReinhardToneMapping, SRGBColorSpace } from "three";
 import { eras } from "../../data/eras";
+import { ERA_UUIDS, isUuid } from "@/data/eraIds";
 import type { Card3DProps } from "./Card3D.types";
 
 function SpinningModel({
@@ -21,7 +28,9 @@ function SpinningModel({
   });
   return (
     <Center>
-      <primitive ref={ref} object={scene} scale={[scale, scale, scale]} />
+      <group ref={ref} scale={[scale, scale, scale]}>
+        <Clone object={scene} />
+      </group>
     </Center>
   );
 }
@@ -42,10 +51,15 @@ export function Card3D({
   const [interacting, setInteracting] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isVisible, setIsVisible] = useState<boolean>(!lazyMount3D);
-  const eraColor = useMemo(
-    () => eras.find((e) => e.id === animal.eraId)?.color ?? "#8ab4ff",
-    [animal.eraId]
-  );
+  const eraColor = useMemo(() => {
+    const id = animal.eraId;
+    let slug = id;
+    if (id && isUuid(id)) {
+      const entry = Object.entries(ERA_UUIDS).find(([, uuid]) => uuid === id);
+      if (entry) slug = entry[0];
+    }
+    return eras.find((e) => e.id === slug)?.color ?? "#8ab4ff";
+  }, [animal.eraId]);
 
   const ageLabel = useMemo(() => {
     const ma = animal.startMa;
@@ -59,7 +73,6 @@ export function Card3D({
     return `${formatted} Ma`;
   }, [animal.startMa]);
 
-  // Lazy mount Canvas when in viewport
   useEffect(() => {
     if (!lazyMount3D) return;
     const el = containerRef.current;
@@ -75,7 +88,6 @@ export function Card3D({
     return () => obs.disconnect();
   }, [lazyMount3D, rootMargin]);
 
-  // Clear GLTF cache on unmount if desired
   useEffect(() => {
     return () => {
       if (clearOnUnmount && animal.model) {

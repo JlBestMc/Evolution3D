@@ -12,9 +12,7 @@ export default function Navbar3({ logo }: NavbarProps3) {
   const [open, setOpen] = useState(false);
   const { signOut, user } = useAuth();
 
-  // Basic nav items; tweak labels/routes as needed
   const navItems: Array<{ label: string; to: string; onClick?: () => void }> = [
-    { label: "Info", to: PATHS.timeline },
     { label: "Timeline", to: PATHS.timeline },
     { label: "Map", to: PATHS.map },
     { label: "Museum", to: PATHS.museum },
@@ -37,24 +35,17 @@ export default function Navbar3({ logo }: NavbarProps3) {
   return (
     <nav className="mt-6 top-4 z-50 w-full px-4">
       <div className="mx-auto flex justify-center">
-        {/* Glass pill container */}
         <div
           className={[
-            // layout: 3 columns -> logo | center (links) | right (cta/hamburger)
             "relative grid grid-cols-[auto_1fr_auto] items-center",
-            // responsive gaps to keep logo and hamburger clearly separated on mobile
             "gap-2 sm:gap-3 md:gap-4 w-full",
-            // responsive max-widths for better tablet/laptop scaling
             "max-w-full sm:max-w-xl md:max-w-2xl lg:max-w-2xl",
-            // padding scales with viewport
             "rounded-full px-2 sm:px-3 md:px-4 py-2",
-            // glassmorphism
             "backdrop-blur-xl bg-white/10 border border-white/15",
             "shadow-[0_8px_30px_rgba(0,0,0,0.25)]",
           ].join(" ")}
           style={{ WebkitBackdropFilter: "blur(12px)" }}
         >
-          {/* Logo */}
           <button
             aria-label="Home"
             onClick={() => handleNavigate(PATHS.root)}
@@ -69,7 +60,6 @@ export default function Navbar3({ logo }: NavbarProps3) {
             </div>
           </button>
 
-          {/* Center links - desktop */}
           <div className="hidden md:flex items-center justify-center gap-2 md:gap-3">
             {navItems.map((item) => (
               <button
@@ -87,13 +77,14 @@ export default function Navbar3({ logo }: NavbarProps3) {
             ))}
           </div>
 
-          {/* Right side: CTA (desktop) + Hamburger (mobile) */}
           <div className="flex items-center justify-end gap-1">
             <div className="hidden md:flex items-center pl-1">
               {user ? (
                 <Button2 onClick={handleLogout}>Logout</Button2>
               ) : (
-                <Button2 onClick={() => handleNavigate(PATHS.register)}>Register</Button2>
+                <Button2 onClick={() => handleNavigate(PATHS.register)}>
+                  Register
+                </Button2>
               )}
             </div>
             <div className="md:hidden flex items-center">
@@ -134,7 +125,6 @@ export default function Navbar3({ logo }: NavbarProps3) {
             </div>
           </div>
 
-          {/* Mobile dropdown */}
           {open && (
             <div
               className={[
@@ -159,9 +149,21 @@ export default function Navbar3({ logo }: NavbarProps3) {
                 ))}
                 <div className="px-2 pt-1">
                   {user ? (
-                    <Button2 onClick={handleLogout} rounded="rounded-full" size="sm">Logout</Button2>
+                    <Button2
+                      onClick={handleLogout}
+                      rounded="rounded-full"
+                      size="sm"
+                    >
+                      Logout
+                    </Button2>
                   ) : (
-                    <Button2 onClick={() => handleNavigate(PATHS.register)} rounded="rounded-full" size="sm">Register</Button2>
+                    <Button2
+                      onClick={() => handleNavigate(PATHS.register)}
+                      rounded="rounded-full"
+                      size="sm"
+                    >
+                      Register
+                    </Button2>
                   )}
                 </div>
               </div>

@@ -53,9 +53,9 @@ export default function WelcomePage() {
         />
       </div>
       <div
-        className={`absolute xl:left-220 2xl:right-140 top-47 xl:top-59 pointer-events-auto h-1/2 w-90 z-20 transition-opacity duration-800 ease-out ${
+        className={`absolute xl:left-200 2xl:right-140 top-47 xl:top-52 pointer-events-auto h-1/2 w-90 z-20 transition-opacity duration-800 ease-out ${
           showContent ? "opacity-100" : "opacity-0"
-        } [clip-path:inset(20px_0_57px_0)] sm:[clip-path:inset(60px_0_65px_0)] xl:[clip-path:inset(100px_0_65px_0)]`}
+        } [clip-path:inset(20px_0_57px_0)] sm:[clip-path:inset(60px_0_65px_0)] xl:[clip-path:inset(56px_100px_57px_100px)]`}
       >
         <Spline
           scene="https://prod.spline.design/LKd9I8zeBvzQ1QK9/scene.splinecode"
@@ -77,7 +77,7 @@ export default function WelcomePage() {
       <div className="absolute bottom-6 right-6 z-40">
         <button
           onClick={() => navigate(PATHS.timeline)}
-          className="px-5 py-2.5 rounded-full text-[14px] tracking-wide uppercase bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-medium shadow-lg shadow-purple-900/40 border border-white/10 hover:from-purple-500 hover:to-blue-500 transition"
+          className="px-5 py-2.5 rounded-full text-[12px] tracking-wide uppercase bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-medium shadow-lg shadow-purple-900/40 border border-white/10 hover:from-purple-500 hover:to-blue-500 transition"
         >
           {ctaLabel}
         </button>

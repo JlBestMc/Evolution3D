@@ -3,27 +3,23 @@ import Navbar3 from "../../components/navbar/Navbar3";
 import logo from "/images/favicon.ico";
 import { supabase } from "@/lib/supabaseClient";
 import { PATHS } from "@/routes/routes";
-// Import Leaflet with types; if @types/leaflet is missing, the ambient .d.ts fallback will silence errors
 import L from "leaflet";
 import type { LatLngBoundsLiteral } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import markerIcon2xUrl from "leaflet/dist/images/marker-icon-2x.png";
 import markerIconUrl from "leaflet/dist/images/marker-icon.png";
 import markerShadowUrl from "leaflet/dist/images/marker-shadow.png";
+import Background from "../../components/ui/background/Background";
+import { eras } from "../../data/eras";
 
-// Fix default marker icons with Vite bundling
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2xUrl,
   iconUrl: markerIconUrl,
   shadowUrl: markerShadowUrl,
 });
 
-// To change the marker image, place your PNGs in `public/images/` and set these URLs.
-// Typical sizes: iconSize [25,41], iconAnchor [12,41], shadowSize [41,41], popupAnchor [1,-34]
-// Example files you can add: /images/animal-marker.png and /images/animal-marker@2x.png
 const customMarkerIcon = L.icon({
-  iconUrl: "/images/marker.jpg", // change to your path
-  iconRetinaUrl: "/images/marker@2x.jpg", // optional
+  iconUrl: "/images/marker.png",
   shadowUrl: markerShadowUrl,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
@@ -32,7 +28,10 @@ const customMarkerIcon = L.icon({
 });
 
 type AnimalRow = { name: string; country: string | null };
-type GeoPoint = { lat: number; lon: number };
+interface GeoPoint {
+  lat: number;
+  lon: number;
+}
 
 function normalizeCountry(raw?: string | null): string | null {
   if (!raw) return null;
@@ -58,7 +57,6 @@ function normalizeCountry(raw?: string | null): string | null {
     congo: "Republic of the Congo",
   };
   if (map[lower]) return map[lower];
-  // Capitalize first letter of each word as a simple normalization
   return c
     .split(/\s+/)
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
@@ -71,10 +69,9 @@ async function geocodeCountry(country: string): Promise<GeoPoint | null> {
     const cached = localStorage.getItem(key);
     if (cached) return JSON.parse(cached) as GeoPoint;
   } catch {
-    // ignore localStorage get errors (Safari private mode, quota exceeded)
+    //
   }
 
-  // Nominatim public endpoint (no key). Be nice with rate limits.
   const url = new URL("https://nominatim.openstreetmap.org/search");
   url.searchParams.set("format", "json");
   url.searchParams.set("q", country);
@@ -84,15 +81,14 @@ async function geocodeCountry(country: string): Promise<GeoPoint | null> {
     headers: { "Accept-Language": "en" },
   });
   if (!res.ok) return null;
-  const data: Array<{ lat: string; lon: string } & Record<string, unknown>> =
-    await res.json();
+  const data: Array<{ lat: string; lon: string }> = await res.json();
   const first = data[0];
   if (!first) return null;
   const point = { lat: Number(first.lat), lon: Number(first.lon) };
   try {
     localStorage.setItem(key, JSON.stringify(point));
   } catch {
-    // ignore cache errors
+    //
   }
   return point;
 }
@@ -106,8 +102,8 @@ export default function MapPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [groups, setGroups] = useState<Map<string, AnimalRow[]>>(new Map());
+  const accent = useMemo(() => eras[0]?.color ?? "#6b8cff", []);
 
-  // Fetch animals (name, country) and group by normalized country
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -137,12 +133,11 @@ export default function MapPage() {
     };
   }, []);
 
-  // Initialize map and add markers when groups change
   useEffect(() => {
     if (!mapRef.current) return;
     const container = mapRef.current;
-    // Ensure clean instance on hot reload
-  const existing = (container as unknown as { _leaflet_id?: number })._leaflet_id;
+    const existing = (container as unknown as { _leaflet_id?: number })
+      ._leaflet_id;
     if (existing) {
       container.innerHTML = "";
     }
@@ -160,7 +155,7 @@ export default function MapPage() {
 
     let cancelled = false;
     (async () => {
-  const bounds: LatLngBoundsLiteral = [
+      const bounds: LatLngBoundsLiteral = [
         [90, 180],
         [-90, -180],
       ];
@@ -168,11 +163,12 @@ export default function MapPage() {
       for (let i = 0; i < entries.length; i++) {
         const [country, animals] = entries[i];
         const pt = await geocodeCountry(country);
-        // Be gentle with the free service
         if (i < entries.length - 1) await sleep(250);
         if (!pt || cancelled) continue;
         const { lat, lon } = pt;
-  const marker = L.marker([lat, lon], { icon: customMarkerIcon }).addTo(map);
+        const marker = L.marker([lat, lon], { icon: customMarkerIcon }).addTo(
+          map
+        );
         const html = `
           <div class="text-sm">
             <div class="font-semibold mb-1">${country}</div>
@@ -180,20 +176,23 @@ export default function MapPage() {
               ${animals
                 .map(
                   (a) =>
-                    `<li><a href="${PATHS.animal(a.name)}" class="text-emerald-300 hover:underline">${a.name}</a></li>`
+                    `<li><a href="${PATHS.animal(
+                      a.name
+                    )}" class="text-emerald-300 hover:underline">${
+                      a.name
+                    }</a></li>`
                 )
                 .join("")}
             </ul>
           </div>`;
         marker.bindPopup(html, { closeButton: true });
-        // Extend bounds
         if (lat < bounds[0][0]) bounds[0][0] = lat;
         if (lon < bounds[1][1]) bounds[1][1] = lon;
       }
       try {
         map.fitWorld({ animate: false });
       } catch {
-        // ignore
+        //S
       }
     })();
 
@@ -210,26 +209,57 @@ export default function MapPage() {
   );
 
   return (
-    <div className="min-h-screen w-full bg-black text-white">
-      <Navbar3 logo={logo} />
-      <div className="px-4 md:px-6 max-w-6xl mx-auto py-3">
-        <h1 className="text-xl font-semibold">Global Animals Map</h1>
-        <p className="text-white/70 text-sm">
-          Showing {totalAnimals} animals across {totalCountries} countries. Hover and click markers to see details.
-        </p>
+    <main className="relative min-h-screen w-full overflow-hidden bg-[#06080F] text-white">
+      <Background accentColor={accent} />
+
+      <div className="relative z-20">
+        <Navbar3 logo={logo} />
       </div>
-      <div className="px-4 pb-6">
-        <div ref={mapRef} className="h-[70vh] w-full rounded-2xl overflow-hidden border border-white/10" />
-      </div>
+
+      <section className="relative z-10 container mx-auto px-6 pt-10">
+        <header className="mb-6">
+          <h1
+            className="text-3xl md:text-4xl font-semibold tracking-tight"
+            style={{
+              background: `linear-gradient(90deg, ${accent}, #ffffff)`,
+              WebkitBackgroundClip: "text",
+              backgroundClip: "text",
+              color: "transparent",
+            }}
+          >
+            Global Animals Map
+          </h1>
+          <div
+            className="mt-3 h-[3px] w-24 rounded-full"
+            style={{
+              background: `linear-gradient(90deg, ${accent}, transparent)`,
+            }}
+          />
+          <p className="mt-3 text-white/70 text-sm">
+            Showing {totalAnimals} animals across {totalCountries} countries.
+            Hover and click markers to see details.
+          </p>
+        </header>
+      </section>
+
+      <section className="relative z-10 container mx-auto px-6 pb-6">
+        <div
+          ref={mapRef}
+          className="h-[70vh] w-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_0_1px_rgba(255,255,255,0.03)]"
+        />
+      </section>
+
       {loading && (
-        <div className="px-4 pb-6 text-sm text-white/70">Loading animals…</div>
+        <div className="relative z-10 container mx-auto px-6 pb-6 text-sm text-white/70">
+          Loading animals…
+        </div>
       )}
+
       {error && (
-        <div className="px-4 pb-6 text-sm text-red-400">{String(error)}</div>
+        <div className="relative z-10 container mx-auto px-6 pb-6 text-sm text-red-400">
+          {String(error)}
+        </div>
       )}
-      <div className="px-4 pb-6 text-xs text-white/50">
-        Geocoding by OpenStreetMap Nominatim.
-      </div>
-    </div>
+    </main>
   );
 }
