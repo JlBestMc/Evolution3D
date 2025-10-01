@@ -48,7 +48,11 @@ function toUpdatePayload(form: Partial<DbAnimal>): Partial<DbAnimalRow> {
   return payload;
 }
 
-async function fetchAnimals(page: number, pageSize: number, search: string): Promise<{ rows: DbAnimal[]; count: number }>{
+async function fetchAnimals(
+  page: number,
+  pageSize: number,
+  search: string
+): Promise<{ rows: DbAnimal[]; count: number }> {
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
   let query = supabase
@@ -58,7 +62,8 @@ async function fetchAnimals(page: number, pageSize: number, search: string): Pro
     .range(from, to);
   const s = search.trim();
   if (s) {
-    query = query.or(`name.ilike.%${s}%,era_id.ilike.%${s}%`);
+    // Search only text columns to avoid type errors (e.g., ilike on UUID)
+    query = query.or(`name.ilike.%${s}%,description.ilike.%${s}%`);
   }
   const { data, error, count } = await query;
   if (error) throw error;
@@ -98,7 +103,14 @@ export default function AnimalsAdmin() {
       setItems(rows);
       setTotal(count);
     } catch (e) {
-      setError((e as Error).message);
+      const err = e as { status?: number; message?: string };
+      if (err?.status === 404) {
+        setError(
+          "Supabase 404: La tabla 'animals' no existe en el proyecto configurado. Revisa VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY, o crea la tabla en Supabase."
+        );
+      } else {
+        setError((e as Error).message);
+      }
     } finally {
       setLoading(false);
     }

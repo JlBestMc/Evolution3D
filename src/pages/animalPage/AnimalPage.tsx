@@ -1,22 +1,40 @@
 import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "react-router-dom";
-import animals from "../../data/animals";
 import { eras } from "../../data/eras";
 import Background from "../../components/ui/background/Background";
 import logo from "/images/favicon.ico";
 import { Card3D } from "../../components/card/Card3D";
 import Navbar3 from "../../components/navbar/Navbar3";
+import { getAnimalByName } from "@/services/animals";
 
 export default function AnimalPage() {
   const params = useParams<{ name?: string }>();
   const raw = params.name ? decodeURIComponent(params.name) : "";
-  const animal = useMemo(() => {
-    const lower = raw.toLowerCase();
-    return animals.find((a) => a.name.toLowerCase() === lower);
-  }, [raw]);
+  const { data: animal, isLoading } = useQuery({
+    queryKey: ["animal", raw],
+    enabled: !!raw,
+    queryFn: () => getAnimalByName(raw),
+  });
 
   const era = useMemo(() => eras.find((e) => e.id === animal?.eraId), [animal]);
   const eraColor = era?.color ?? "#6b8cff";
+
+  if (isLoading) {
+    return (
+      <main className="relative min-h-screen w-full overflow-hidden bg-[#06080F] text-white">
+        <Background accentColor={eraColor} />
+        <div className="relative z-20">
+          <Navbar3 logo={logo} />
+        </div>
+        <section className="relative z-10 container mx-auto px-6 py-10">
+          <div className="min-h-[40vh] flex items-center justify-center text-center text-white/70">
+            Loading…
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   if (!animal) {
     return (

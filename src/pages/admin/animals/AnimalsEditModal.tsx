@@ -36,7 +36,7 @@ export default function AnimalsEditModal({
   return (
     <div className="fixed inset-0 z-50 grid place-items-center p-4">
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative w-full max-w-4xl rounded-2xl border border-white/10 bg-[#0B0F17] p-0 shadow-2xl overflow-hidden">
+      <div className="relative w-full max-w-4xl max-h-[85vh] rounded-2xl border border-white/10 bg-[#0B0F17] p-0 shadow-2xl overflow-hidden flex flex-col">
         <div className="flex items-center justify-between px-5 py-3 border-b border-white/10">
           <div className="flex items-center gap-3">
             <h3 className="text-lg font-semibold">
@@ -57,7 +57,7 @@ export default function AnimalsEditModal({
           </button>
         </div>
 
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {/* Basics */}
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-white/80">Basics</h4>
@@ -79,13 +79,19 @@ export default function AnimalsEditModal({
               <select
                 className="w-full rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
                 value={form.eraId ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, eraId: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, eraId: e.target.value }))
+                }
               >
                 <option className=" bg-black/10" value="" disabled>
                   Select an era…
                 </option>
                 {eraOptions.map((opt) => (
-                  <option className="text-black bg-black/10" key={opt.value} value={opt.value}>
+                  <option
+                    className="text-black bg-black/10"
+                    key={opt.value}
+                    value={opt.value}
+                  >
                     {opt.label}
                   </option>
                 ))}
@@ -114,7 +120,10 @@ export default function AnimalsEditModal({
                 onChange={(e) =>
                   setForm((f) => ({
                     ...f,
-                    startMa: e.target.value === "" ? undefined : Number.parseFloat(e.target.value),
+                    startMa:
+                      e.target.value === ""
+                        ? undefined
+                        : Number.parseFloat(e.target.value),
                   }))
                 }
               />
@@ -125,7 +134,9 @@ export default function AnimalsEditModal({
                 className="rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
                 placeholder="e.g. Germany"
                 value={form.country ?? ""}
-                onChange={(e) => setForm((f) => ({ ...f, country: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, country: e.target.value }))
+                }
               />
             </div>
             <div className="flex items-center gap-2 pt-1">
@@ -134,9 +145,16 @@ export default function AnimalsEditModal({
                 type="checkbox"
                 className="h-4 w-4 rounded border-white/20 bg-white/10"
                 checked={!!form.isIconic}
-                onChange={(e) => setForm((f) => ({ ...f, isIconic: e.target.checked }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, isIconic: e.target.checked }))
+                }
               />
-              <label htmlFor="isIconic" className="text-sm font-medium select-none">Is iconic</label>
+              <label
+                htmlFor="isIconic"
+                className="text-sm font-medium select-none"
+              >
+                Is iconic
+              </label>
             </div>
           </div>
 
@@ -154,7 +172,8 @@ export default function AnimalsEditModal({
                 }
               />
               <p className="text-xs text-white/50">
-                Upload a 3D model or paste a public URL. When uploading, this field is auto-filled.
+                Upload a 3D model or paste a public URL. When uploading, this
+                field is auto-filled.
               </p>
             </div>
             <UploadModelField
@@ -246,7 +265,9 @@ export default function AnimalsEditModal({
 
           {/* Discovery and Description (full width) */}
           <div className="space-y-3 md:col-span-2 xl:col-span-3">
-            <h4 className="text-sm font-semibold text-white/80">History and notes</h4>
+            <h4 className="text-sm font-semibold text-white/80">
+              History and notes
+            </h4>
             <div className="space-y-2">
               <label className="text-sm font-medium">Discovery location</label>
               <input

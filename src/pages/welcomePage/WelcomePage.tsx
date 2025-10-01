@@ -53,9 +53,9 @@ export default function WelcomePage() {
         />
       </div>
       <div
-        className={`absolute xl:left-220 2xl:right-140 top-47 xl:top-59 pointer-events-auto h-1/2 w-90 z-20 transition-opacity duration-800 ease-out ${
+        className={`absolute xl:left-200 2xl:right-140 top-47 xl:top-52 pointer-events-auto h-1/2 w-90 z-20 transition-opacity duration-800 ease-out ${
           showContent ? "opacity-100" : "opacity-0"
-        } [clip-path:inset(20px_0_57px_0)] sm:[clip-path:inset(60px_0_65px_0)] xl:[clip-path:inset(100px_0_65px_0)]`}
+        } [clip-path:inset(20px_0_57px_0)] sm:[clip-path:inset(60px_0_65px_0)] xl:[clip-path:inset(56px_0_57px_0)]`}
       >
         <Spline
           scene="https://prod.spline.design/LKd9I8zeBvzQ1QK9/scene.splinecode"

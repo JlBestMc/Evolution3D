@@ -196,9 +196,9 @@ const animals: Animal[] = [
     order: "Proboscidea",
     family: "Elephantidae",
     diet: "herbivore",
-    lengthM: 6,
-    heightM: 3.2,
-    weightKg: 6000,
+    lengthM: 9.1,
+    heightM: 5.3,
+    weightKg: 12000,
     discoveryLocation: "Siberia and North America",
   },
   {
@@ -308,7 +308,7 @@ const animals: Animal[] = [
     diet: "herbivore",
     lengthM: 9,
     heightM: 3,
-    weightKg: 6000,
+    weightKg: 7000,
     discoveryLocation: "Montana and Wyoming, USA",
   },
   {
