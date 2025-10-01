@@ -5,7 +5,6 @@ import logo from "/images/favicon.ico";
 import { eras } from "../../data/eras";
 import Navbar3 from "../../components/navbar/Navbar3";
 
-// Minimal types for Sketchfab Viewer API to keep TS happy without adding global d.ts
 type SketchfabApiCamera = {
   position: [number, number, number];
   target: [number, number, number];
@@ -21,7 +20,10 @@ type SketchfabAPI = {
     cb: (err: unknown, camera: SketchfabApiCamera) => void
   ) => void;
   getAnnotationList: (
-    cb: (err: unknown, list: Array<{ title?: string; content?: string }>) => void
+    cb: (
+      err: unknown,
+      list: Array<{ title?: string; content?: string }>
+    ) => void
   ) => void;
   updateAnnotation: (
     index: number,
@@ -67,21 +69,11 @@ declare global {
 const SketchfabViewer = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // (Removed) App-created annotations via camera-based placement
-
-  // Runtime adjustments for existing annotations authored in Sketchfab (non-persistent).
-  // Edit here to update/remove by title or index when the viewer loads.
   const existingAdjustRef = useRef({
-    // Examples (leave empty by default):
-    // removeByTitle: ["Museum overhead view", "博物館俯瞰"],
-    removeByTitle: [
-      // Remove: 生命を育てた太古の海 / The Prehistoric Seas which Nurtured Life
-    ] as string[],
-    // removeByIndex: [0],
-    removeByIndex: [
-      // UI number 3 -> zero-based index 2
-    ] as number[],
-    // update: [ { matchTitle: "Museum overhead view", newTitle: "Overhead view", newContent: "Updated description." } ]
+    removeByTitle: [] as string[],
+
+    removeByIndex: [] as number[],
+
     update: [
       {
         matchIndex: 0,
@@ -171,17 +163,14 @@ const SketchfabViewer = () => {
       {
         matchIndex: 14,
         newTitle: "Entire Exhibition “Age of the Earth”",
-        newContent:
-          'Gunma Museum of Natural History building',
+        newContent: "Gunma Museum of Natural History building",
       },
     ] as Array<{
       matchTitle?: string;
       matchIndex?: number;
       newTitle?: string;
       newContent?: string;
-      // Optional: automatically append a Markdown link to this animal
       linkAnimalName?: string;
-      // Optional: automatically append a Markdown link to an Era
       linkEraId?: string;
       eye?: [number, number, number];
       target?: [number, number, number];
@@ -191,7 +180,7 @@ const SketchfabViewer = () => {
   useEffect(() => {
     if (!iframeRef.current) return;
 
-    const uid = "27eed96c03ad480bb29331ee1b955d15"; // ID del museo en Sketchfab
+    const uid = "27eed96c03ad480bb29331ee1b955d15";
     if (!window.Sketchfab) return;
     const client = new window.Sketchfab(iframeRef.current);
 
@@ -202,13 +191,11 @@ const SketchfabViewer = () => {
         api.addEventListener("viewerready", () => {
           console.log("Viewer listo");
 
-          // 1) Leer anotaciones existentes y aplicar cambios en runtime (no persistentes)
           api.getAnnotationList((err, list) => {
             if (err || !Array.isArray(list)) {
               return;
             }
 
-            // a) Actualizar anotaciones (primero updates para no desplazar indices)
             const adjust = existingAdjustRef.current;
             if (adjust.update.length > 0) {
               const tasks: Array<() => void> = [];
@@ -238,7 +225,9 @@ const SketchfabViewer = () => {
                       }](${baseUrl}/era/${encodeURIComponent(rule.linkEraId)})`
                     );
                   }
-                  const linkBlock = extras.length ? `\n\n${extras.join("\n\n")}` : "";
+                  const linkBlock = extras.length
+                    ? `\n\n${extras.join("\n\n")}`
+                    : "";
                   const contentToSet = (rule.newContent ?? "") + linkBlock;
 
                   const current = list[idx] || {};
@@ -252,8 +241,15 @@ const SketchfabViewer = () => {
                   const eyeChanged = !!rule.eye;
                   const targetChanged = !!rule.target;
 
-                  if (!(titleChanged || contentChanged || eyeChanged || targetChanged)) {
-                    return; // skip no-op update
+                  if (
+                    !(
+                      titleChanged ||
+                      contentChanged ||
+                      eyeChanged ||
+                      targetChanged
+                    )
+                  ) {
+                    return;
                   }
 
                   const options: {
@@ -267,15 +263,15 @@ const SketchfabViewer = () => {
                   if (eyeChanged) options.eye = rule.eye;
                   if (targetChanged) options.target = rule.target;
 
-                  tasks.push(() => api.updateAnnotation(idx!, options, () => {}));
+                  tasks.push(() =>
+                    api.updateAnnotation(idx!, options, () => {})
+                  );
                 }
               });
 
-              // Throttle update calls to avoid hitting remote rate limits (429)
               tasks.forEach((fn, i) => setTimeout(fn, i * 200));
             }
 
-            // b) Eliminar anotaciones por título y por índice (descendente para evitar shift)
             const indicesToRemove: number[] = [];
             if (adjust.removeByTitle.length > 0) {
               list.forEach((a, i) => {
@@ -314,9 +310,7 @@ const SketchfabViewer = () => {
       <Background accentColor={accent} />
 
       <div className="relative z-20">
-        <Navbar3
-        logo={logo}
-        />
+        <Navbar3 logo={logo} />
       </div>
 
       <section className="relative z-10 container mx-auto px-6 py-10">

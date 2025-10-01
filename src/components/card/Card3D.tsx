@@ -1,6 +1,12 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, useGLTF, Center, AdaptiveDpr } from "@react-three/drei";
+import {
+  OrbitControls,
+  useGLTF,
+  Center,
+  AdaptiveDpr,
+  Clone,
+} from "@react-three/drei";
 import { Group, ReinhardToneMapping, SRGBColorSpace } from "three";
 import { eras } from "../../data/eras";
 import { ERA_UUIDS, isUuid } from "@/data/eraIds";
@@ -22,7 +28,9 @@ function SpinningModel({
   });
   return (
     <Center>
-      <primitive ref={ref} object={scene} scale={[scale, scale, scale]} />
+      <group ref={ref} scale={[scale, scale, scale]}>
+        <Clone object={scene} />
+      </group>
     </Center>
   );
 }
@@ -65,7 +73,6 @@ export function Card3D({
     return `${formatted} Ma`;
   }, [animal.startMa]);
 
-  // Lazy mount Canvas when in viewport
   useEffect(() => {
     if (!lazyMount3D) return;
     const el = containerRef.current;
@@ -81,7 +88,6 @@ export function Card3D({
     return () => obs.disconnect();
   }, [lazyMount3D, rootMargin]);
 
-  // Clear GLTF cache on unmount if desired
   useEffect(() => {
     return () => {
       if (clearOnUnmount && animal.model) {

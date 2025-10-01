@@ -26,7 +26,6 @@ declare global {
   }
 
   interface Window {
-    // Sketchfab constructor available after loading their script
     Sketchfab?: new (iframe: HTMLIFrameElement) => SketchfabClient;
   }
 }

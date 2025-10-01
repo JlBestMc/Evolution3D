@@ -15,7 +15,6 @@ const DRACO_CDN = "https://www.gstatic.com/draco/v1/decoders/";
 useGLTF.setDecoderPath(DRACO_CDN);
 
 export default function EraPage() {
-  // Leer eraId desde la URL: /era/:eraId
   const params = useParams<{ eraId?: string }>();
   const [eraId] = useState<string>(params.eraId ?? "");
   const eraObj = useMemo(() => eras.find((e) => e.id === eraId), [eraId]);
@@ -40,7 +39,6 @@ export default function EraPage() {
     return arr.slice().sort((a, b) => (b.startMa ?? 0) - (a.startMa ?? 0));
   }, [fetchedAnimals]);
 
-  // Preload solo algunos modelos visibles (primeros 6) y limpiar cache al cambiar de era
   useEffect(() => {
     const toPreload = animals
       .map((a) => a.model)
@@ -58,7 +56,6 @@ export default function EraPage() {
     };
   }, [animals]);
 
-  // Al salir de EraPage, limpia la caché de TODOS los modelos conocidos para liberar memoria
   useEffect(() => {
     return () => {
       const currentModels = Array.from(
@@ -75,7 +72,6 @@ export default function EraPage() {
   }, [fetchedAnimals]);
   const navigate = useNavigate();
 
-  // Mejor UX: convertir rueda vertical a scroll horizontal en el carrusel
   const scrollRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const el = scrollRef.current;
@@ -106,7 +102,7 @@ export default function EraPage() {
               <h1
                 className="text-3xl md:text-4xl font-semibold tracking-tight"
                 style={{
-                  background: `linear-gradient(90deg, ${eraColor}, #ffffff)`,
+                  backgroundImage: `linear-gradient(90deg, ${eraColor}, #ffffff)`,
                   WebkitBackgroundClip: "text",
                   backgroundClip: "text",
                   color: "transparent",

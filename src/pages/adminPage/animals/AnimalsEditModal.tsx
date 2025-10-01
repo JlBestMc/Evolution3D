@@ -58,7 +58,6 @@ export default function AnimalsEditModal({
         </div>
 
         <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {/* Basics */}
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-white/80">Basics</h4>
             <div className="space-y-2">
@@ -158,7 +157,6 @@ export default function AnimalsEditModal({
             </div>
           </div>
 
-          {/* 3D Model */}
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-white/80">3D Model</h4>
             <div className="space-y-2">
@@ -181,8 +179,6 @@ export default function AnimalsEditModal({
               onUploaded={(url) => setForm((f) => ({ ...f, model: url }))}
             />
           </div>
-
-          {/* Taxonomy */}
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-white/80">Taxonomy</h4>
             <div className="grid grid-cols-2 gap-3">
@@ -229,7 +225,6 @@ export default function AnimalsEditModal({
             </div>
           </div>
 
-          {/* Metrics */}
           <div className="space-y-3 md:col-span-2 xl:col-span-3">
             <h4 className="text-sm font-semibold text-white/80">Metrics</h4>
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3">
@@ -263,7 +258,6 @@ export default function AnimalsEditModal({
             </div>
           </div>
 
-          {/* Discovery and Description (full width) */}
           <div className="space-y-3 md:col-span-2 xl:col-span-3">
             <h4 className="text-sm font-semibold text-white/80">
               History and notes

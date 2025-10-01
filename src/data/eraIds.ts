@@ -1,4 +1,3 @@
-// Central mapping from era slug (used in routes/UI) to UUID stored in DB
 export const ERA_UUIDS: Record<string, string> = {
   precambrian: "fa623e10-ea07-4ad0-a4da-6b469ea2016b",
   paleozoic: "1a148d60-41df-4477-aa02-1d5d36ddc5a5",

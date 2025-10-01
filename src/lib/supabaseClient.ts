@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-const DEFAULT_URL = "https://ksowobdydeybxowvcqnz.supabase.co"; // placeholder fallback
+const DEFAULT_URL = "https://ksowobdydeybxowvcqnz.supabase.co";
 export const supabaseUrl: string =
   (import.meta.env.VITE_SUPABASE_URL as string) || DEFAULT_URL;
 export const supabaseAnonKey: string =

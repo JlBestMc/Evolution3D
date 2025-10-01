@@ -11,7 +11,7 @@ const RegisterPage = () => {
   const [info, setInfo] = useState<string | null>(null);
   const navigate = useNavigate();
   const { signUpWithPassword, signInWithGoogle } = useAuth();
-  const from = "/"; // Always send to Welcome after sign up
+  const from = "/";
   return (
     <div className="bg-[url('/images/30.png')] bg-cover bg-center min-h-screen bg-fixed bg-no-repeat flex flex-col">
       <div className="flex-1 flex items-center justify-center">

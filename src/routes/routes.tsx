@@ -10,7 +10,7 @@ const MuseumPage = lazy(() => import("../pages/museumPage/MuseumPage"));
 const MapPage = lazy(() => import("../pages/mapPage/MapPage"));
 const LoginPage = lazy(() => import("../pages/loginPage/loginPage"));
 const RegisterPage = lazy(() => import("../pages/registerPage/registerPage"));
-const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard"));
+const AdminDashboard = lazy(() => import("../pages/adminPage/AdminDashboard"));
 
 export const PATHS = {
   root: "/",

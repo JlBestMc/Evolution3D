@@ -62,7 +62,6 @@ async function fetchAnimals(
     .range(from, to);
   const s = search.trim();
   if (s) {
-    // Search only text columns to avoid type errors (e.g., ilike on UUID)
     query = query.or(`name.ilike.%${s}%,description.ilike.%${s}%`);
   }
   const { data, error, count } = await query;
@@ -79,7 +78,6 @@ export default function AnimalsAdmin() {
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [total, setTotal] = useState(0);
-  // Create modal state
   const [createOpen, setCreateOpen] = useState(false);
   const [createForm, setCreateForm] = useState<Partial<DbAnimal>>({});
   const [createErrors, setCreateErrors] = useState<{
@@ -120,7 +118,6 @@ export default function AnimalsAdmin() {
     loadPage();
   }, [loadPage]);
 
-  // Reset to first page when search changes
   useEffect(() => {
     setPage(1);
   }, [search]);
@@ -156,7 +153,6 @@ export default function AnimalsAdmin() {
         }}
       />
 
-      {/* Pagination */}
       <div className="mt-3 flex items-center justify-between text-sm text-white/70">
         <div>
           Showing {rangeStart}-{rangeEnd} of {total}
@@ -199,7 +195,6 @@ export default function AnimalsAdmin() {
           if (Object.keys(errs).length) return;
           try {
             setCreateSaving(true);
-            // Map UI form to DB payload: eraId -> era_id (omit id)
             const insertPayload = toInsertPayload(createForm);
             const { error } = await supabase
               .from("animals")

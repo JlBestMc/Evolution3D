@@ -69,7 +69,7 @@ async function geocodeCountry(country: string): Promise<GeoPoint | null> {
     const cached = localStorage.getItem(key);
     if (cached) return JSON.parse(cached) as GeoPoint;
   } catch {
-    // ignore localStorage errors
+    //
   }
 
   const url = new URL("https://nominatim.openstreetmap.org/search");
@@ -88,7 +88,7 @@ async function geocodeCountry(country: string): Promise<GeoPoint | null> {
   try {
     localStorage.setItem(key, JSON.stringify(point));
   } catch {
-    // ignore cache set errors
+    //
   }
   return point;
 }
@@ -192,7 +192,7 @@ export default function MapPage() {
       try {
         map.fitWorld({ animate: false });
       } catch {
-        // ignore fit errors
+        //S
       }
     })();
 
