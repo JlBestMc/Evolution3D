@@ -1,24 +1,51 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# OS / editor
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.idea/
+.vscode/
 
-node_modules
-dist
-dist-ssr
+# Node/Vite
+node_modules/
+dist/
+.vite/
+vite.svg
 *.local
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# Logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+*.log
+
+# Tests / coverage / tooling
+coverage/
+.playwright-report/
+test-results/
+.eslintcache
+.stylelintcache
+
+# Env
+.env
+.env.*.local
+.env.local
+
+# Supabase (runtime/temp; conserva migrations y config)
+supabase/.env
+supabase/.temp/
+supabase/.branches/
+supabase/functions/**/node_modules/
+supabase/functions/**/dist/
+supabase/.next/
+supabase/.cache/
+
+# Uploads locales
+uploads/
+tmp/
+*.bak
+
+# Misc caches
+.pnp.*
+.cache/
+.parcel-cache/
