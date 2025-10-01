@@ -4,10 +4,10 @@ import { useEffect, useMemo, useState } from "react";
 import { eras } from "../../data/eras";
 import logo from "/images/favicon.ico";
 import { Button } from "../../components/ui/button/Button";
-import IdleCameraOrbit from "../../components/timeline/IdleCameraOrbit";
-import BackgroundCrossfade from "../../components/timeline/BackgroundCrossfade";
-import LoaderOverlay from "../../components/timeline/LoaderOverlay";
-import WithProgressUI from "../../components/timeline/WithProgressUI";
+import IdleCameraOrbit from "../../components/timeline/timelineSkydome/IdleCameraOrbit";
+import BackgroundCrossfade from "../../components/timeline/timelineSkydome/BackgroundCrossfade";
+import LoaderOverlay from "../../components/timeline/timelineSkydome/LoaderOverlay";
+import WithProgressUI from "../../components/timeline/timelineSkydome/WithProgressUI";
 import { TextureLoader } from "three";
 import Navbar3 from "../../components/navbar/Navbar3";
 
@@ -70,7 +70,7 @@ export default function MainScene() {
         />
       </div>
 
-      <Canvas camera={{ position: [0, 0, 3], fov: 100, near: 0.1, far: 2000 }}>
+      <Canvas camera={{ position: [0, 0, 3], fov: 90, near: 0.1, far: 2000 }}>
         <ambientLight intensity={0.2} />
 
         <IdleCameraOrbit active={!freeView} radius={3} period={120} />
@@ -110,7 +110,7 @@ export default function MainScene() {
       <Button
         onClick={() => setFreeView(!freeView)}
         variant="secondary"
-        styles="absolute bottom-8 left-8 z-30 bg-white/10 hover:bg-white/20 border border-white/25 shadow-[0_0_0_1px_rgba(255,255,255,0.05)] backdrop-blur-md text-white/90 hover:text-white px-5 py-2.5 rounded-full text-[11px] tracking-wide uppercase transition-colors select-none"
+        styles="absolute right-37 top-23 sm:top-auto sm:bottom-8 sm:right-8 z-28 shadow-[0_0_0_1px_rgba(255,255,255,0.05)] backdrop-blur-md text-white/90 hover:text-white px-4 sm:px-5 py-2 sm:py-3 rounded-full text-[10px] sm:text-[13px] tracking-wide uppercase transition-colors select-none"
       >
         {freeView ? "Close free view" : "Free view"}
       </Button>

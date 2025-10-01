@@ -4,7 +4,7 @@ import animals from "../../data/animals";
 import { eras } from "../../data/eras";
 import Background from "../../components/ui/background/Background";
 import logo from "/images/favicon.ico";
-import { Card3D } from "../../components/ui/card/Card3D";
+import { Card3D } from "../../components/card/Card3D";
 import Navbar3 from "../../components/navbar/Navbar3";
 
 export default function AnimalPage() {
