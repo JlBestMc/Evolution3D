@@ -14,27 +14,32 @@ export default function AdminDashboard() {
           subtitle="Manage animals, eras and models"
         />
         <div className="mt-6">
+          <h1 className="text-2xl pb-10 pt-5 font-bold">Statistics charts</h1>
           <AdminCharts />
         </div>
-        <div className="mb-6 inline-flex rounded-full border border-white/15 bg-white/5 p-1">
-          <button
-            className={`px-4 py-2 rounded-full text-sm ${
-              tab === "animals" ? "bg-white/10" : "hover:bg-white/5"
-            }`}
-            onClick={() => setTab("animals")}
-          >
-            Animals
-          </button>
-          <button
-            className={`px-4 py-2 rounded-full text-sm ${
-              tab === "eras" ? "bg-white/10" : "hover:bg-white/5"
-            }`}
-            onClick={() => setTab("eras")}
-          >
-            Eras
-          </button>
-        </div>
+        <h1 className="text-2xl pt-10 pb-3 font-bold">
+          Manage {tab === "animals" ? "Animals" : "Eras"}
+        </h1>
+
         <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] shadow-xl p-4 md:p-6">
+          <div className="mb-6 inline-flex rounded-full border border-white/15 bg-white/5 p-1">
+            <button
+              className={`px-4 py-2 rounded-full text-sm ${
+                tab === "animals" ? "bg-white/10" : "hover:bg-white/5"
+              }`}
+              onClick={() => setTab("animals")}
+            >
+              Animals
+            </button>
+            <button
+              className={`px-4 py-2 rounded-full text-sm ${
+                tab === "eras" ? "bg-white/10" : "hover:bg-white/5"
+              }`}
+              onClick={() => setTab("eras")}
+            >
+              Eras
+            </button>
+          </div>
           {tab === "animals" ? <AnimalsAdmin /> : <ErasAdmin />}
         </div>
       </section>

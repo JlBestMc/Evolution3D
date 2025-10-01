@@ -126,7 +126,7 @@ const animals: Animal[] = [
     model: "/models/Chicken3D_draco.glb",
     startMa: 0.005,
     eraId: "cenozoic",
-    className: "Aves",
+    className: "Birds",
     order: "Galliformes",
     family: "Phasianidae",
     diet: "omnivore",
