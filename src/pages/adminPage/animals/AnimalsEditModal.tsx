@@ -61,8 +61,11 @@ export default function AnimalsEditModal({
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-white/80">Basics</h4>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Name</label>
+              <label className="text-sm font-medium" htmlFor="animal-name">
+                Name
+              </label>
               <input
+                id="animal-name"
                 className="rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
                 value={form.name ?? ""}
                 onChange={(e) =>
@@ -74,8 +77,11 @@ export default function AnimalsEditModal({
               )}
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Era</label>
+              <label className="text-sm font-medium" htmlFor="animal-era">
+                Era
+              </label>
               <select
+                id="animal-era"
                 className="w-full rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
                 value={form.eraId ?? ""}
                 onChange={(e) =>
@@ -160,8 +166,11 @@ export default function AnimalsEditModal({
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-white/80">3D Model</h4>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Model URL</label>
+              <label className="text-sm font-medium" htmlFor="animal-model">
+                Model URL
+              </label>
               <input
+                id="animal-model"
                 className="rounded-lg bg-white/[0.06] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/20"
                 placeholder="https://…"
                 value={form.model ?? ""}
