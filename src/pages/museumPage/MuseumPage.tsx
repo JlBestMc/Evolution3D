@@ -210,19 +210,19 @@ const SketchfabViewer = () => {
                   const baseUrl = window.location.origin;
                   const extras: string[] = [];
                   if (rule.linkAnimalName) {
+                    const url = `${baseUrl}/animal/${encodeURIComponent(
+                      rule.linkAnimalName
+                    )}`;
                     extras.push(
-                      `[See ${
-                        rule.linkAnimalName
-                      }](${baseUrl}/animal/${encodeURIComponent(
-                        rule.linkAnimalName
-                      )})`
+                      `<a href="${url}" target="_blank" rel="noopener noreferrer">See ${rule.linkAnimalName}</a>`
                     );
                   }
                   if (rule.linkEraId) {
+                    const url = `${baseUrl}/era/${encodeURIComponent(
+                      rule.linkEraId
+                    )}`;
                     extras.push(
-                      `[See the era: ${
-                        rule.linkEraId
-                      }](${baseUrl}/era/${encodeURIComponent(rule.linkEraId)})`
+                      `<a href="${url}" target="_blank" rel="noopener noreferrer">See the era: ${rule.linkEraId}</a>`
                     );
                   }
                   const linkBlock = extras.length
