@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/routes/routes";
 import { eras } from "@/data/eras";
@@ -33,8 +33,6 @@ export default function TimelineUI({
       setCurrentEra(eras[0].id);
     }
   }, [currentEra, setCurrentEra]);
-  const portalRef = useRef<HTMLDivElement | null>(null);
-
   const handlePrev = () => {
     if (loading) return;
     if (index > 0) {
@@ -59,13 +57,16 @@ export default function TimelineUI({
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") handlePrev();
-      else if (e.key === "ArrowRight") handleNext();
+      if (loading) return;
+      if (e.key === "ArrowLeft" && index > 0) {
+        setCurrentEra(eras[index - 1].id);
+      } else if (e.key === "ArrowRight" && index < eras.length - 1) {
+        setCurrentEra(eras[index + 1].id);
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index]);
+  }, [index, loading, setCurrentEra]);
 
   useEffect(() => {
     [eras[index - 1], eras[index + 1]].forEach((e) => {
@@ -88,38 +89,57 @@ export default function TimelineUI({
     ? [videoProp]
     : [];
 
+  useEffect(() => {
+    setVideoOpen(false);
+  }, [currentEra]);
+
   return (
     <>
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-5 select-none z-20">
-        <TimelinePortal
-          era={era}
-          color={color}
-          onClick={() => {
-            if (videoSources.length > 0) setVideoOpen(true);
-            else handleExplore();
-          }}
-          ref={portalRef}
-        />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center px-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6 sm:pb-8">
+        <div className="pointer-events-auto relative flex w-full max-w-[1180px] flex-col items-center gap-4 select-none sm:gap-5">
+          
+          <div className="pointer-events-none absolute -top-12 flex items-center gap-3 text-[9px] font-medium uppercase tracking-[0.3em] text-white">
+            <span className="h-px w-12 bg-gradient-to-r from-transparent to-violet-300/70" />
+            <span className="text-lg">Timeline</span>
+            <span className="h-px w-12 bg-gradient-to-l from-transparent to-cyan-300/70" />
+          </div>
 
-        <TimelineControls
-          index={index}
-          loading={loading}
-          onPrev={handlePrev}
-          onNext={handleNext}
-          onSelect={(id) => setCurrentEra(id)}
-        />
+          <div className="flex w-full flex-col items-center gap-3">
+            <TimelinePortal
+              era={era}
+              color={color}
+              index={index}
+              total={eras.length}
+              loading={loading}
+              videoAvailable={videoSources.length > 0}
+              onExplore={handleExplore}
+              onWatch={() => setVideoOpen(true)}
+            />
+          </div>
 
-        <TimelineRail
-          index={index}
-          loading={loading}
-          onSelect={(id) => setCurrentEra(id)}
-        />
+          <TimelineControls
+            index={index}
+            loading={loading}
+            onPrev={handlePrev}
+            onNext={handleNext}
+            onSelect={setCurrentEra}
+            activeColor={color}
+          />
+
+          <TimelineRail
+            index={index}
+            loading={loading}
+            onSelect={setCurrentEra}
+          />
+        </div>
       </div>
 
       <VideoModal
         open={videoOpen}
         title={era.name}
         sources={videoSources}
+        poster={era.image}
+        accentColor={color}
         onClose={() => setVideoOpen(false)}
         onContinue={() => navigate(PATHS.eraId(era.id))}
       />

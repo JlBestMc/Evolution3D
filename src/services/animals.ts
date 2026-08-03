@@ -58,10 +58,31 @@ const animalColumns = [
   "discoveryLocation",
 ].join(",");
 
-export async function getAnimals(): Promise<AnimalRecord[]> {
+const animalCardColumns = [
+  "id",
+  "name",
+  "description",
+  "model",
+  "subtitle",
+  "start_ma",
+  "era_id",
+  "isIconic",
+].join(",");
+
+type AnimalListOptions = {
+  summary?: boolean;
+};
+
+function getAnimalColumns(summary = false) {
+  return summary ? animalCardColumns : animalColumns;
+}
+
+export async function getAnimals(
+  options: AnimalListOptions = {}
+): Promise<AnimalRecord[]> {
   const { data, error } = await supabase
     .from("animals")
-    .select(animalColumns)
+    .select(getAnimalColumns(options.summary))
     .order("name", { ascending: true });
   if (error) throw error;
   return (data as unknown as DbAnimalRow[]).map(rowToAnimal);
@@ -78,14 +99,15 @@ export async function getAnimalById(id: string): Promise<AnimalRecord | null> {
 }
 
 export async function getAnimalsByEra(
-  eraIdOrSlug: string
+  eraIdOrSlug: string,
+  options: AnimalListOptions = {}
 ): Promise<AnimalRecord[]> {
   const eraId = isUuid(eraIdOrSlug)
     ? eraIdOrSlug
     : ERA_UUIDS[eraIdOrSlug] ?? eraIdOrSlug;
   const { data, error } = await supabase
     .from("animals")
-    .select(animalColumns)
+    .select(getAnimalColumns(options.summary))
     .eq("era_id", eraId)
     .order("start_ma", { ascending: true, nullsFirst: true });
   if (error) throw error;
@@ -116,12 +138,13 @@ export async function getAnimalByName(
 }
 
 export async function getAnimalsByNames(
-  names: string[]
+  names: string[],
+  options: AnimalListOptions = {}
 ): Promise<AnimalRecord[]> {
   if (!names.length) return [];
   const { data, error } = await supabase
     .from("animals")
-    .select(animalColumns)
+    .select(getAnimalColumns(options.summary))
     .in("name", names);
   if (error) throw error;
   const rows = (data as unknown as DbAnimalRow[]) || [];

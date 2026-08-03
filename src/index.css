@@ -3,6 +3,68 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@keyframes free-view-attention {
+	0%,
+	68%,
+	100% {
+		transform: scale(1);
+	}
+	74% {
+		transform: scale(1.045);
+	}
+	80% {
+		transform: scale(1);
+	}
+}
+
+@keyframes free-view-halo {
+	0%,
+	68%,
+	100% {
+		opacity: 0.42;
+		transform: scale(0.96);
+	}
+	74% {
+		opacity: 0.9;
+		transform: scale(1.12);
+	}
+	80% {
+		opacity: 0.42;
+		transform: scale(0.98);
+	}
+}
+
+.free-view-attention {
+	isolation: isolate;
+	animation: free-view-attention 5.5s ease-in-out infinite;
+}
+
+.free-view-attention::before {
+	position: absolute;
+	inset: -7px;
+	z-index: -1;
+	border-radius: 9999px;
+	background: linear-gradient(90deg, #a855f7, #3b82f6 52%, #22d3ee);
+	content: "";
+	filter: blur(11px);
+	opacity: 0.42;
+	transform: scale(1.16);
+	animation: free-view-halo 5.5s ease-in-out infinite;
+	pointer-events: none;
+}
+
+.free-view-attention:focus-within::before,
+.free-view-attention:hover::before {
+	opacity: 0.95;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.free-view-attention,
+	.free-view-attention::before {
+		animation: none;
+	}
+}
+
 /* Carousel scroll UX enhancements */
 .carousel-scroll {
 	mask-image: linear-gradient( to right, transparent 0, black 24px, black calc(100% - 24px), transparent 100% );
@@ -23,6 +85,30 @@
 }
 .carousel-scroll::-webkit-scrollbar-thumb:hover {
 	background: linear-gradient(90deg, rgba(255,255,255,0.32), rgba(255,255,255,0.22));
+}
+
+.observatory-page {
+	--observatory-display: "Aptos Display", "Bahnschrift", "Segoe UI", sans-serif;
+	--observatory-body: "Aptos", "Segoe UI", sans-serif;
+	--observatory-mono: "Cascadia Mono", "Consolas", monospace;
+	color-scheme: dark;
+	font-family: var(--observatory-body);
+	letter-spacing: 0;
+}
+
+.observatory-page .observatory-display {
+	font-family: var(--observatory-display);
+	font-weight: 600;
+}
+
+.observatory-page .observatory-meta {
+	font-family: var(--observatory-mono);
+	font-variant-numeric: tabular-nums;
+}
+
+.observatory-page ::selection {
+	background: var(--era-color, #8ab4ff);
+	color: #041008;
 }
 
 @theme inline {

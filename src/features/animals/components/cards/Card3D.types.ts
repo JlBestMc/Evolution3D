@@ -9,6 +9,9 @@ export interface Card3DProps {
   heightClass?: string;
   className?: string;
   modelScale?: number;
+  surface?: "card" | "stage";
+  showMeta?: boolean;
+  autoRotate?: boolean;
   lazyMount3D?: boolean;
   rootMargin?: string;
   clearOnUnmount?: boolean;

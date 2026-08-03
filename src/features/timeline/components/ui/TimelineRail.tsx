@@ -1,4 +1,5 @@
 import { eras } from "@/data/eras";
+import type { CSSProperties } from "react";
 
 type Props = {
   index: number;
@@ -8,66 +9,96 @@ type Props = {
 
 export default function TimelineRail({ index, loading, onSelect }: Props) {
   return (
-    <div className="mt-6 w-full sm:w-[92vw] max-w-[1024px] relative select-none px-3 sm:px-0">
-      <div className="absolute inset-x-1 sm:inset-x-2 top-0 bottom-0 rounded-2xl bg-white/[0.03] border border-white/10" />
+    <div
+      role="region"
+      className="carousel-scroll mt-1 w-[calc(100vw-1.5rem)] max-w-[1024px] select-none overflow-x-auto px-3 sm:mt-2 sm:w-[92vw] sm:px-0"
+      aria-label="Timeline eras"
+    >
+      <div className="relative h-36 min-w-[560px] sm:h-40 sm:min-w-0">
+        <div className="absolute left-7 right-7 top-[53%] h-px bg-gradient-to-r from-purple-300/20 via-white/70 to-cyan-300/20 sm:left-10 sm:right-10" />
+        <div className="absolute left-7 right-7 top-[53%] h-6 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(168,85,247,0.24),transparent_68%)] blur-md sm:left-10 sm:right-10" />
 
-      <div className="absolute left-6 right-6 sm:left-10 sm:right-10 top-1/2 -translate-y-1/2 h-[2px] bg-white/30" />
-      <div className="absolute left-6 right-6 sm:left-10 sm:right-10 top-1/2 -translate-y-1/2 h-[6px] bg-gradient-to-r from-transparent via-white/10 to-transparent blur-md" />
-
-      <div className="relative flex items-center justify-between px-6 sm:px-10 py-4 h-40 sm:h-44">
-        {eras.map((e, i) => (
-          <div
-            key={e.id}
-            className="relative flex flex-col items-center h-full"
-            style={{ minWidth: 0 }}
-          >
+        <div className="relative flex h-full items-center justify-between px-7 py-3 sm:px-10">
+          {eras.map((e, i) => (
             <button
+              key={e.id}
+              type="button"
               onClick={() => !loading && onSelect(e.id)}
-              className={`w-14 h-10 sm:w-16 sm:h-11 mb-8 sm:mb-10 rounded-md overflow-hidden ring-1 ${
-                i === index ? "ring-white/80 shadow-md" : "ring-white/70"
-              }`}
-              aria-label={`${e.name} thumbnail`}
+              disabled={loading}
+              aria-pressed={i === index}
+              aria-label={`${e.name}: ${e.transition}`}
+              className="group relative flex h-full min-w-0 flex-col items-center appearance-none border-0 bg-transparent p-0 text-inherit disabled:cursor-not-allowed"
             >
-              <img
-                src={e.background}
-                alt={e.name}
-                className="w-full h-full object-cover"
-                draggable={false}
-              />
-            </button>
-
-            <button
-              aria-label={e.name}
-              onClick={() => !loading && onSelect(e.id)}
-              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-4 h-4 rounded-full border ${
-                i === index
-                  ? "bg-white border-white shadow-[0_0_12px_rgba(255,255,255,0.8)]"
-                  : "bg-white/20 border-white/60 hover:bg-white/40"
-              }`}
-            />
-
-            <div className="mt-2 text-center">
-              <div
-                className={`inline-flex items-center rounded-full px-2 py-0.5 text-[12px] sm:text-[14px] font-semibold tracking-wide ${
+              <span
+                className={`relative mb-7 block h-10 w-16 overflow-hidden rounded-lg border bg-[#071216]/80 transition-[transform,border-color,opacity] duration-300 sm:mb-8 sm:h-11 sm:w-[72px] ${
                   i === index
-                    ? "bg-white text-black"
-                    : "bg-white/10 text-white/90 border border-white/20"
-                } whitespace-nowrap`}
-                title={e.name}
+                    ? "scale-105 border-white opacity-100 shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+                    : "border-white/20 opacity-60 group-hover:scale-105 group-hover:border-violet-200/65 group-hover:opacity-100"
+                }`}
+                style={
+                  i === index
+                    ? ({
+                        borderColor: "transparent",
+                        backgroundImage:
+                          "linear-gradient(#050509, #050509), linear-gradient(135deg, #a855f7, #3b82f6, #22d3ee)",
+                        backgroundOrigin: "border-box",
+                        backgroundClip: "padding-box, border-box",
+                      } as CSSProperties)
+                    : undefined
+                }
               >
-                {e.name}
-              </div>
-              {e.period && (
+                <img
+                  src={e.image}
+                  alt={e.name}
+                  className="h-full w-full object-cover"
+                  draggable={false}
+                  loading={i === index ? "eager" : "lazy"}
+                  decoding="async"
+                />
+              </span>
+
+              <span
+                aria-hidden="true"
+                className={`absolute left-1/2 top-[53%] z-10 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border transition-all duration-300 ${
+                  i === index
+                    ? "scale-125 border-white shadow-[0_0_0_4px_rgba(255,255,255,0.12),0_0_20px_var(--era-glow)]"
+                    : "border-white/45 bg-white/15 hover:scale-110 hover:bg-white/50"
+                }`}
+                style={
+                  i === index
+                    ? ({
+                        backgroundColor: e.color,
+                        "--era-glow": `${e.color}AA`,
+                      } as React.CSSProperties)
+                    : undefined
+                }
+                />
+
+              <div className="mt-1 text-center">
                 <div
-                  className="hidden sm:block mt-1 text-[10px] font-medium tracking-wide text-white/70 whitespace-nowrap"
-                  title={e.period}
+                  className={`inline-flex items-center rounded-full border px-2.5 py-1 mt-2 text-[11px] font-semibold tracking-wide transition-colors sm:text-xs ${
+                    i === index
+                      ? "border-transparent bg-black/80 text-white shadow-[0_0_18px_rgba(168,85,247,0.22)]"
+                      : "border-white/12 bg-black/10 text-white/65 group-hover:border-violet-200/45 group-hover:text-white"
+                  } whitespace-nowrap`}
+                  title={e.name}
+                  style={
+                    i === index
+                      ? ({
+                          backgroundImage:
+                            "linear-gradient(#050509, #050509), linear-gradient(90deg, #a855f7, #3b82f6, #22d3ee)",
+                          backgroundOrigin: "border-box",
+                          backgroundClip: "padding-box, border-box",
+                        } as CSSProperties)
+                      : undefined
+                  }
                 >
-                  {e.period}
+                  {e.name}
                 </div>
-              )}
-            </div>
-          </div>
-        ))}
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

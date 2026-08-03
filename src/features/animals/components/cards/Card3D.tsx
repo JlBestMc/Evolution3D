@@ -12,6 +12,9 @@ import { eras } from "@/data/eras";
 import { ERA_UUIDS, isUuid } from "@/data/eraIds";
 import type { Card3DProps } from "./Card3D.types";
 
+const DRACO_CDN = "https://www.gstatic.com/draco/v1/decoders/";
+useGLTF.setDecoderPath(DRACO_CDN);
+
 function SpinningModel({
   url,
   paused,
@@ -44,13 +47,17 @@ function Card3DComponent({
   heightClass = "h-140",
   className = "",
   modelScale = 1.8,
+  surface = "card",
+  showMeta = true,
+  autoRotate = true,
   lazyMount3D = true,
   rootMargin = "300px",
-  clearOnUnmount = true,
+  clearOnUnmount = false,
 }: Card3DProps) {
   const [interacting, setInteracting] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isVisible, setIsVisible] = useState<boolean>(!lazyMount3D);
+  const isStage = surface === "stage";
   const eraColor = useMemo(() => {
     const id = animal.eraId;
     let slug = id;
@@ -103,17 +110,21 @@ function Card3DComponent({
   return (
     <div
       ref={containerRef}
-      className={`group relative ${widthClass} ${heightClass} rounded-2xl overflow-hidden bg-white/5 border border-white/10 backdrop-blur-md shadow-xl transition-all duration-300 hover:-translate-y-1 hover:scale-105 md:duration-500 ${className}`}
-      style={{ boxShadow: `0 0 40px -12px ${eraColor}55` }}
+      className={`group relative ${widthClass} ${heightClass} overflow-hidden transition-all duration-300 ${
+        isStage
+          ? "rounded-none border-0 bg-transparent shadow-none hover:translate-y-0 hover:scale-100"
+          : "rounded-2xl border border-white/10 bg-white/5 shadow-xl hover:-translate-y-1 hover:scale-105 md:duration-500"
+      } ${className}`}
+      style={{ boxShadow: isStage ? "none" : `0 0 40px -12px ${eraColor}55` }}
     >
       <div
-        className="absolute inset-0 -z-0"
+        className={`absolute inset-0 -z-0 ${isStage ? "opacity-0" : ""}`}
         style={{
           background: `linear-gradient(140deg, rgba(8,11,20,0.9), ${eraColor}14 45%, rgba(0,0,0,0.92))`,
         }}
       />
 
-      <div className="absolute inset-0 opacity-20 pointer-events-none">
+      {!isStage && <div className="absolute inset-0 opacity-20 pointer-events-none">
         <div
           className="absolute w-3 h-3 rounded-full blur-md transition-transform duration-500 group-hover:scale-150"
           style={{ left: "15%", top: "20%", background: `${eraColor}` }}
@@ -126,16 +137,16 @@ function Card3DComponent({
           className="absolute w-2 h-2 bg-yellow-400 rounded-full blur transition-transform duration-500 group-hover:scale-150"
           style={{ left: "40%", top: "10%" }}
         />
-      </div>
+      </div>}
 
-      <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-colors duration-500 group-hover:border-white/20 pointer-events-none">
+      {!isStage && <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-colors duration-500 group-hover:border-white/20 pointer-events-none">
         <div
           className="absolute top-0 left-0 h-1 w-1/3 rounded-full transition-all duration-500 group-hover:w-full"
           style={{
             background: `linear-gradient(90deg, transparent, ${eraColor}, transparent)`,
           }}
         />
-      </div>
+      </div>}
 
       <div className="absolute inset-0">
         {isVisible || interacting ? (
@@ -143,6 +154,7 @@ function Card3DComponent({
             camera={{ position: [0, 0.5, 3], fov: 60 }}
             gl={{ alpha: true, antialias: true }}
             dpr={[1, 1.25]}
+            frameloop={autoRotate ? "always" : "demand"}
             style={{
               background: "transparent",
               cursor: interacting ? "grabbing" : "grab",
@@ -160,7 +172,7 @@ function Card3DComponent({
             <Suspense fallback={null}>
               <SpinningModel
                 url={animal.model}
-                paused={interacting}
+                paused={interacting || !autoRotate}
                 scale={modelScale}
               />
             </Suspense>
@@ -184,7 +196,7 @@ function Card3DComponent({
         )}
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/75 via-black/10 to-transparent text-white">
+      {showMeta && <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/75 via-black/10 to-transparent text-white">
         <h3 className="text-[15px] font-semibold tracking-wide drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)] flex items-center gap-2">
           {animal.name}
           {ageLabel && (
@@ -199,9 +211,9 @@ function Card3DComponent({
         <p className="mt-0.5 text-[11px] leading-snug opacity-80">
           {animal.subtitle ?? animal.description}
         </p>
-      </div>
+      </div>}
 
-      <div
+      {showMeta && <div
         className="absolute top-2 right-2 z-10 rounded-full px-2 py-0.5 text-[10px] font-semibold text-white/90"
         style={{
           background: `${eraColor}33`,
@@ -210,8 +222,8 @@ function Card3DComponent({
         }}
       >
         3D
-      </div>
-      {animal.isIconic && (
+      </div>}
+      {showMeta && animal.isIconic && (
         <div
           className="absolute top-4 left-4 z-10 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold text-amber-100"
           style={{
@@ -229,7 +241,7 @@ function Card3DComponent({
           Legendary
         </div>
       )}
-      <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/10" />
+      {!isStage && <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/10" />}
     </div>
   );
 }
@@ -244,6 +256,9 @@ export const Card3D = memo(Card3DComponent, (prev, next) => {
     prev.heightClass === next.heightClass &&
     prev.className === next.className &&
     prev.modelScale === next.modelScale &&
+    prev.surface === next.surface &&
+    prev.showMeta === next.showMeta &&
+    prev.autoRotate === next.autoRotate &&
     prev.lazyMount3D === next.lazyMount3D &&
     prev.rootMargin === next.rootMargin &&
     prev.clearOnUnmount === next.clearOnUnmount

@@ -1,7 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
-import { TextureLoader } from "three";
 import { useThree } from "@react-three/fiber";
+import {
+  acquireTimelineTexture,
+  disposeUnusedTimelineTextures,
+  type TextureLease,
+} from "./timelineTextureCache";
 
 type Props = {
   path: string;
@@ -9,89 +13,74 @@ type Props = {
   widthSegments?: number;
   heightSegments?: number;
   anisotropy?: number | "max";
+  onLoadingChange?: (loading: boolean) => void;
+  onReady?: () => void;
+  onError?: (error: unknown) => void;
 };
 
 export default function BackgroundCrossfade({
   path,
-  radius = 800,
-  widthSegments = 64,
-  heightSegments = 64,
   anisotropy = "max",
+  onLoadingChange,
+  onReady,
+  onError,
 }: Props) {
-  const { gl } = useThree();
-  const currentTexRef = useRef<THREE.Texture | null>(null);
-  const lastPathRef = useRef<string | null>(null);
-  const [revision, setRevision] = useState(0);
-
-  const loadTexture = useCallback(
-    (url: string) =>
-      new Promise<THREE.Texture>((resolve, reject) => {
-        const loader = new TextureLoader();
-        loader.load(
-          url + "?v=" + Date.now(),
-          (tex) => {
-            tex.colorSpace = THREE.SRGBColorSpace;
-            tex.mapping = THREE.UVMapping;
-            tex.generateMipmaps = true;
-            tex.minFilter = THREE.LinearMipmapLinearFilter;
-            tex.magFilter = THREE.LinearFilter;
-            const maxAniso = gl.capabilities.getMaxAnisotropy?.() ?? 1;
-            const desired =
-              anisotropy === "max"
-                ? maxAniso
-                : Math.min(maxAniso, anisotropy ?? 1);
-            tex.anisotropy = Math.max(1, desired);
-            tex.needsUpdate = true;
-            resolve(tex);
-          },
-          undefined,
-          reject
-        );
-      }),
-    [gl, anisotropy]
+  const { gl, scene } = useThree();
+  const currentLeaseRef = useRef<TextureLease | null>(null);
+  const [currentTexture, setCurrentTexture] = useState<THREE.Texture | null>(
+    null
   );
 
   useEffect(() => {
     if (!path) return;
-    if (lastPathRef.current === path && currentTexRef.current) return;
 
-    let mounted = true;
-    const prev = currentTexRef.current;
-    loadTexture(path).then((tex) => {
-      if (!mounted) return;
-      if (prev) prev.dispose();
-      currentTexRef.current = tex;
-      setRevision((r) => r + 1);
-    });
-    lastPathRef.current = path;
+    let active = true;
+    onLoadingChange?.(true);
+
+    acquireTimelineTexture(path, gl, anisotropy)
+      .then((lease) => {
+        if (!active) {
+          lease.release();
+          return;
+        }
+
+        const previousLease = currentLeaseRef.current;
+        currentLeaseRef.current = lease;
+        setCurrentTexture(lease.texture);
+        previousLease?.release();
+        onLoadingChange?.(false);
+        onReady?.();
+      })
+      .catch((error: unknown) => {
+        if (!active) return;
+        onLoadingChange?.(false);
+        onError?.(error);
+      });
+
     return () => {
-      mounted = false;
+      active = false;
     };
-  }, [path, loadTexture]);
+  }, [anisotropy, gl, onError, onLoadingChange, onReady, path]);
 
-  if (!currentTexRef.current) {
-    return (
-      <mesh scale={[-1, 1, 1]}>
-        <sphereGeometry args={[radius, widthSegments, heightSegments]} />
-        <meshBasicMaterial
-          side={THREE.BackSide}
-          color="#000"
-          depthWrite={false}
-          toneMapped={false}
-        />
-      </mesh>
-    );
-  }
+  useEffect(() => {
+    if (!currentTexture) return;
 
-  return (
-    <mesh key={revision} scale={[-1, 1, 1]}>
-      <sphereGeometry args={[radius, widthSegments, heightSegments]} />
-      <meshBasicMaterial
-        side={THREE.BackSide}
-        depthWrite={false}
-        toneMapped={false}
-        map={currentTexRef.current ?? undefined}
-      />
-    </mesh>
-  );
+    currentTexture.mapping = THREE.EquirectangularReflectionMapping;
+    currentTexture.needsUpdate = true;
+    scene.background = currentTexture;
+
+    return () => {
+      if (scene.background === currentTexture) scene.background = null;
+    };
+  }, [currentTexture, scene]);
+
+  useEffect(() => {
+    return () => {
+      currentLeaseRef.current?.release();
+      currentLeaseRef.current = null;
+      disposeUnusedTimelineTextures();
+    };
+  }, []);
+
+  return null;
 }

@@ -12,6 +12,9 @@ interface Button2Props {
   styles?: string;
   rounded?: string;
   size?: "sm" | "md" | "lg";
+  ariaLabel?: string;
+  ariaPressed?: boolean;
+  title?: string;
 }
 
 function Button2({
@@ -25,6 +28,10 @@ function Button2({
   rounded = "rounded-xl",
   size = "md",
   className,
+  ariaLabel,
+  ariaPressed,
+  title,
+  disabled = false,
 }: Button2Props) {
   const sizeCfg = {
     sm: { padding: "px-3 py-2", text: "text-xs", icon: "w-4 h-4" },
@@ -33,16 +40,21 @@ function Button2({
   } as const;
   const cfg = sizeCfg[size] || sizeCfg.md;
   return (
-    <div className={`inline-block relative group ${styles}`}>
+    <div className={`inline-block group ${styles}`}>
       <button
         type={type}
         onClick={onClick}
+        disabled={disabled}
+        aria-label={ariaLabel}
+        aria-pressed={ariaPressed}
+        title={title}
         className={[
           ` relative p-px font-semibold leading-6 text-white ${cfg.text}`,
           `${borderColor} ${rounded} shadow-2xl shadow-zinc-900`,
           "transition-transform duration-300 ease-in-out",
           "hover:scale-105 active:scale-95",
           "focus-visible:outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-teal-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-black",
+          "disabled:pointer-events-none disabled:opacity-45 disabled:hover:scale-100",
           className || "",
         ].join(" ")}
       >

@@ -1,10 +1,13 @@
-import Button2 from "@/components/ui/button/Button2";
+import { Film, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import Button2 from "@/components/ui/button/Button2";
 
 type VideoModalProps = {
   open: boolean;
   title?: string;
   sources: string[];
+  poster?: string;
+  accentColor?: string;
   onClose: () => void;
   onContinue?: () => void;
 };
@@ -13,37 +16,45 @@ export default function VideoModal({
   open,
   title,
   sources,
+  poster,
+  accentColor = "#ffffff",
   onClose,
   onContinue,
 }: VideoModalProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
     };
+
     if (open) window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
   useEffect(() => {
-    if (open) {
-      const id = requestAnimationFrame(() => setShow(true));
-      return () => cancelAnimationFrame(id);
-    } else {
+    if (!open) {
       setShow(false);
+      return;
     }
+
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const showId = requestAnimationFrame(() => setShow(true));
+    const focusId = requestAnimationFrame(() => closeButtonRef.current?.focus());
+
+    return () => {
+      cancelAnimationFrame(showId);
+      cancelAnimationFrame(focusId);
+      previousFocus?.focus();
+    };
   }, [open]);
 
   useEffect(() => {
     if (!open && videoRef.current) {
-      try {
-        videoRef.current.pause();
-        videoRef.current.currentTime = 0;
-      } catch {
-        // ignore
-      }
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
     }
   }, [open]);
 
@@ -51,88 +62,103 @@ export default function VideoModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6"
       role="dialog"
       aria-modal="true"
+      aria-labelledby="timeline-video-title"
     >
       <button
-        aria-label="Close"
+        type="button"
+        aria-label="Close video"
         onClick={onClose}
-        className={`absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300 ${
+        className={`absolute inset-0 bg-[#02080a]/80 backdrop-blur-md transition-opacity duration-300 ${
           show ? "opacity-100" : "opacity-0"
         }`}
       />
 
-      <div
-        className={`relative w-[92vw] max-w-4xl rounded-2xl border border-white/10 bg-black/70 p-3 sm:p-4 shadow-2xl transform transition-all duration-300 ease-out ${
-          show
-            ? "opacity-100 translate-y-0 scale-100"
-            : "opacity-0 translate-y-3 scale-95"
+      <section
+        className={`relative w-[min(92vw,68rem)] overflow-hidden rounded-[1.5rem] border bg-[#071216]/95 p-3 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-out sm:p-5 ${
+          show ? "translate-y-0 scale-100 opacity-100" : "translate-y-3 scale-95 opacity-0"
         }`}
+        style={{
+          borderColor: "transparent",
+          backgroundImage:
+            "linear-gradient(rgba(7,18,22,0.97), rgba(7,18,22,0.97)), linear-gradient(120deg, #22d3ee, #3b82f6 48%, #a855f7)",
+          backgroundOrigin: "border-box",
+          backgroundClip: "padding-box, border-box",
+        }}
       >
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-white text-sm sm:text-base font-medium opacity-90 truncate flex items-center gap-2">
-            <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-white/10 border border-white/10">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="h-3.5 w-3.5 text-white/80"
-              >
-                <path d="M3 4.5A1.5 1.5 0 0 1 4.5 3h7A1.5 1.5 0 0 1 13 4.5V6h2.25A1.75 1.75 0 0 1 17 7.75v4.5A1.75 1.75 0 0 1 15.25 14H13v1.5A1.5 1.5 0 0 1 11.5 17h-7A1.5 1.5 0 0 1 3 15.5v-11Z" />
-              </svg>
-            </span>
-            {title || "Video"}
-          </h3>
-          <Button2
-            onClick={onClose}
-            className="p-2 rounded-full text-white/80 hover:text-white hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 transition"
-            aria-label="Close"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="h-5 w-5"
+        <div
+          className="absolute inset-x-0 top-0 h-px"
+          style={{ background: `linear-gradient(90deg, transparent, #22d3ee 28%, ${accentColor} 52%, #a855f7 76%, transparent)` }}
+        />
+
+        <header className="mb-4 flex items-start justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <span
+              className="grid size-9 shrink-0 place-items-center rounded-full border bg-white/[0.08]"
+              style={{ borderColor: `${accentColor}88`, color: accentColor }}
             >
-              <path
-                fillRule="evenodd"
-                d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </Button2>
-        </div>
-        <div className="rounded-xl overflow-hidden border border-white/10 bg-black/40 aspect-video shadow-lg">
+              <Film aria-hidden="true" className="size-4" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/45">
+                Era film
+              </p>
+              <h2
+                id="timeline-video-title"
+                className="truncate text-base font-semibold text-white sm:text-lg"
+              >
+                {title || "Video"}
+              </h2>
+            </div>
+          </div>
+
+          <button
+            ref={closeButtonRef}
+            type="button"
+            onClick={onClose}
+            className="grid size-9 shrink-0 place-items-center rounded-full border border-white/15 text-white/65 transition-colors hover:border-white/35 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+            aria-label="Close video"
+          >
+            <X aria-hidden="true" className="size-4" />
+          </button>
+        </header>
+
+        <div className="aspect-video overflow-hidden rounded-xl border border-white/15 bg-black/50 shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
           <video
             ref={videoRef}
             controls
             autoPlay
             playsInline
-            className="w-full h-full"
+            poster={poster}
+            className="h-full w-full"
             preload="metadata"
           >
-            {sources.map((src) => (
-              <source key={src} src={src} />
+            {sources.map((source) => (
+              <source key={source} src={source} />
             ))}
             Your browser does not support the video tag.
           </video>
         </div>
 
-        <div className="flex justify-end gap-2 mt-3">
-          {onContinue && (
+        {onContinue && (
+          <footer className="mt-4 flex justify-end">
             <Button2
               onClick={onContinue}
+              gradientHover="from-cyan-400 via-blue-500 to-purple-500"
+              bgColor="bg-[#071216]/95"
+              borderColor="bg-[#071216]/85"
               rounded="rounded-full"
-              gradientHover="from-purple-500 to-blue-500"
-              borderColor="bg-purple-500/70"
-              size="md"
+              size="sm"
+              ariaLabel={`Explore ${title || "era"}`}
+              className="shadow-[0_12px_28px_rgba(0,0,0,0.32)]"
             >
               Explore era
             </Button2>
-          )}
-        </div>
-      </div>
+          </footer>
+        )}
+      </section>
     </div>
   );
 }

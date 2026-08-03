@@ -1,4 +1,6 @@
-import { forwardRef } from "react";
+import { Film } from "lucide-react";
+import type { CSSProperties } from "react";
+import Button2 from "@/components/ui/button/Button2";
 
 type EraItem = {
   id: string;
@@ -6,88 +8,115 @@ type EraItem = {
   image: string;
   color?: string;
   period?: string;
+  environment?: string;
+  milestone?: string;
+  transition?: string;
   description?: string;
 };
 
 type Props = {
   era: EraItem;
   color: string;
-  onClick: () => void;
+  index: number;
+  total: number;
+  loading?: boolean;
+  videoAvailable: boolean;
+  onExplore: () => void;
+  onWatch: () => void;
 };
 
-const TimelinePortal = forwardRef<HTMLDivElement, Props>(
-  function TimelinePortal({ era, color, onClick }, ref) {
-    return (
+export default function TimelinePortal({
+  era,
+  color,
+  index,
+  total,
+  loading = false,
+  videoAvailable,
+  onExplore,
+  onWatch,
+}: Props) {
+  return (
+    <article
+      aria-label={`${era.name} overview`}
+      className="group relative isolate flex h-[clamp(14rem,28vh,18rem)] w-[min(300px,calc(100vw-1.5rem))] flex-col justify-end overflow-hidden rounded-[1.35rem] border border-white/15 bg-black/55 text-white shadow-[0_24px_80px_-34px_rgba(0,0,0,0.98)] backdrop-blur-xl transition-[transform,box-shadow,filter] duration-500 hover:brightness-110 lg:h-[16rem]"
+      style={
+        {
+          backgroundImage:
+            "linear-gradient(145deg, rgba(168,85,247,0.18), transparent 38%), linear-gradient(180deg, rgba(5,5,12,0.3), rgba(0,0,0,0.88))",
+          backgroundOrigin: "border-box",
+          backgroundClip: "padding-box, border-box",
+          boxShadow: `0 24px 80px -34px rgba(0,0,0,0.98), 0 0 40px -24px ${color}AA`,
+          "--era-color": color,
+        } as CSSProperties
+      }
+    >
+      <img
+        src={era.image}
+        alt=""
+        className="absolute inset-0 h-full w-full scale-105 object-cover opacity-55 transition-transform duration-700 ease-out"
+        draggable={false}
+        decoding="async"
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.06)_0%,rgba(0,0,0,0.35)_36%,rgba(0,0,0,0.96)_100%)]" />
       <div
-        onClick={onClick}
-        ref={ref}
-        className="relative cursor-pointer w-70 h-60 rounded-3xl overflow-hidden border border-white/10 bg-white/[0.06] backdrop-blur-md flex items-center justify-center shadow-[0_0_60px_-10px_rgba(0,0,0,0.7)]"
-        style={{ boxShadow: `0 0 55px -12px ${color}AA` }}
-      >
-        <div
-          className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-white/10"
-          style={{ boxShadow: `inset 0 0 0 5px ${color}33` }}
-        />
-        <img
-          key={era.id}
-          src={era.image}
-          alt={era.name}
-          className="absolute inset-0 w-full h-full object-fit opacity-80 scale-105 animate-fadeIn"
-          draggable={false}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        className="absolute inset-x-5 top-0 h-px opacity-90"
+        style={{ background: `linear-gradient(90deg, transparent, #a855f7 45%, ${color} 72%, transparent)` }}
+      />
 
-        <div
-          className="absolute top-0 left-0 right-0 h-1 opacity-80"
-          style={{
-            background: `linear-gradient(90deg, transparent, ${color}, transparent)`,
-          }}
-        />
+      <div className="relative flex flex-col gap-3 px-5 pb-5 pt-8 sm:px-6 sm:pb-6">
+        <div className="flex items-center justify-between text-[9px] font-medium uppercase tracking-[0.24em] text-white/55">
+          <span>
+            Era {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+          </span>
+          <span className="text-violet-100/70">{era.period}</span>
+        </div>
 
-        <div className="relative text-center text-white drop-shadow flex flex-col items-center px-4">
-          <h2 className="text-[26px] font-semibold tracking-wide leading-tight mb-1">
+        <div>
+          <h2 className="text-2xl font-light leading-tight tracking-[0.01em] sm:text-[28px]">
             {era.name}
           </h2>
-          {era.period && (
-            <p className="text-xs font-medium tracking-wide text-white/80 mb-1">
-              {era.period}
+          {era.milestone && (
+            <p className="mt-1 text-[10px] font-medium uppercase tracking-[0.16em] text-violet-100/75">
+              {era.milestone}
             </p>
           )}
-          {era.description && (
-            <p
-              className="text-[16px] leading-snug font-light max-w-[220px] text-white/85 line-clamp-3"
-              style={{
-                textShadow: "0 0 6px rgba(0,0,0,0.5)",
-                borderTop: `1px solid ${color}33`,
-                paddingTop: 6,
-              }}
-            >
-              {era.description}
-            </p>
-          )}
+        </div>
 
-          <span
-            className="mt-6 inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/10 px-2 py-1 text-[14px] font-medium text-white/90 transition-all duration-400 ease-out hover:bg-purple-950/80 hover:shadow-[0_8px_20px_rgba(0,0,0,0.25)] hover:-translate-y-0.5"
-            aria-hidden
+        {era.description && (
+          <p className="line-clamp-2 max-w-[38ch] border-l border-violet-300/70 pl-3 text-xs leading-relaxed text-white/70">
+            {era.description}
+          </p>
+        )}
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Button2
+            onClick={onExplore}
+            disabled={loading}
+            gradientHover="from-purple-500 via-blue-500 to-cyan-400"
+            bgColor="bg-black/80"
+            borderColor="bg-black/70"
+            rounded="rounded-full"
+            size="sm"
+            ariaLabel={`Explore ${era.name}`}
           >
-            Explore
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="size-4"
+            Explore era
+          </Button2>
+          {videoAvailable && (
+            <button
+              type="button"
+              onClick={onWatch}
+              disabled={loading}
+              className="group/watch inline-flex items-center gap-2 rounded-full border border-violet-100/25 bg-black/35 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.13em] text-white/75 transition-[background-color,border-color,color] hover:border-violet-200/70 hover:bg-violet-500/20 hover:text-white disabled:pointer-events-none disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/80"
             >
-              <path
-                fillRule="evenodd"
-                d="M3 10a.75.75 0 0 1 .75-.75h9.638L9.22 5.08a.75.75 0 1 1 1.06-1.06l5.5 5.5a.75.75 0 0 1 0 1.06l-5.5 5.5a.75.75 0 1 1-1.06-1.06l4.168-4.17H3.75A.75.75 0 0 1 3 10Z"
-                clipRule="evenodd"
+              <Film
+                aria-hidden="true"
+                className="size-3.5 text-violet-200 transition-transform group-hover/watch:scale-110"
               />
-            </svg>
-          </span>
+              Watch story
+            </button>
+          )}
         </div>
       </div>
-    );
-  }
-);
-
-export default TimelinePortal;
+    </article>
+  );
+}
