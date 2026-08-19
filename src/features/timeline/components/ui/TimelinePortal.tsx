@@ -1,24 +1,16 @@
 import { Film } from "lucide-react";
 import type { CSSProperties } from "react";
 import Button2 from "@/components/ui/button/Button2";
+import type { Era, Subera } from "@/data/eras";
 
-type EraItem = {
-  id: string;
-  name: string;
-  image: string;
-  color?: string;
-  period?: string;
-  environment?: string;
-  milestone?: string;
-  transition?: string;
-  description?: string;
-};
+type EraItem = Era | Subera;
 
 type Props = {
   era: EraItem;
   color: string;
   index: number;
   total: number;
+  suberaSelected: boolean;
   loading?: boolean;
   videoAvailable: boolean;
   onExplore: () => void;
@@ -30,6 +22,7 @@ export default function TimelinePortal({
   color,
   index,
   total,
+  suberaSelected,
   loading = false,
   videoAvailable,
   onExplore,
@@ -38,7 +31,7 @@ export default function TimelinePortal({
   return (
     <article
       aria-label={`${era.name} overview`}
-      className="group relative isolate flex h-[clamp(14rem,28vh,18rem)] w-[min(300px,calc(100vw-1.5rem))] flex-col justify-end overflow-hidden rounded-[1.35rem] border border-white/15 bg-black/55 text-white shadow-[0_24px_80px_-34px_rgba(0,0,0,0.98)] backdrop-blur-xl transition-[transform,box-shadow,filter] duration-500 hover:brightness-110 lg:h-[16rem]"
+      className="group relative isolate flex h-[clamp(13rem,26vh,15rem)] w-[min(300px,calc(100vw-1.5rem))] flex-col justify-end overflow-hidden rounded-[1.35rem] border border-white/15 bg-black/55 text-white shadow-[0_24px_80px_-34px_rgba(0,0,0,0.98)] backdrop-blur-xl transition-[transform,box-shadow,filter] duration-500 hover:brightness-110 lg:h-[14rem]"
       style={
         {
           backgroundImage:
@@ -63,16 +56,16 @@ export default function TimelinePortal({
         style={{ background: `linear-gradient(90deg, transparent, #a855f7 45%, ${color} 72%, transparent)` }}
       />
 
-      <div className="relative flex flex-col gap-3 px-5 pb-5 pt-8 sm:px-6 sm:pb-6">
+      <div className="relative flex flex-col gap-2 px-5 pb-4 pt-6 sm:px-5 sm:pb-5">
         <div className="flex items-center justify-between text-[9px] font-medium uppercase tracking-[0.24em] text-white/55">
           <span>
-            Era {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+            {suberaSelected ? "Subera" : "Era"} {String(index + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
           </span>
           <span className="text-violet-100/70">{era.period}</span>
         </div>
 
         <div>
-          <h2 className="text-2xl font-light leading-tight tracking-[0.01em] sm:text-[28px]">
+          <h2 className="text-2xl font-light leading-tight tracking-[0.01em] sm:text-[26px]">
             {era.name}
           </h2>
           {era.milestone && (
@@ -83,9 +76,17 @@ export default function TimelinePortal({
         </div>
 
         {era.description && (
-          <p className="line-clamp-2 max-w-[38ch] border-l border-violet-300/70 pl-3 text-xs leading-relaxed text-white/70">
+          <p className="line-clamp-2 max-w-[38ch] border-l border-violet-300/70 pl-3 text-[11px] leading-relaxed text-white/70">
             {era.description}
           </p>
+        )}
+
+        {suberaSelected && "featuredSpeciesCount" in era && (
+          <div className="flex items-center gap-2 text-[9px] font-medium uppercase tracking-[0.12em] text-white/55">
+            <span>{era.featuredSpeciesCount} featured species</span>
+            <span className="size-1 rounded-full bg-violet-200/70" aria-hidden="true" />
+            <span>Deep-time record</span>
+          </div>
         )}
 
         <div className="flex flex-wrap items-center gap-2">

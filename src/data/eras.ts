@@ -1,4 +1,44 @@
-export const eras = [
+export interface Subera {
+  id: string;
+  eraId: string;
+  name: string;
+  image: string;
+  background: string;
+  period: string;
+  milestone: string;
+  description: string;
+  featuredSpeciesCount: number;
+}
+
+export interface Era {
+  id: string;
+  name: string;
+  image: string;
+  background: string;
+  video: string;
+  color: string;
+  period: string;
+  environment: string;
+  milestone: string;
+  transition: string;
+  specimenName: string;
+  description: string;
+  duration: string;
+  climate: string;
+  life: string;
+  legacy: string;
+  highlights: string[];
+  suberas: Subera[];
+}
+
+const subera = (
+  eraId: string,
+  image: string,
+  background: string,
+  details: Omit<Subera, "eraId" | "image" | "background">
+): Subera => ({ eraId, image, background, ...details });
+
+export const eras: Era[] = [
   {
     id: "precambrian",
     name: "Precambrian Era",
@@ -22,6 +62,32 @@ export const eras = [
       "Photosynthesis begins changing the atmosphere",
       "The first complex cells emerge",
     ],
+    suberas: [
+      subera("precambrian", "/images/precambrian.png", "/skydome/precambrianEra.png", {
+        id: "hadean",
+        name: "Hadean",
+        period: "4600 – 4000 Ma",
+        milestone: "Earth takes shape",
+        description: "A young planet cools from a molten beginning into its first crust and oceans.",
+        featuredSpeciesCount: 0,
+      }),
+      subera("precambrian", "/images/precambrian.png", "/skydome/precambrianEra.png", {
+        id: "archean",
+        name: "Archean",
+        period: "4000 – 2500 Ma",
+        milestone: "Life finds a foothold",
+        description: "Microbial mats spread through shallow seas while the first stable continents emerge.",
+        featuredSpeciesCount: 2,
+      }),
+      subera("precambrian", "/images/precambrian.png", "/skydome/precambrianEra.png", {
+        id: "proterozoic",
+        name: "Proterozoic",
+        period: "2500 – 541 Ma",
+        milestone: "Oxygen reshapes the atmosphere",
+        description: "Oxygen accumulates and complex cells prepare the conditions for larger life.",
+        featuredSpeciesCount: 4,
+      }),
+    ],
   },
   {
     id: "paleozoic",
@@ -36,7 +102,7 @@ export const eras = [
     transition: "Life moves ashore",
     specimenName: "Tiktaalik",
     description:
-      "Explosion of marine life, first land plants, insects, amphibians and reptiles.",
+      "The age of ancient seas. Life emerged, diversified and evolved in incredible ways. From the first marine invertebrates to the great terrestrial colonization.",
     duration: "≈ 289 million years",
     climate: "Shallow inland seas, humid forests and expanding terrestrial habitats.",
     life: "Marine invertebrates, fishes, land plants, insects and early reptiles.",
@@ -45,6 +111,56 @@ export const eras = [
       "Marine life diversifies rapidly",
       "Plants and arthropods colonize the continents",
       "The first forests and complex food webs appear",
+    ],
+    suberas: [
+      subera("paleozoic", "/images/paleozoic.png", "/skydome/paleozoicEra.png", {
+        id: "cambrian",
+        name: "Cambrian",
+        period: "541 – 485 Ma",
+        milestone: "Animal life diversifies",
+        description: "A burst of body plans fills the seas with new predators, grazers and armored life.",
+        featuredSpeciesCount: 3,
+      }),
+      subera("paleozoic", "/images/paleozoic.png", "/skydome/paleozoicEra.png", {
+        id: "ordovician",
+        name: "Ordovician",
+        period: "485 – 444 Ma",
+        milestone: "The seas become richer",
+        description: "Marine ecosystems expand across a world of shallow seas, reefs and cephalopod hunters.",
+        featuredSpeciesCount: 4,
+      }),
+      subera("paleozoic", "/images/paleozoic.png", "/skydome/paleozoicEra.png", {
+        id: "silurian",
+        name: "Silurian",
+        period: "444 – 419 Ma",
+        milestone: "The first forests take root",
+        description: "Plants establish themselves on land while jawed fishes and reef communities spread.",
+        featuredSpeciesCount: 4,
+      }),
+      subera("paleozoic", "/images/paleozoic.png", "/skydome/paleozoicEra.png", {
+        id: "devonian",
+        name: "Devonian",
+        period: "419 – 359 Ma",
+        milestone: "Life moves toward land",
+        description: "Fishes diversify while forests and the first four-limbed pioneers transform the shore.",
+        featuredSpeciesCount: 5,
+      }),
+      subera("paleozoic", "/images/paleozoic.png", "/skydome/paleozoicEra.png", {
+        id: "carboniferous",
+        name: "Carboniferous",
+        period: "359 – 299 Ma",
+        milestone: "Forests become coal",
+        description: "Vast swamp forests build oxygen-rich ecosystems while insects and early amniotes spread.",
+        featuredSpeciesCount: 5,
+      }),
+      subera("paleozoic", "/images/paleozoic.png", "/skydome/paleozoicEra.png", {
+        id: "permian",
+        name: "Permian",
+        period: "299 – 252 Ma",
+        milestone: "A supercontinent reaches its limit",
+        description: "Dry interiors favor resilient reptiles before the largest extinction reshapes life.",
+        featuredSpeciesCount: 4,
+      }),
     ],
   },
   {
@@ -70,6 +186,32 @@ export const eras = [
       "Dinosaurs dominate terrestrial ecosystems",
       "Birds and flowering plants begin their long rise",
     ],
+    suberas: [
+      subera("mesozoic", "/images/mesozoic.png", "/skydome/mesozoic3.png", {
+        id: "triassic",
+        name: "Triassic",
+        period: "252 – 201 Ma",
+        milestone: "Dinosaurs make their first appearance",
+        description: "Life recovers from extinction as the first dinosaurs and early mammals share a warming world.",
+        featuredSpeciesCount: 4,
+      }),
+      subera("mesozoic", "/images/mesozoic.png", "/skydome/mesozoic2.png", {
+        id: "jurassic",
+        name: "Jurassic",
+        period: "201 – 145 Ma",
+        milestone: "Giants rule the forest",
+        description: "Humid forests and broad seas support immense sauropods, marine reptiles and feathered hunters.",
+        featuredSpeciesCount: 7,
+      }),
+      subera("mesozoic", "/images/mesozoic.png", "/skydome/mesozoic3.png", {
+        id: "cretaceous",
+        name: "Cretaceous",
+        period: "145 – 66 Ma",
+        milestone: "Flowering plants reshape the food web",
+        description: "Continents drift apart as flowering plants spread and dinosaurs reach their final diversity.",
+        featuredSpeciesCount: 8,
+      }),
+    ],
   },
   {
     id: "cenozoic",
@@ -92,6 +234,32 @@ export const eras = [
       "Mammals diversify into nearly every habitat",
       "Grasslands and ice-age ecosystems expand",
       "Humans emerge and transform the biosphere",
+    ],
+    suberas: [
+      subera("cenozoic", "/images/cenozoic.png", "/skydome/cenozoicEra.png", {
+        id: "paleogene",
+        name: "Paleogene",
+        period: "66 – 23 Ma",
+        milestone: "Mammals fill the open niches",
+        description: "After the dinosaur extinction, mammals and birds rapidly occupy newly available habitats.",
+        featuredSpeciesCount: 6,
+      }),
+      subera("cenozoic", "/images/cenozoic.png", "/skydome/cenozoicEra.png", {
+        id: "neogene",
+        name: "Neogene",
+        period: "23 – 2.58 Ma",
+        milestone: "Grasslands change the silhouette of life",
+        description: "Cooling climates and open grasslands drive new grazers, hunters and the first hominins.",
+        featuredSpeciesCount: 8,
+      }),
+      subera("cenozoic", "/images/cenozoic.png", "/skydome/cenozoicEra.png", {
+        id: "quaternary",
+        name: "Quaternary",
+        period: "2.58 Ma – present",
+        milestone: "Humans become a geological force",
+        description: "Ice ages, modern ecosystems and human expansion define the most recent chapter of deep time.",
+        featuredSpeciesCount: 10,
+      }),
     ],
   },
 ];

@@ -5,16 +5,27 @@ type Props = {
   index: number;
   loading: boolean;
   onSelect: (id: string) => void;
+  selectedSuberaId: string | null;
+  onSuberaSelect: (id: string) => void;
 };
 
-export default function TimelineRail({ index, loading, onSelect }: Props) {
+export default function TimelineRail({
+  index,
+  loading,
+  onSelect,
+  selectedSuberaId,
+  onSuberaSelect,
+}: Props) {
+  const activeEra = eras[index];
+
   return (
     <div
       role="region"
       className="carousel-scroll mt-1 w-[calc(100vw-1.5rem)] max-w-[1024px] select-none overflow-x-auto px-3 sm:mt-2 sm:w-[92vw] sm:px-0"
       aria-label="Timeline eras"
     >
-      <div className="relative h-36 min-w-[560px] sm:h-40 sm:min-w-0">
+      <div className="relative min-w-[560px] pb-1 sm:min-w-0">
+        <div className="relative h-32 sm:h-36">
         <div className="absolute left-7 right-7 top-[53%] h-px bg-gradient-to-r from-purple-300/20 via-white/70 to-cyan-300/20 sm:left-10 sm:right-10" />
         <div className="absolute left-7 right-7 top-[53%] h-6 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(168,85,247,0.24),transparent_68%)] blur-md sm:left-10 sm:right-10" />
 
@@ -98,6 +109,63 @@ export default function TimelineRail({ index, loading, onSelect }: Props) {
               </div>
             </button>
           ))}
+        </div>
+        </div>
+
+        <div
+          className="overflow-hidden opacity-100 transition-[max-height,opacity,transform] duration-500 ease-out motion-reduce:transition-none"
+          style={{ maxHeight: activeEra.suberas.length ? "11rem" : 0 }}
+          aria-label={`${activeEra.name} suberas`}
+        >
+          <div className="relative border-t border-white/10 px-7 pt-2 sm:px-10">
+            <div className="mb-1.5 flex items-center justify-between gap-3 text-[9px] font-semibold uppercase tracking-[0.24em] text-white/45">
+              <span>Stratigraphic detail</span>
+              <span>{activeEra.suberas.length} chapters</span>
+            </div>
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              {activeEra.suberas.map((item) => {
+                const selected = item.id === selectedSuberaId;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => !loading && onSuberaSelect(item.id)}
+                    disabled={loading}
+                    aria-pressed={selected}
+                    aria-label={`${item.name}, ${item.period}`}
+                    className={`group relative min-w-0 overflow-hidden rounded-xl border px-2.5 py-2 text-left transition-[border-color,background-color,transform,box-shadow] duration-300 motion-reduce:transition-none sm:px-3 sm:py-2.5 ${
+                      selected
+                        ? "border-white/70 bg-black/65 shadow-[0_10px_30px_rgba(0,0,0,0.32)]"
+                        : "border-white/12 bg-black/25 hover:-translate-y-0.5 hover:border-white/40 hover:bg-black/45"
+                    }`}
+                  >
+                    <span className="absolute inset-0 opacity-40 transition-opacity duration-300 group-hover:opacity-60">
+                      <img
+                        src={item.image}
+                        alt=""
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                        draggable={false}
+                      />
+                    </span>
+                    <span className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/15" />
+                    <span className="relative block truncate text-[11px] font-semibold text-white sm:text-xs">
+                      {item.name}
+                    </span>
+                    <span className="relative mt-1 block truncate text-[9px] font-medium uppercase tracking-[0.1em] text-white/55">
+                      {item.period}
+                    </span>
+                    <span
+                      className={`relative mt-2 block h-0.5 rounded-full transition-[width,background-color] duration-300 ${
+                        selected ? "w-3/4 bg-white" : "w-1/4 bg-white/35 group-hover:w-1/2"
+                      }`}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>

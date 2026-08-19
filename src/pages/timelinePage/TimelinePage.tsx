@@ -14,6 +14,9 @@ import Button2 from "@/components/ui/button/Button2";
 
 export default function MainScene() {
   const [currentEra, setCurrentEra] = useState<string>(eras[0]?.id || "");
+  const [currentSubera, setCurrentSubera] = useState<string | null>(
+    eras[0]?.suberas[0]?.id ?? null
+  );
   const [freeView, setFreeView] = useState(false);
   const [initialReady, setInitialReady] = useState(false);
   const [backgroundLoading, setBackgroundLoading] = useState(true);
@@ -25,8 +28,11 @@ export default function MainScene() {
   }, [currentEra]);
 
   const eraIndex = eras.findIndex((era) => era.id === currentEra);
-  const background = eraData?.background;
-  const preloadPath = eras[eraIndex + 1]?.background ?? eras[eraIndex - 1]?.background;
+  const selectedSubera = eraData?.suberas.find((item) => item.id === currentSubera);
+  const background = selectedSubera?.background ?? eraData?.background;
+  const preloadPath =
+    eras[eraIndex + 1]?.suberas[0]?.background ??
+    eras[eraIndex - 1]?.suberas[0]?.background;
 
   const handleBackgroundLoading = useCallback((loading: boolean) => {
     setBackgroundLoading(loading);
@@ -44,10 +50,24 @@ export default function MainScene() {
   const handleEraChange = useCallback(
     (eraId: string) => {
       if (eraId === currentEra) return;
+      const nextEra = eras.find((era) => era.id === eraId);
+      const nextSubera = nextEra?.suberas[0];
+      setCurrentSubera(nextSubera?.id ?? null);
       setBackgroundLoading(true);
       setCurrentEra(eraId);
     },
     [currentEra]
+  );
+
+  const handleSuberaChange = useCallback(
+    (suberaId: string) => {
+      if (suberaId === currentSubera) return;
+      const nextSubera = eraData?.suberas.find((item) => item.id === suberaId);
+      if (!nextSubera) return;
+      if (nextSubera.background !== background) setBackgroundLoading(true);
+      setCurrentSubera(suberaId);
+    },
+    [background, currentSubera, eraData]
   );
 
   const isHDR =
@@ -102,6 +122,8 @@ export default function MainScene() {
         <WithProgressUI
           currentEra={currentEra}
           setCurrentEra={handleEraChange}
+          currentSubera={currentSubera}
+          setCurrentSubera={handleSuberaChange}
           loading={backgroundLoading}
         />
       )}

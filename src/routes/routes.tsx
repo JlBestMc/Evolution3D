@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom";
 
 const WelcomePage = lazy(() => import("../pages/welcomePage/WelcomePage"));
 const TimelinePage = lazy(() => import("../pages/timelinePage/TimelinePage"));
-const EraPage = lazy(() => import("../pages/eraPage/EraPage"));
+const EraPage2 = lazy(() => import("../pages/eraPage/EraPage2"));
 const AnimalPage = lazy(() => import("../pages/animalPage/AnimalPage"));
 const MuseumPage = lazy(() => import("../pages/museumPage/MuseumPage"));
 const MapPage = lazy(() => import("../pages/mapPage/MapPage"));
@@ -52,8 +52,10 @@ export default function AppRoutes() {
         <Route path={PATHS.login} element={<LoginPage />} />
         <Route path={PATHS.register} element={<RegisterPage />} />
         <Route path={PATHS.timeline} element={<TimelinePage />} />
-        <Route path={PATHS.era} element={<EraPage />} />
-        <Route path={`${PATHS.era}/:eraId`} element={<EraPage />} />
+        <Route path={PATHS.era} element={<EraPage2 />} />
+        <Route path={`${PATHS.era}/:eraId`} element={<EraPage2 />} />
+        <Route path="/era2" element={<EraPage2 />} />
+        <Route path="/era2/:eraId" element={<EraPage2 />} />
         <Route path="/animal/:name" element={<AnimalPage />} />
         <Route path={PATHS.museum} element={<MuseumPage />} />
         <Route path={PATHS.map} element={<MapPage />} />

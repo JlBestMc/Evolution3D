@@ -8,18 +8,19 @@ import {
   ChevronRight,
   CircleDot,
   Cloud,
-  Compass,
   Globe2,
   Heart,
+  Layers3,
   Mountain,
   Share2,
   Sparkles,
   Sprout,
+  Sun,
   Waves,
 } from "lucide-react";
 import { eras } from "@/data/eras";
 import { ERA_UUIDS, isUuid } from "@/data/eraIds";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Background from "@/components/ui/background/Background";
 import { Card3D } from "@/features/animals/components/cards/Card3D";
 import { DragSafeCard } from "@/features/animals/components/cards/DragSafeCard";
@@ -28,12 +29,29 @@ import { getEraColor } from "@/services/eras";
 
 export default function EraPage() {
   const params = useParams<{ eraId?: string }>();
+  const [searchParams] = useSearchParams();
   const eraId = params.eraId ?? "";
   const eraSlug = useMemo(() => {
     if (!isUuid(eraId)) return eraId;
     return Object.entries(ERA_UUIDS).find(([, uuid]) => uuid === eraId)?.[0] ?? eraId;
   }, [eraId]);
-  const eraObj = useMemo(() => eras.find((e) => e.id === eraSlug), [eraSlug]);
+  const baseEra = useMemo(() => eras.find((e) => e.id === eraSlug), [eraSlug]);
+  const suberaId = searchParams.get("subera");
+  const selectedSubera = useMemo(
+    () => baseEra?.suberas.find((item) => item.id === suberaId),
+    [baseEra, suberaId]
+  );
+  const eraObj = useMemo(() => {
+    if (!baseEra || !selectedSubera) return baseEra;
+    return {
+      ...baseEra,
+      name: selectedSubera.name,
+      image: selectedSubera.image,
+      period: selectedSubera.period,
+      milestone: selectedSubera.milestone,
+      description: selectedSubera.description,
+    };
+  }, [baseEra, selectedSubera]);
   const eraIndex = eras.findIndex((era) => era.id === eraSlug);
   const previousEra = eraIndex > 0 ? eras[eraIndex - 1] : undefined;
   const nextEra = eraIndex >= 0 ? eras[eraIndex + 1] : undefined;
@@ -45,6 +63,7 @@ export default function EraPage() {
     gcTime: 30 * 60 * 1000,
   });
   const eraColor = eraColorFromDb ?? eraObj?.color ?? "#6b8cff";
+  const pageAccent = eraSlug === "paleozoic" ? "#c9ed55" : eraColor;
 
   const {
     data: fetchedAnimals,
@@ -66,8 +85,20 @@ export default function EraPage() {
 
   const navigate = useNavigate();
   const [saved, setSaved] = useState(false);
+  const [ambientLight, setAmbientLight] = useState(false);
   const heroImage = eraObj?.image ?? "/images/mesozoic.png";
   const featuredAnimals = useMemo(() => animals.slice(0, 3), [animals]);
+  const heroName = selectedSubera?.name ?? baseEra?.name?.replace(" Era", "") ?? "All life";
+  const heroAccent = "Era";
+  const heroPeriod = selectedSubera?.period ?? baseEra?.period ?? "A record in deep time";
+  const heroDescription = selectedSubera?.description ?? baseEra?.description ?? "A living index of Earth's biological history.";
+  const activeRailId = selectedSubera?.id ?? baseEra?.suberas[0]?.id;
+  const displayPeriod = (period: string) => {
+    const [start, end] = period.split(" – ");
+    if (!end) return period;
+    if (end === "present") return `${start.replace(" Ma", "")} million years ago – present`;
+    return `${start.replace(" Ma", "")} – ${end.replace(" Ma", "")} million years ago`;
+  };
 
   const handleShare = async () => {
     const shareData = {
@@ -104,74 +135,121 @@ export default function EraPage() {
   }, []);
 
   return (
-    <main className="observatory-page relative min-h-screen overflow-hidden bg-[#05090d] text-white" style={{ "--era-color": eraColor } as CSSProperties}>
-      <Background accentColor={eraColor} />
-      <section className="relative z-10 isolate min-h-[100dvh] overflow-hidden" aria-labelledby="era-title">
-        <img src={heroImage} alt="" className="absolute inset-0 h-full w-full origin-top-right object-cover object-[58%_28%] lg:object-right-top lg:scale-[1.1]" />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(1,5,6,0.98)_0%,rgba(1,5,6,0.88)_22%,rgba(1,5,6,0.45)_36%,rgba(1,5,6,0.12)_48%,transparent_62%)]" />
-        <div className="absolute bottom-0 left-0 h-[48%] w-[64%] bg-[linear-gradient(180deg,transparent_0%,rgba(1,5,6,0.92)_100%)]" />
+    <main
+      className={`observatory-page relative min-h-screen overflow-x-hidden bg-[#03090b] text-white ${ambientLight ? "brightness-110" : ""}`}
+      style={{ "--era-color": pageAccent } as CSSProperties}
+    >
+      <Background accentColor={pageAccent} />
+      <section className="relative z-10 isolate flex min-h-[100dvh] flex-col overflow-hidden" aria-labelledby="era-title">
+        <img
+          src={heroImage}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(1,7,9,0.98)_0%,rgba(1,7,9,0.86)_20%,rgba(1,7,9,0.48)_38%,rgba(1,7,9,0.12)_58%,rgba(1,7,9,0.08)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(1,7,9,0.38)_0%,transparent_24%,transparent_58%,rgba(1,7,9,0.9)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(110,205,226,0.12),transparent_34%),radial-gradient(circle_at_38%_80%,rgba(1,7,9,0.42),transparent_0%)]" />
 
-        <header className="absolute inset-x-0 top-0 z-20 mx-auto flex max-w-none items-center justify-between px-5 pt-5 sm:px-8 lg:px-8 lg:pt-6">
-          <Link to="/timeline" className="observatory-meta inline-flex items-center gap-2 text-xs font-semibold text-white/85 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 lg:text-sm">
-            <ArrowLeft className="size-4" aria-hidden />
-            <span>Back to Timeline</span>
+        <header className="absolute inset-x-0 top-0 z-20 mx-auto flex h-20 max-w-[1440px] items-center justify-between px-5 sm:px-8 lg:px-10">
+          <Link
+            to="/"
+            className="group inline-flex items-center gap-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+            aria-label="Evolution3D home"
+          >
+            <span className="grid size-8 place-items-center rounded-full border border-[var(--era-color)]/70 bg-black/20 p-1.5 text-[var(--era-color)] backdrop-blur-sm transition-transform group-hover:scale-105 sm:size-9">
+              <CircleDot className="size-full" strokeWidth={1.5} aria-hidden />
+            </span>
+            <span className="text-[13px] font-semibold tracking-[-0.02em] text-white/90 sm:text-sm">EVOLUTION3D</span>
           </Link>
 
-          <div className="observatory-meta absolute left-1/2 hidden -translate-x-1/2 items-center gap-2 text-xs font-semibold text-white/60 sm:flex lg:text-sm">
-            <span>Timeline</span>
-            <ChevronRight className="size-3.5 text-white/30" aria-hidden />
-            <span>{eraObj?.name ?? "Geological era"}</span>
-            <ChevronRight className="size-3.5 text-white/30" aria-hidden />
-            <span style={{ color: eraColor }}>{eraObj?.transition ?? "Deep time"}</span>
-          </div>
+          <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 lg:flex" aria-label="Primary navigation">
+            <Link to="/timeline" className="text-xs font-medium text-white/65 transition-colors hover:text-white">Timeline</Link>
+            {eras.slice(1).map((era) => {
+              const active = era.id === eraSlug;
+              return (
+                <Link
+                  key={era.id}
+                  to={`/era/${era.id}`}
+                  className={`text-xs font-medium transition-colors ${active ? "text-[var(--era-color)]" : "text-white/60 hover:text-white"}`}
+                >
+                  {era.name.replace(" Era", "")}
+                </Link>
+              );
+            })}
+            <a href="#world-heading" className="text-xs font-medium text-white/60 transition-colors hover:text-white">About</a>
+          </nav>
 
           <div className="flex items-center gap-1">
-            <button type="button" aria-label={saved ? "Remove era from saved records" : "Save era"} aria-pressed={saved} onClick={() => setSaved((value) => !value)} className="grid size-9 place-items-center rounded-full text-white/80 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 lg:size-10">
-              <Heart className={`size-[18px] lg:size-5 ${saved ? "fill-current" : ""}`} style={{ color: saved ? eraColor : undefined }} aria-hidden />
+            <button
+              type="button"
+              aria-label="Toggle ambient light"
+              aria-pressed={ambientLight}
+              onClick={() => setAmbientLight((value) => !value)}
+              className="grid size-9 place-items-center rounded-full border border-white/10 bg-black/15 text-white/75 transition-colors hover:border-white/30 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+              title="Toggle ambient light"
+            >
+              <Sun className="size-4" aria-hidden />
             </button>
-            <button type="button" aria-label="Share era" onClick={handleShare} className="grid size-9 place-items-center rounded-full text-white/80 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 lg:size-10">
-              <Share2 className="size-[18px] lg:size-5" aria-hidden />
+            <button
+              type="button"
+              aria-label={saved ? "Remove era from saved records" : "Save era"}
+              aria-pressed={saved}
+              onClick={() => setSaved((value) => !value)}
+              className="hidden"
+            >
+              <Heart className={`size-[17px] ${saved ? "fill-current" : ""}`} style={{ color: saved ? pageAccent : undefined }} aria-hidden />
+            </button>
+            <button
+              type="button"
+              aria-label="Share era"
+              onClick={handleShare}
+              className="hidden"
+            >
+              <Share2 className="size-[17px]" aria-hidden />
             </button>
           </div>
         </header>
 
-        <div className="relative z-10 mx-auto flex min-h-[100dvh] max-w-none flex-col justify-start gap-7 px-5 pb-4 pt-24 sm:px-8 sm:pb-6 lg:gap-0 lg:px-16 lg:pb-0 lg:pt-16">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_19rem]">
-            <article className="max-w-[44rem] self-start lg:pt-2">
-              <span className="observatory-meta inline-flex rounded-full border border-white/15 bg-[#071216]/60 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/70 backdrop-blur-md lg:px-3.5 lg:py-2 lg:text-xs">
-                {eraObj?.name ?? "Geological era"}
-              </span>
-              <h1 id="era-title" className="observatory-display mt-4 max-w-3xl text-5xl leading-[0.92] tracking-[-0.06em] text-white sm:text-7xl lg:mt-4 lg:text-[clamp(4rem,5.2vw,5.2rem)] lg:leading-[0.96]">
-                {eraObj?.name?.replace(" Era", "") ?? "All life"}
+        <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full flex-col justify-end px-5 pb-[12rem] pt-24 sm:px-8 sm:pb-[13rem] lg:px-[7.1vw] lg:pb-[13rem] lg:pt-20">
+          <div className="w-full">
+            <article className="max-w-[42rem] self-start lg:pt-2">
+              <Link to="/timeline" className="observatory-meta inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/65 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 sm:text-xs">
+                <ArrowLeft className="size-3.5" aria-hidden />
+                Back to timeline
+              </Link>
+              <h1 id="era-title" className="observatory-display mt-5 max-w-3xl text-[clamp(3.3rem,7vw,6.4rem)] leading-[0.9] tracking-[-0.065em] text-white">
+                {heroName} <span className="text-[var(--era-color)]">{heroAccent}</span>
               </h1>
-              <p className="observatory-meta mt-3 text-base font-semibold text-white/70 sm:text-lg lg:text-lg" style={{ color: eraColor }}>
-                {eraObj?.period ?? "A record in deep time"}
+              <p className="observatory-meta mt-4 text-base font-semibold text-[var(--era-color)] sm:text-lg">
+                {displayPeriod(heroPeriod)}
               </p>
-              <div className="observatory-meta mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-white/50 lg:text-sm">
-                <span>{eraObj?.environment ?? "Changing habitats"}</span>
-                <span aria-hidden className="text-white/25">/</span>
-                <span>{eraObj?.duration ?? "A long interval in deep time"}</span>
-              </div>
-              <h2 className="observatory-display mt-5 text-2xl font-medium tracking-[-0.025em] sm:text-3xl lg:mt-5 lg:text-[2rem]" style={{ color: eraColor }}>
-                {eraObj?.milestone ?? eraObj?.transition ?? "Life changes course"}
-              </h2>
-              <p className="mt-3 max-w-[34rem] text-base leading-6 text-white/80 sm:text-lg sm:leading-7 lg:text-[17px] lg:leading-7">
-                {eraObj?.description ?? "A living index of Earth's biological history."}{eraObj?.legacy ? ` ${eraObj.legacy}` : ""}
+              <p className="mt-4 max-w-[34rem] text-sm leading-6 text-white/70 sm:text-base sm:leading-7">
+                {heroDescription}
               </p>
 
-              <div className="mt-6 flex flex-wrap items-center gap-3">
-                <button type="button" onClick={() => scrollToSection("specimens-heading")} className="inline-flex items-center gap-2 rounded-lg px-4 py-3 text-xs font-semibold text-white transition-transform hover:-translate-y-0.5 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#071013] lg:min-h-16 lg:px-7 lg:py-5 lg:text-base" style={{ backgroundColor: eraColor }}>
-                  <Dna className="size-4 lg:size-[18px]" aria-hidden />
-                  Begin Exploration
-                </button>
-                <button type="button" onClick={() => scrollToSection("world-heading")} className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-black/20 px-4 py-3 text-xs font-semibold text-white/90 backdrop-blur-sm transition-colors hover:border-white/70 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 lg:min-h-16 lg:px-7 lg:py-5 lg:text-base">
-                  <Compass className="size-4 lg:size-[18px]" aria-hidden />
-                  View Environment
-                </button>
+              <div className="mt-6 grid max-w-[26rem] grid-cols-[1fr_1fr_1.5fr] gap-2 sm:gap-3">
+                {[
+                  { value: baseEra?.duration?.replace("≈ ", "") ?? "Deep time", label: "Duration", Icon: CalendarDays },
+                  { value: String(baseEra?.suberas.length ?? 0), label: "Suberas", Icon: Layers3 },
+                  { value: isLoading ? "—" : String(animals.length), label: "Featured species", Icon: Dna },
+                ].map(({ value, label, Icon }) => (
+                  <div key={label} className="min-w-0 rounded-lg border border-white/10 bg-[#071316]/55 px-3 py-3 backdrop-blur-md sm:px-3.5">
+                    <div className="flex min-w-0 items-center gap-1.5">
+                      <Icon className="size-4 shrink-0 text-[var(--era-color)]" aria-hidden />
+                      <p className="whitespace-nowrap text-[8px] font-medium uppercase tracking-[0.06em] text-white/55 sm:text-[9px] sm:tracking-[0.08em]">{label}</p>
+                    </div>
+                    <p className="mt-2 truncate text-xs font-semibold text-white sm:text-sm">{value}</p>
+                  </div>
+                ))}
               </div>
+
+              <button type="button" onClick={() => scrollToSection("specimens-heading")} className="mt-6 inline-flex items-center gap-5 rounded-md bg-[var(--era-color)] px-5 py-3 text-xs font-bold text-[#0b150b] shadow-[0_12px_36px_rgba(0,0,0,0.24)] transition-[transform,filter] hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#071013] sm:px-5 sm:py-3.5 sm:text-sm">
+                Explore this Era
+                <ArrowRight className="size-4" aria-hidden />
+              </button>
             </article>
 
-            <aside className="w-full max-w-sm self-start rounded-xl border border-white/10 bg-[#061016]/80 p-4 backdrop-blur-xl lg:mt-12 lg:max-w-[19rem] lg:justify-self-end lg:p-6" aria-labelledby="snapshot-heading">
+            <aside className="hidden w-full max-w-sm self-start rounded-xl border border-white/10 bg-[#061016]/80 p-4 backdrop-blur-xl lg:mt-12 lg:max-w-[19rem] lg:justify-self-end lg:p-6" aria-labelledby="snapshot-heading">
               <p id="snapshot-heading" className="observatory-meta text-xs font-semibold uppercase tracking-[0.14em] lg:text-sm" style={{ color: eraColor }}>Era snapshot</p>
               <div className="mt-3 divide-y divide-white/10">
                 {[
@@ -192,7 +270,7 @@ export default function EraPage() {
             </aside>
           </div>
 
-          <div className="grid min-w-0 gap-3 lg:absolute lg:inset-x-16 lg:bottom-5 lg:items-end lg:gap-5 lg:grid-cols-[minmax(0,0.93fr)_minmax(0,1fr)]">
+          <div className="hidden grid min-w-0 gap-3 lg:absolute lg:inset-x-16 lg:bottom-5 lg:items-end lg:gap-5 lg:grid-cols-[minmax(0,0.93fr)_minmax(0,1fr)]">
             <div className="flex flex-col gap-3 lg:gap-7">
               <div className="grid grid-cols-2 divide-x divide-white/10 rounded-xl border border-white/10 bg-[#061016]/80 px-3 py-3 backdrop-blur-xl sm:grid-cols-4 lg:px-5 lg:py-4">
                 {[
@@ -258,6 +336,47 @@ export default function EraPage() {
             </section>
           </div>
         </div>
+
+        <nav
+          className="absolute inset-x-4 bottom-5 z-20 mx-auto max-w-[1240px] sm:inset-x-8 lg:bottom-6 lg:inset-x-[7.1vw]"
+          aria-label={`Suberas of ${baseEra?.name ?? "this era"}`}
+        >
+          <div className="overflow-hidden rounded-2xl border border-white/15 bg-[#071316]/75 shadow-[0_18px_50px_rgba(0,0,0,0.28)] backdrop-blur-xl">
+            <div className="flex items-stretch gap-3 p-3 sm:gap-5 sm:p-4">
+              <div className="flex w-[7.5rem] shrink-0 flex-col justify-center border-r border-white/10 pr-3 sm:w-[9rem] sm:pr-5">
+                <span className="observatory-meta text-[9px] font-semibold uppercase tracking-[0.16em] text-white/50">Suberas of</span>
+                <strong className="mt-1 text-[11px] font-semibold uppercase tracking-[0.04em] text-white/90 sm:text-xs">
+                  the {baseEra?.name?.replace(" Era", "") ?? "era"}
+                </strong>
+              </div>
+
+              <div className="carousel-scroll relative flex min-w-0 flex-1 overflow-x-auto pb-1">
+                <div className="absolute bottom-1 left-4 right-4 h-px bg-white/15" aria-hidden="true" />
+                <div className="relative flex min-w-full gap-1 sm:gap-2">
+                  {baseEra?.suberas.map((subera, index) => {
+                    const active = subera.id === activeRailId;
+                    const Icon = [CircleDot, Waves, Sprout, Mountain, Dna, Layers3][index % 6];
+                    return (
+                      <Link
+                        key={subera.id}
+                        to={`/era/${baseEra.id}?subera=${subera.id}`}
+                        aria-current={active ? "page" : undefined}
+                        className={`group relative flex min-w-[8.3rem] flex-1 items-center gap-2 px-2 pb-3 pt-1 transition-colors sm:min-w-0 sm:px-3 ${active ? "text-white" : "text-white/55 hover:text-white"}`}
+                      >
+                        <Icon className={`size-5 shrink-0 transition-colors sm:size-6 ${active ? "text-[var(--era-color)]" : "text-white/35 group-hover:text-white/75"}`} aria-hidden />
+                        <span className="min-w-0">
+                          <span className="block truncate text-[10px] font-semibold sm:text-xs">{subera.name}</span>
+                          <span className="mt-1 block truncate text-[9px] text-white/45 sm:text-[10px]">{subera.period}</span>
+                        </span>
+                        <span className={`absolute bottom-0 left-2 right-2 h-0.5 rounded-full transition-all ${active ? "bg-[var(--era-color)] shadow-[0_0_12px_var(--era-color)]" : "bg-transparent group-hover:bg-white/30"}`} />
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </nav>
       </section>
 
       <section className="relative z-10 mx-auto max-w-[1440px] px-4 pb-12 sm:px-6 lg:px-10">

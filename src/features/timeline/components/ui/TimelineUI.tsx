@@ -10,12 +10,16 @@ import VideoModal from "./VideoModal";
 interface TimelineUIProps {
   currentEra: string;
   setCurrentEra: (eraId: string) => void;
+  currentSubera: string | null;
+  setCurrentSubera: (suberaId: string) => void;
   loading?: boolean;
 }
 
 export default function TimelineUI({
   currentEra,
   setCurrentEra,
+  currentSubera,
+  setCurrentSubera,
   loading = false,
 }: TimelineUIProps) {
   const navigate = useNavigate();
@@ -52,7 +56,10 @@ export default function TimelineUI({
   const handleExplore = () => {
     if (loading) return;
     const era = eras[index];
-    navigate(PATHS.eraId(era.id));
+    const suberaQuery = selectedSubera
+      ? `?subera=${encodeURIComponent(selectedSubera.id)}`
+      : "";
+    navigate(`${PATHS.eraId(era.id)}${suberaQuery}`);
   };
 
   useEffect(() => {
@@ -78,6 +85,11 @@ export default function TimelineUI({
   }, [index]);
 
   const era = eras[index];
+  const selectedSubera = era.suberas.find((item) => item.id === currentSubera);
+  const activeItem = selectedSubera ?? era;
+  const explorePath = selectedSubera
+    ? `${PATHS.eraId(era.id)}?subera=${encodeURIComponent(selectedSubera.id)}`
+    : PATHS.eraId(era.id);
   const color = era.color || "#ffffff";
   const [videoOpen, setVideoOpen] = useState(false);
   type EraWithVideo = (typeof eras)[number] & { video?: string | string[] };
@@ -91,25 +103,26 @@ export default function TimelineUI({
 
   useEffect(() => {
     setVideoOpen(false);
-  }, [currentEra]);
+  }, [currentEra, currentSubera]);
 
   return (
     <>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-center px-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6 sm:pb-8">
         <div className="pointer-events-auto relative flex w-full max-w-[1180px] flex-col items-center gap-4 select-none sm:gap-5">
           
-          <div className="pointer-events-none absolute -top-12 flex items-center gap-3 text-[9px] font-medium uppercase tracking-[0.3em] text-white">
-            <span className="h-px w-12 bg-gradient-to-r from-transparent to-violet-300/70" />
+          <div className="pointer-events-none absolute -top-12 flex items-center gap-2 text-[9px] font-medium uppercase tracking-[0.3em] text-white sm:gap-3">
+            <span className="h-px w-2 bg-gradient-to-r from-transparent to-violet-300/70 sm:w-12" />
             <span className="text-lg">Timeline</span>
-            <span className="h-px w-12 bg-gradient-to-l from-transparent to-cyan-300/70" />
+            <span className="h-px w-2 bg-gradient-to-l from-transparent to-cyan-300/70 sm:w-12" />
           </div>
 
           <div className="flex w-full flex-col items-center gap-3">
             <TimelinePortal
-              era={era}
+              era={activeItem}
               color={color}
               index={index}
               total={eras.length}
+              suberaSelected={Boolean(selectedSubera)}
               loading={loading}
               videoAvailable={videoSources.length > 0}
               onExplore={handleExplore}
@@ -130,18 +143,20 @@ export default function TimelineUI({
             index={index}
             loading={loading}
             onSelect={setCurrentEra}
+            selectedSuberaId={selectedSubera?.id ?? null}
+            onSuberaSelect={setCurrentSubera}
           />
         </div>
       </div>
 
       <VideoModal
         open={videoOpen}
-        title={era.name}
+        title={activeItem.name}
         sources={videoSources}
         poster={era.image}
         accentColor={color}
         onClose={() => setVideoOpen(false)}
-        onContinue={() => navigate(PATHS.eraId(era.id))}
+        onContinue={() => navigate(explorePath)}
       />
     </>
   );
